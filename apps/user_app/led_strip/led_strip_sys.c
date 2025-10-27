@@ -22,14 +22,16 @@
 // 效果数据初始化
 void fc_data_init(void)
 {
-
     // 灯具
     fc_effect.on_off_flag = DEVICE_ON; // 灯为开启状态
-    fc_effect.led_num = 12 + 1;        // 灯带的总灯珠数量
+    fc_effect.led_num = 12 + 1;        // 灯带的总灯珠数量（12个流星灯+1七彩灯）
     fc_effect.Now_state = IS_STATIC;   // 当前运行状态 静态
-    fc_effect.rgb.r = 255;
-    fc_effect.rgb.g = 0;
-    fc_effect.rgb.b = 0;
+    // fc_effect.rgb.r = 0;
+    // fc_effect.rgb.g = 0;
+    // fc_effect.rgb.b = 0;
+    // fc_effect.rgb.r = 255;
+    fc_effect.rgb.g = 255;
+    fc_effect.rgb.b = 255;
 #ifdef LED_STRIP_RGBW
     // fc_effect.rgb.w = 255;
     fc_effect.rgb.w = 0;
@@ -41,7 +43,7 @@ void fc_data_init(void)
     fc_effect.app_speed = 80;
     fc_effect.dream_scene.speed = 100;
     fc_effect.ls_speed = 3;
-    fc_effect.sequence = NEO_RGBW;
+    fc_effect.sequence = NEO_RBGW;
     fc_effect.auto_f = IS_PAUSE;
     fc_effect.music.s = 80;
     fc_effect.music.m = 0;
@@ -56,7 +58,8 @@ void fc_data_init(void)
     // 流星
     fc_effect.star_on_off = DEVICE_ON;
     fc_effect.star_index = 1;
-    fc_effect.star_speed = 30; // 变化速度
+    // fc_effect.star_speed = 30; // 变化速度
+    fc_effect.star_speed = 3000; // 变化速度（数值越小，速度越快）
     fc_effect.app_star_speed = 100;
     fc_effect.meteor_period = 8;                           // 默认8秒  周期值
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // ms,运行时的计数器
@@ -100,9 +103,8 @@ void soft_turn_on_the_light(void) // 软开灯处理
             one_wire_set_mode(4); // 360正转
             fc_effect.motor_on_off = DEVICE_ON;
         }
-        
-        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
+        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
         motor_Init();     // 初始化电机相关的变量
         WS2812FX_start(); // 清空动画使用到的缓存，给运行标志位置位
@@ -159,7 +161,7 @@ void app_set_bright(u8 tp_b)
     {
         if (tp_b < MIN_BRIGHT_VALUE)
             tp_b = MIN_BRIGHT_VALUE;
-        fc_effect.b = tp_b * 255 / 100;
+        fc_effect.b = (u16)tp_b * 255 / 100;
         fc_effect.app_b = tp_b;
         WS2812FX_setBrightness(fc_effect.b);
     }
@@ -890,24 +892,27 @@ void set_static_mode(u8 r, u8 g, u8 b)
     fc_effect.rgb.r = r;
     fc_effect.rgb.g = g;
     fc_effect.rgb.b = b;
-    fc_effect.rgb.w = 0;
+    // fc_effect.rgb.w = 0;
 
     // printf("r = %d, g = %d, b = %d", r, g, b);
 
-    // #if LED_STRIP_RGBW
-    //     if( fc_effect.rgb.r == 0xFF && \
-//         fc_effect.rgb.g == 0xFF && \
-//         fc_effect.rgb.b == 0xFF){
+#if LED_STRIP_RGBW
 
-    //         fc_effect.rgb.r = 0;
-    //         fc_effect.rgb.g = 0;
-    //         fc_effect.rgb.b = 0;
-    //         fc_effect.rgb.w = 255;
-    //     }else{
+    if (fc_effect.rgb.r == 0xFF &&
+        fc_effect.rgb.g == 0xFF &&
+        fc_effect.rgb.b == 0xFF)
+    {
 
-    //         fc_effect.rgb.w = 0;
-    //     }
-    // #endif
+        fc_effect.rgb.r = 0;
+        fc_effect.rgb.g = 0;
+        fc_effect.rgb.b = 0;
+        fc_effect.rgb.w = 255;
+    }
+    else
+    {
+        fc_effect.rgb.w = 0;
+    }
+#endif
 
     set_fc_effect(); // 效果调度
 }

@@ -439,7 +439,7 @@ uint8_t* WS2812FX_getActiveSegments(void) {
 //}
 
 void WS2812FX_setIdleSegment(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t options) {
-  uint32_t colors[] = {color, 0, 0};
+  uint32_t colors[MAX_NUM_COLORS] = {color, 0, 0};
   WS2812FX_setIdleSegment_colors(n, start, stop, mode, colors, speed, options);
 }
 
@@ -449,7 +449,7 @@ void WS2812FX_setIdleSegment_colors(uint8_t n, uint16_t start, uint16_t stop, mo
 }
 
 void WS2812FX_setSegment_colorReverse(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t reverse) {
-  uint32_t colors[] = {color, 0, 0};
+  uint32_t colors[MAX_NUM_COLORS] = {color, 0, 0};
   WS2812FX_setSegment_colorsOptions(n, start, stop, mode, colors, speed, (uint8_t)(reverse ? REVERSE : NO_OPTIONS));
 }
 
@@ -458,7 +458,7 @@ void WS2812FX_setSegment_colorsReverse(uint8_t n, uint16_t start, uint16_t stop,
 }
 
 void WS2812FX_setSegment_colorOptions(uint8_t n, uint16_t start, uint16_t stop, mode_ptr mode, uint32_t color, uint16_t speed, uint8_t options) {
-  uint32_t colors[] = {color, 0, 0};
+  uint32_t colors[MAX_NUM_COLORS] = {color, 0, 0};
   WS2812FX_setSegment_colorsOptions(n, start, stop, mode, colors, speed, options);
 }
 

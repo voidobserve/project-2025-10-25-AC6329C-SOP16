@@ -23,7 +23,7 @@ typedef struct
 // 定义按键键值：（不是真是的按键键值）
 enum
 {
-    RF24G_KEY_ON_OFF = 0x01, // 开关机
+    RF24G_KEY_ON_OFF = 0x17, // 开关机
 
     RF24G_KEY_CHROMATIC_CIRCLE = 0x51, // 色环
 

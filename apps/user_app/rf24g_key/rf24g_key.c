@@ -70,21 +70,21 @@ void rf24g_scan(u8 *recv_buff)
 
         // 测试时使用：
         // if (p->header1 == 0xDC && p->header2 == 0xDC)
-        // {
-        //     rf24g_key_val = p->red_val;
-        //     rf24g_rx_flag = 1;
-        //     return;
-        // }
-
-        if (p->key_1 == RF24G_KEY_CHROMATIC_CIRCLE) // 如果是色环按键
         {
             rf24g_key_val = p->key_1;
-            chromatic_circle_val = p->key_2;
+            rf24g_rx_flag = 1;
+            return;
         }
-        else
-        {
-            rf24g_key_val = p->key_2;
-        }
+
+        // if (p->key_1 == RF24G_KEY_CHROMATIC_CIRCLE) // 如果是色环按键
+        // {
+        //     rf24g_key_val = p->key_1;
+        //     chromatic_circle_val = p->key_2;
+        // }
+        // else
+        // {
+        //     rf24g_key_val = p->key_2;
+        // }
 
         rf24g_rx_flag = 1; // 测试的时候，屏蔽2.4G遥控器按键
     }

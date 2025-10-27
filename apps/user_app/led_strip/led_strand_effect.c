@@ -7,7 +7,9 @@
 #include "app_main.h"
 #include "asm/mcpwm.h"
 
-fc_effect_t fc_effect; // 幻彩灯串效果数据
+#include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.H"
+
+volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 void set_fc_effect(void);
 
 // FADE_SLOW：12颗
@@ -94,8 +96,15 @@ static void static_mode(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量  0：第0段   fc_effect.dream_scene.c_n  颜色数量，一个颜色包含（RGB）
     ls_set_colors(1, &fc_effect.rgb);                   // 1:1个颜色    &fc_effect.rgb 这个颜色是什么色
 
-    WS2812FX_start(); // 不能在这里清空显示的缓存，会导致流星灯也闪烁（流星灯会重新开始跑）
-    // WS2812FX_set_running();
+    // WS2812FX_start(); // 不能在这里清空显示的缓存，会导致流星灯也闪烁（流星灯会重新开始跑）
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
+
+    // printf("fc_effect.rgb.r %u\n", fc_effect.rgb.r);
+    // printf("fc_effect.rgb.g %u\n", fc_effect.rgb.g);
+    // printf("fc_effect.rgb.b %u\n", fc_effect.rgb.b);
+    // printf("fc_effect.rgb.w %u\n", fc_effect.rgb.w);
+    // printf("%s %u\n", __func__, __LINE__);
 }
 
 /*----------------------------------彩虹效果----------------------------------*/
@@ -729,7 +738,7 @@ static void ls_custom_effect(void)
  *
  */
 void ls_meteor_stat_effect(void)
-{ 
+{
     fc_effect.period_cnt = 0;
     if (fc_effect.star_on_off == DEVICE_ON)
     {

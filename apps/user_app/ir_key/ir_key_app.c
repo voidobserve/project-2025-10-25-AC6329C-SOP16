@@ -7,7 +7,7 @@
 #include "board_ac632n_demo_cfg.h"
 #include "ir_key_app.h"
 #include "led_strand_effect.h"
-#if 1
+#if 0
 
 // @key_app.c
 // 实现以下功能APP

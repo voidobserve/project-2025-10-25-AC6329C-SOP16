@@ -32,7 +32,8 @@ uint16_t WS2812FX_mode_comet_1(void)
     {
         return (_seg->speed);
     }
-    WS2812FX_fade_out();
+    WS2812FX_fade_out(); 
+    // Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 测试时使用，由于硬件有改动，需要调整流星灯的顺序
     u8 offset;
     offset = 13;
     if (IS_REVERSE)

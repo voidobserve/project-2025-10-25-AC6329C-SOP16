@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "adafruit_typedef.h"
-#include "led_strip_sys.h"
+#include "../../../../apps/user_app/led_strip/led_strip_sys.h"
 
 
 
@@ -72,6 +72,8 @@ void ws281x_show(unsigned char *pixels_pattern, unsigned short pattern_size)
 #if LED_STRIP_RGBW
 
 // printf_buf(pixels_pattern,pattern_size);
+
+//  USER_TO_DO 
     fc_rgbw_driver(*pixels_pattern,    \
                 *(pixels_pattern + 1),\
                 *(pixels_pattern + 2),\
@@ -87,41 +89,44 @@ void ws281x_show(unsigned char *pixels_pattern, unsigned short pattern_size)
 
     }
     
-    for(i=0; i< pattern_size/4; i++)
-    {
-      if(j==0){
+    // RGBW颜色的流星灯使用：
+    // for(i=0; i< pattern_size/4; i++)
+    // {
+    //   if(j==0){
 
-        r = *(buf+i);
+    //     r = *(buf+i);
 
-      }else if(j==1){
+    //   }else if(j==1){
 
-        g = *(buf+i);
+    //     g = *(buf+i);
        
-      }
-      else if(j==2){
+    //   }
+    //   else if(j==2){
 
-        b = *(buf+i);
+    //     b = *(buf+i);
 
-      }else if(j==3){
+    //   }else if(j==3){
 
-        w = *(buf+i);
+    //     w = *(buf+i);
 
-      }
+    //   }
 
-      j++;
+    //   j++;
 
-      if(j==4){
+    //   if(j==4){
 
-        j=0;
+    //     j=0;
 
-        *(buf + rOffset + (i-3)) = r;
-        *(buf + gOffset + (i-3)) = g;
-        *(buf + bOffset + (i-3)) = b;
-        *(buf + wOffset + (i-3)) = w;
+    //     *(buf + rOffset + (i-3)) = r;
+    //     *(buf + gOffset + (i-3)) = g;
+    //     *(buf + bOffset + (i-3)) = b;
+    //     *(buf + wOffset + (i-3)) = w;
 
-      }
-    }
+    //   }
+    // }
+    
     //幻彩灯驱动函数
+    // 流星灯驱动函数：
     extern void ledc_send_rgbbuf_isr(u8 index, u8 *rgbbuf, u32 buf_len, u16 again_cnt);
     ledc_send_rgbbuf_isr(0, buf, pattern_size/4, 0);
 

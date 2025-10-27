@@ -7,6 +7,9 @@
 volatile u16 send_base_ins = 0;
 u8 motor_period[6] = {8, 13, 18, 21, 26, 35}; // 转速  app指令，需要将8 13 18 21 26 转换成相应的16进制
 
+// 定义与驱动电机ic通信的引脚
+#define MOTOR_DATA_IO_PORT IO_PORTB_06
+
 /**
  * @brief  mcu通讯接口
  *
@@ -14,10 +17,9 @@ u8 motor_period[6] = {8, 13, 18, 21, 26, 35}; // 转速  app指令，需要将8 
  */
 void mcu_com_init(void)
 {
-
-    gpio_set_die(IO_PORTA_00, 1);
-    gpio_set_pull_up(IO_PORTA_00, 1);
-    gpio_direction_output(IO_PORTA_00, 1);
+    gpio_set_die(MOTOR_DATA_IO_PORT, 1);
+    gpio_set_pull_up(MOTOR_DATA_IO_PORT, 1);
+    gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
 }
 
 /**
@@ -28,7 +30,7 @@ void pack_base(void)
 {
     u8 p;
     send_base_ins = 0;
-    send_base_ins |= fc_effect.base_ins.mode;
+    send_base_ins |= fc_effect.base_ins.mode; // bit0 ~ bit2 电机模式
 
     for (p = 0; p < 6; p++)
     {
@@ -43,20 +45,27 @@ void pack_base(void)
         p = 0;
     }
 
-    send_base_ins |= ((u16)p << 3);
+    // send_base_ins |= ((u16)p << 3);
+    // send_base_ins |= ((u16)p << 8);
+    send_base_ins |= ((u16)motor_period[p] << 8);
+    
 
     if (fc_effect.base_ins.dir)
     {
         send_base_ins |= BIT(6);
     }
+
+    // printf("send_base_ins == 0x %x\n", (u16)send_base_ins);
 }
 
-#define INS_LEN 7 // 指令长度
-#define W_0_5MS 4 // 脉宽0.5ms
+// #define INS_LEN (7) // 指令长度
+// #define INS_LEN (16 - 1) // 指令长度
+#define INS_LEN (16) // 指令长度
+#define W_0_5MS 4      // 脉宽0.5ms
 #define W_1MS 8
 #define W_2MS 16
 static volatile u8 send_cnt = 0;
-static volatile u8 step = 0;
+static volatile u8 step = 0;       // 控制发送阶段的状态机
 static volatile u8 _125ms_cnt = 0; // 125us
 static volatile u8 h_l = 0;        // 0:输出低电平，1：高电平
 static volatile u8 send_en = 0;    // 0:不发送， 1：发送   使能变量
@@ -75,6 +84,7 @@ void one_wire_send_enable(void)
 
 /**
  * @brief 构造单线通讯协议，16bit  构造波形
+ *          从dat的最低位开始发送
  *
  * @param dat
  */
@@ -83,7 +93,6 @@ static volatile u8 flag_is_just_begin = 1; // 标志位，是否刚开始进入�
 void __attribute__((weak)) make_one_wire(void)
 {
     static volatile u16 dat = 0;
-    
 
     if (send_en == 0)
     {
@@ -118,13 +127,13 @@ void __attribute__((weak)) make_one_wire(void)
         /**********************************************************/
         if (h_l == 0)
         {
-            gpio_direction_output(IO_PORTA_00, 0);
+            gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
             _125ms_cnt++;
 
             //++_125ms_cnt;
             if (_125ms_cnt > (W_1MS)) // 从1开始
             {
-                gpio_direction_output(IO_PORTA_00, 1);
+                gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
 
                 h_l = 1;
                 _125ms_cnt = 0;
@@ -132,12 +141,12 @@ void __attribute__((weak)) make_one_wire(void)
         }
         else
         {
-            // gpio_direction_output(IO_PORTA_00, 1);
+            // gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
             _125ms_cnt++;
 
             if (_125ms_cnt == W_1MS)
             {
-                gpio_direction_output(IO_PORTA_00, 0);
+                gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
                 h_l = 0;
                 step = 1;
                 _125ms_cnt = 0;
@@ -145,16 +154,16 @@ void __attribute__((weak)) make_one_wire(void)
         }
         break;
 
-    case 1:
+    case 1: // 发送中
         if (h_l == 0)
         {
-            // gpio_direction_output(IO_PORTA_00, 0);
+            // gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
             _125ms_cnt++;
 
             if (_125ms_cnt == W_0_5MS)
             {
 
-                gpio_direction_output(IO_PORTA_00, 1);
+                gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
                 h_l = 1;
                 _125ms_cnt = 0;
             }
@@ -163,12 +172,12 @@ void __attribute__((weak)) make_one_wire(void)
         {
             if ((dat >> send_cnt) & 0x01) // 1
             {
-                // gpio_direction_output(IO_PORTA_00, 1);
+                // gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
                 _125ms_cnt++;
 
                 if (_125ms_cnt == W_1MS)
                 {
-                    gpio_direction_output(IO_PORTA_00, 0);
+                    gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
 
                     h_l = 0;
                     _125ms_cnt = 0;
@@ -183,11 +192,11 @@ void __attribute__((weak)) make_one_wire(void)
             }
             else
             {
-                // gpio_direction_output(IO_PORTA_00, 1);
+                // gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
                 _125ms_cnt++;
                 if (_125ms_cnt == W_0_5MS)
                 {
-                    gpio_direction_output(IO_PORTA_00, 0);
+                    gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
                     h_l = 0;
                     _125ms_cnt = 0;
                     // 完成1bit发送
@@ -203,14 +212,14 @@ void __attribute__((weak)) make_one_wire(void)
 
         break;
 
-    case 2:
+    case 2: // 发送结束
         if (h_l == 0)
         {
-            gpio_direction_output(IO_PORTA_00, 0);
+            gpio_direction_output(MOTOR_DATA_IO_PORT, 0);
             _125ms_cnt++;
             if (_125ms_cnt == W_2MS)
             {
-                gpio_direction_output(IO_PORTA_00, 1);
+                gpio_direction_output(MOTOR_DATA_IO_PORT, 1);
 
                 _125ms_cnt = 0;
                 step = 0;
@@ -227,11 +236,11 @@ void __attribute__((weak)) make_one_wire(void)
 }
 
 // 数据发送使能
-void enable_one_wire(void)   
+void enable_one_wire(void)
 {
     send_en = 0;
     flag_is_just_begin = 1;
-    pack_base();   //打包数据
+    pack_base(); // 打包数据
     send_en = 1;
 
     // if (0 != step)
@@ -240,7 +249,7 @@ void enable_one_wire(void)
     // }
     // else
     // {
-    //     printf("begin send\n"); 
+    //     printf("begin send\n");
     // }
 }
 
@@ -250,7 +259,7 @@ void enable_one_wire(void)
  */
 // AT_VOLATILE_RAM_CODE
 void one_wire_send(void)
-{ 
+{
     /*
         发送未使能，不发送
 
@@ -263,7 +272,7 @@ void one_wire_send(void)
     {
         return;
     }
- 
+
     make_one_wire();
 }
 

@@ -2157,15 +2157,12 @@ obj/Release/apps/user_app/led_strip/led_strip_drive.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,led_gpio_init,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_die,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_direction_output,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,led_pwr_on,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_disable_fun_output_port,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_direction,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_pull_up,l
--r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_pull_down,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,led_pwm_init,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,mcpwm_init,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,mic_gpio_init,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,adc_add_sample_ch,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_direction,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,gpio_set_pull_down,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,check_mic_adc,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,adc_get_value,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_drive.o,fc_rgbw_driver,pl

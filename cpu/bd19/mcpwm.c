@@ -139,20 +139,45 @@ CLOCK_CRITICAL_HANDLE_REG(mcpwm, clock_critical_enter, clock_critical_exit)
  */
 void mcpwm_set_duty(pwm_ch_num_type pwm_ch, u16 duty)
 {
-    PWM_TIMER_REG *timer_reg = get_pwm_timer_reg(pwm_ch);
+PWM_TIMER_REG *timer_reg = get_pwm_timer_reg(pwm_ch);
     PWM_CH_REG *pwm_reg = get_pwm_ch_reg(pwm_ch);
 
     if (pwm_reg && timer_reg) {
-        pwm_reg->ch_cmpl = timer_reg->tmr_pr * duty / 10000;
-        pwm_reg->ch_cmph = pwm_reg->ch_cmpl;
-        timer_reg->tmr_cnt = 0;
-        timer_reg->tmr_con |= 0b01;
+
+        // 如果不是100%占空比，直接写入对应的占空比寄存器
+        if (duty != 10000) {
+            pwm_reg->ch_cmpl = timer_reg->tmr_pr * duty / 10000;
+            pwm_reg->ch_cmph = pwm_reg->ch_cmpl;
+        }
+       
+        /*
+            【原来的、官方的程序】：
+            清零计数器，再开启mcpwm对应的通道，可能会触发一次重载，
+            导致输出的pwm波形有抖动，如果驱动的是功率较大的灯光设备，灯光会有闪烁 
+            // timer_reg->tmr_cnt = 0;
+            // timer_reg->tmr_con |= 0b01;
+        */
+
+        /*
+            如果是100%占空比，给寄存器写入一个比100%占空比还要大的值（10000 + 1），
+            否则输出的占空比不会到100%，而是100%以下，附带些细微的脉冲
+        */ 
+            
         if (duty == 10000) {
-            timer_reg->tmr_cnt = 0;
-            timer_reg->tmr_con &= ~(0b11);
+            pwm_reg->ch_cmpl = timer_reg->tmr_pr + 1;
+            pwm_reg->ch_cmph = pwm_reg->ch_cmpl;
+
+            /*
+                原来的程序，如果传参duty是10000，会导致pwm通道直接关闭，
+                在逻辑分析仪上面看到是0%的占空比，低电平
+            */
+            // timer_reg->tmr_cnt = 0;
+            // timer_reg->tmr_con &= ~(0b11); // 关闭对应的通道
         } else if (duty == 0) {
-            timer_reg->tmr_cnt = pwm_reg->ch_cmpl;
-            timer_reg->tmr_con &= ~(0b11);
+            // 改为不关闭对应的通道，直接输出0%占空比
+            
+            // timer_reg->tmr_cnt = pwm_reg->ch_cmpl;
+            // timer_reg->tmr_con &= ~(0b11); // 关闭对应的通道
         }
     }
 }
@@ -243,6 +268,7 @@ void mcpwm_init(struct pwm_platform_data *arg)
     mcpwm_set_frequency(arg->pwm_ch_num, arg->pwm_aligned_mode, arg->frequency);
 
     pwm_reg->ch_con0 = 0;
+    pwm_reg->ch_con0 |= BIT(1); // 时基 MCTMR0_CNT 等于“0”或者等于 MCTMR0_OVF 时候载入
 
     if (arg->complementary_en) {            //是否互补
         pwm_reg->ch_con0 &= ~(BIT(5) | BIT(4));
@@ -251,9 +277,9 @@ void mcpwm_init(struct pwm_platform_data *arg)
         pwm_reg->ch_con0 &= ~(BIT(5) | BIT(4));
     }
 
-    mcpwm_open(arg->pwm_ch_num); 	 //mcpwm enable
     //set duty
     mcpwm_set_duty(arg->pwm_ch_num, arg->duty);
+    mcpwm_open(arg->pwm_ch_num); 	 //mcpwm enable
 
     //H:
     if (arg->h_pin < IO_MAX_NUM) {      //任意引脚
@@ -261,6 +287,7 @@ void mcpwm_init(struct pwm_platform_data *arg)
         gpio_set_fun_output_port(arg->h_pin, FO_MCPWM_CH0H + 2 * arg->pwm_ch_num, 0, 1);
         gpio_set_direction(arg->h_pin, 0); //DIR output
     }
+
     //L:
     if (arg->l_pin < IO_MAX_NUM) {      //任意引脚
         pwm_reg->ch_con0 |= BIT(3);     //L_EN
@@ -268,7 +295,7 @@ void mcpwm_init(struct pwm_platform_data *arg)
         gpio_set_direction(arg->l_pin, 0); //DIR output
     }
 
-    log_pwm_info(arg->pwm_ch_num);
+    // log_pwm_info(arg->pwm_ch_num);
 }
 
 
