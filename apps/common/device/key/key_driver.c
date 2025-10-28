@@ -32,6 +32,8 @@
 #include "../../../../apps/user_app/rf24g_key/rf24g_key.h"
 #endif
 
+#include "../../../../apps/user_app/rf433_key/rf433_key.h"
+
 #define KEY_EVENT_CLICK_ONLY_SUPPORT 0 // 是否支持某些按键只响应单击事件
 
 #if TCFG_SPI_LCD_ENABLE
@@ -403,6 +405,21 @@ _notify:
     }
 #endif // #if TCFG_RF24GKEY_ENABLE
 
+#if RF_433_KEY_ENABLE
+    if (KEY_DRIVER_TYPE_RF_433_KEY == scan_para->key_type)
+    {
+        rf_433_key_structure.rf_433_key_latest_key_val = key_value;
+        // printf("rf 433 cur key value %u\n", (u16)cur_key_value);
+        rf_433_key_structure.rf_433_key_driver_event = key_event;
+
+        scan_para->click_cnt = 0; // 单击次数清0
+        scan_para->notify_value = NO_KEY;
+
+        // printf("key event %u\n", key_event);
+        goto _scan_end; // 提前退出
+    }
+#endif
+
     // key_value &= ~BIT(7);  //BIT(7) 用作按键特殊处理的标志
     e.type = SYS_KEY_EVENT;
     e.u.key.init = 1;
@@ -482,6 +499,13 @@ int key_driver_init(void)
     sys_s_hi_timer_add((void *)&rf24g_scan_para, key_driver_scan, rf24g_scan_para.scan_time); // 注册按键扫描定时器
     sys_s_hi_timer_add(NULL, rf24_key_handle, 1);                                             // 需要1ms调用一次，否则在调节色环时，颜色跳动会特别厉害
 #endif
+
+#if RF_433_KEY_ENABLE // 在 rf_433_key.h 中配置
+
+    extern rf_433_key_struct_t rf_433_key_structure;
+    sys_hi_timer_add((void *)&rf_433_key_structure.rf_433_key_para, key_driver_scan, rf_433_key_structure.rf_433_key_para.scan_time); // 注册按键扫描定时器
+
+#endif // #if RF_433_KEY_ENABLE
 
 #if TCFG_IOKEY_ENABLE
     extern const struct iokey_platform_data iokey_data;

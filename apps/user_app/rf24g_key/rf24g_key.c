@@ -2,7 +2,7 @@
 #include "../../../apps/user_app/led_strip/led_strand_effect.h"
 #include "../../../apps/user_app/save_flash/save_flash.h" // 包含读写flash的接口
 
-#if 1
+#if (TCFG_RF24GKEY_ENABLE)
 
 static volatile u8 rf24g_rx_flag = 0;       // 是否收到了新的数据
 volatile rf24g_recv_info_t rf24g_recv_info; // 存放接收到的数据包
@@ -69,7 +69,7 @@ void rf24g_scan(u8 *recv_buff)
         // rf24g_recv_info = *p; // 结构体变量赋值
 
         // 测试时使用：
-        // if (p->header1 == 0xDC && p->header2 == 0xDC)
+        if (p->header1 == 0xDC && p->header2 == 0xDC)
         {
             rf24g_key_val = p->key_1;
             rf24g_rx_flag = 1;
@@ -225,12 +225,11 @@ void rf24_key_handle(void)
         u8 b;
         extern const u8 chromatic_circle_table[][3];
 
-        if (0x51 == chromatic_circle_val )
+        if (0x51 == chromatic_circle_val)
         {
             // 如果收到了0x51，可能是803接收触摸ic传过来的数据丢失了，这里选择屏蔽这个数据
-            return; 
+            return;
         }
-        
 
         r = chromatic_circle_table[chromatic_circle_val][0];
         g = chromatic_circle_table[chromatic_circle_val][1];
@@ -499,7 +498,6 @@ void rf24_key_handle(void)
 
     } // switch (rf24g_key_event)
 }
-#endif
 
 // 色环数值对应的查表数组
 const u8 chromatic_circle_table[][3] = {
@@ -777,3 +775,5 @@ void convert_key_val_to_rgb(u8 key_val)
     //     cw = (u16)key_val * 100 / 255;
     // }
 }
+
+#endif // #if (TCFG_RF24GKEY_ENABLE)

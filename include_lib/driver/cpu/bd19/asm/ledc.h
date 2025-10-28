@@ -37,5 +37,7 @@ struct ledc_platform_data {
 #define LEDC_PLATFORM_DATA_END()  \
 };
 
+void ledc_init(const struct ledc_platform_data *arg);
+
 #endif
 

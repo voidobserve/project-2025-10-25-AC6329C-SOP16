@@ -456,8 +456,8 @@ typedef struct {
 
 typedef struct {
     __RW __u32 CON;
-    __RW __u32 FD;
-    __RW __u32 LP;
+    __RW __u32 FD; // FD_LEN
+    __RW __u32 LP; // LP_LEN，FP_LEN重复次数，0意味着不重复
     __RW __u32 TIX;
     __RW __u32 RSTX;
     __RW __u32 ADR;

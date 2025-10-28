@@ -17,6 +17,7 @@ static OS_SEM ledc1_sem;
 
 static unsigned char tran_finish = 1;
 ___interrupt
+// AT_VOLATILE_RAM_CODE
 void ledc_isr(void)
 {
     if (JL_LEDC0->CON & BIT(7)) {
@@ -58,6 +59,7 @@ void ledc_init(const struct ledc_platform_data *arg)
     // os_sem_create(&ledc0_sem, 1);
     // os_sem_create(&ledc1_sem, 1);
     request_irq(16, 1, ledc_isr, 0);
+    // request_irq(16, 3, ledc_isr, 0);
     if (arg->cbfun) {
         if (arg->index == 0) {
             ledc0_isr_cbfun = arg->cbfun;
@@ -128,7 +130,14 @@ void ledc_send_rgbbuf_isr(u8 index, u8 *rgbbuf, u32 led_num, u16 again_cnt)
     // }
     tran_finish = 0;
     JL_LEDCx[index]->ADR = (u32)rgbbuf;
-    JL_LEDCx[index]->FD = led_num * 3 * 8;
+    // JL_LEDCx[index]->FD = led_num * 3 * 8;
+    // JL_LEDCx[index]->FD = (u32)led_num * 7; // 控制总共发送的数据位（如果超出了灯珠驱动芯片的个数，在静态显示时会导致灯光闪烁）
+    /*
+        控制总共发送的数据位（如果超出了灯珠驱动芯片的个数，在静态显示时会导致灯光闪烁）
+        例如，只有5个单色灯珠，发送数据位 == 5 * 8 == 40，如果超过了40位，会导致灯光闪烁
+    */ 
+    JL_LEDCx[index]->FD = (u32)led_num * 8; // 单色灯，每个灯8位数据，控制亮度
+    // JL_LEDCx[index]->FD = (u32)led_num * 8 + 16; // 最后16位是亮度补偿（实际测试好像不是，会导致第一个灯闪烁）
     JL_LEDCx[index]->LP = again_cnt;
     JL_LEDCx[index]->CON |= BIT(0);//启动
     JL_LEDCx[index]->CON |= BIT(5);//使能中断

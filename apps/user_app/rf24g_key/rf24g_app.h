@@ -5,6 +5,8 @@
 
 #if TCFG_RF24GKEY_ENABLE
 
+#if 0
+
 #pragma pack (1)
 //遥控配�??
 typedef struct
@@ -125,7 +127,7 @@ struct RF24G_PARA{
 
 // void RF24G_Key_Handle(void);
 
-
+#endif
 #endif
 #endif
 

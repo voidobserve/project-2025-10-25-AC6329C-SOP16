@@ -28,11 +28,13 @@ u8 ws2811fx_set_cycle; // 1：效果跑完一轮
 uint16_t WS2812FX_mode_comet_1(void)
 {
 
+#if 0
     if ((get_effect_p() == 1) && (fc_effect.mode_cycle == 1))
     {
         return (_seg->speed);
     }
-    WS2812FX_fade_out(); 
+
+    WS2812FX_fade_out();
     // Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 测试时使用，由于硬件有改动，需要调整流星灯的顺序
     u8 offset;
     offset = 13;
@@ -61,6 +63,17 @@ uint16_t WS2812FX_mode_comet_1(void)
     }
 
     return (_seg->speed);
+#endif
+
+    static u8 flag = 1;
+    if (flag)
+    {
+        flag = 0;
+        Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len); // 测试时使用
+    }
+
+    SET_CYCLE;
+    return 10000;
 }
 
 /**

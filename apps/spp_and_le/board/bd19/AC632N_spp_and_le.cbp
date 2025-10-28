@@ -924,6 +924,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/rf24g_key/rf24g_key.h" />
+		<Unit filename="../../../user_app/rf433_key/rf433_key.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/rf433_key/rf433_key.h" />
 		<Unit filename="../../../user_app/save_flash/save_flash.c">
 			<Option compilerVar="CC" />
 		</Unit>

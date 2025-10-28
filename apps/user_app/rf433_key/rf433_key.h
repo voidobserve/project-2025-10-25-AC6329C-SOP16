@@ -1,0 +1,256 @@
+#ifndef __RF433_KEY_H
+#define __RF433_KEY_H
+
+#include "includes.h"
+
+#define RF_433_KEY_ENABLE 1 // 是否使能 433 遥控器功能
+
+#if RF_433_KEY_ENABLE
+
+// 433信号检测引脚
+#define RF_433_KEY_SCAN_PIN IO_PORTB_05 // PB5 IC 2脚
+
+/*
+    按键的扫描周期，单位：ms
+    注意不能超过变量的最大值，值不能为0
+*/
+
+#define RF_433_KEY_SCAN_CIRCLE_TIMES (10)
+#define RF_433_KEY_SCAN_FILTER_TIMES (0)                     // 按键消抖次数
+#define RF_433_KEY_SCAN_LONG_PRESS_TIME_THRESHOLD ((u16)750) // 长按时间阈值，单位：ms
+#define RF_433_KEY_SCAN_HOLD_PRESS_TIME_THRESHOLD ((u16)150) // 长按持续（不松手）的时间阈值，单位：ms，每隔 xx ms认为有一次长按持续事件
+#define RF_433_KEY_SCAN_MUILTY_CLICK_TIME_THRESHOLD (0)      // 等待多击的时间间隔，单位：ms
+/*
+    按键有效超时时间，单位：ms
+    当按键按下后，如果按键没有被按下，超过这个时间，才认为按键无效。
+    按键按下后，多久没有信号才开始认为按键无效。
+    如果按键有效时间内还有按键按下，有效时间会重新计算。
+
+    例如，按键有效时间为120ms。当按键按下再松手，之后的120ms内都认为这个按键按下。
+    如果120ms内又有按键按下，有效时间会回到120ms，重新计算。
+
+    120ms，除了不能检测快速的双击，其他都可以正常检测
+    快速双击时，在逻辑分析仪上观察波形，两次双击的时间检测在198ms，
+    但是按键按下后会连续发送多个波形，导致这两段波形的时间间隔小于两次双击的时间检测。
+    在逻辑分析仪上面看到这两段波形的间隔在27ms左右，所以不能正常检测快速双击。
+*/
+#define RF_433_KEY_SCAN_EFFECTIVE_TIME_OUT (120)
+// #define RF_433_KEY_SCAN_EFFECTIVE_TIME_OUT (500)
+
+/*
+    定义遥控器按键键值
+*/
+enum
+{
+    RF_433_KEY_R1C1 = 0x01, // 第1行第1列按键
+    RF_433_KEY_R1C2,        // 第1行第2列按键
+    RF_433_KEY_R1C3,
+    RF_433_KEY_R1C4,
+
+    RF_433_KEY_R2C1,
+    RF_433_KEY_R2C2,
+    RF_433_KEY_R2C3,
+    RF_433_KEY_R2C4,
+
+    RF_433_KEY_R3C1,
+    RF_433_KEY_R3C2,
+    RF_433_KEY_R3C3,
+    RF_433_KEY_R3C4,
+
+    RF_433_KEY_R4C1,
+    RF_433_KEY_R4C2,
+    RF_433_KEY_R4C3,
+    RF_433_KEY_R4C4,
+
+    RF_433_KEY_R5C1,
+    RF_433_KEY_R5C2,
+    RF_433_KEY_R5C3,
+    RF_433_KEY_R5C4,
+
+    RF_433_KEY_R6C1,
+    RF_433_KEY_R6C2,
+    RF_433_KEY_R6C3,
+    RF_433_KEY_R6C4,
+
+    RF_433_KEY_R7C1,
+    RF_433_KEY_R7C2,
+    RF_433_KEY_R7C3,
+    RF_433_KEY_R7C4,
+};
+
+/*
+    定义按键事件
+*/
+enum
+{
+
+    // 第一行第一列按键事件
+    RF_433_KEY_EVENT_R1C1_CLICK,
+    RF_433_KEY_EVENT_R1C1_LONG,
+    RF_433_KEY_EVENT_R1C1_HOLD,
+    RF_433_KEY_EVENT_R1C1_LOOSE,
+    // 第一行第二列按键事件
+    RF_433_KEY_EVENT_R1C2_CLICK,
+    RF_433_KEY_EVENT_R1C2_LONG,
+    RF_433_KEY_EVENT_R1C2_HOLD,
+    RF_433_KEY_EVENT_R1C2_LOOSE,
+
+    RF_433_KEY_EVENT_R1C3_CLICK,
+    RF_433_KEY_EVENT_R1C3_LONG,
+    RF_433_KEY_EVENT_R1C3_HOLD,
+    RF_433_KEY_EVENT_R1C3_LOOSE,
+
+    RF_433_KEY_EVENT_R1C4_CLICK,
+    RF_433_KEY_EVENT_R1C4_LONG,
+    RF_433_KEY_EVENT_R1C4_HOLD,
+    RF_433_KEY_EVENT_R1C4_LOOSE,
+
+    RF_433_KEY_EVENT_R2C1_CLICK,
+    RF_433_KEY_EVENT_R2C1_LONG,
+    RF_433_KEY_EVENT_R2C1_HOLD,
+    RF_433_KEY_EVENT_R2C1_LOOSE,
+
+    RF_433_KEY_EVENT_R2C2_CLICK,
+    RF_433_KEY_EVENT_R2C2_LONG,
+    RF_433_KEY_EVENT_R2C2_HOLD,
+    RF_433_KEY_EVENT_R2C2_LOOSE,
+
+    RF_433_KEY_EVENT_R2C3_CLICK,
+    RF_433_KEY_EVENT_R2C3_LONG,
+    RF_433_KEY_EVENT_R2C3_HOLD,
+    RF_433_KEY_EVENT_R2C3_LOOSE,
+
+    RF_433_KEY_EVENT_R2C4_CLICK,
+    RF_433_KEY_EVENT_R2C4_LONG,
+    RF_433_KEY_EVENT_R2C4_HOLD,
+    RF_433_KEY_EVENT_R2C4_LOOSE,
+
+    RF_433_KEY_EVENT_R3C1_CLICK,
+    RF_433_KEY_EVENT_R3C1_LONG,
+    RF_433_KEY_EVENT_R3C1_HOLD,
+    RF_433_KEY_EVENT_R3C1_LOOSE,
+
+    RF_433_KEY_EVENT_R3C2_CLICK,
+    RF_433_KEY_EVENT_R3C2_LONG,
+    RF_433_KEY_EVENT_R3C2_HOLD,
+    RF_433_KEY_EVENT_R3C2_LOOSE,
+
+    RF_433_KEY_EVENT_R3C3_CLICK,
+    RF_433_KEY_EVENT_R3C3_LONG,
+    RF_433_KEY_EVENT_R3C3_HOLD,
+    RF_433_KEY_EVENT_R3C3_LOOSE,
+
+    RF_433_KEY_EVENT_R3C4_CLICK,
+    RF_433_KEY_EVENT_R3C4_LONG,
+    RF_433_KEY_EVENT_R3C4_HOLD,
+    RF_433_KEY_EVENT_R3C4_LOOSE,
+
+    RF_433_KEY_EVENT_R4C1_CLICK,
+    RF_433_KEY_EVENT_R4C1_LONG,
+    RF_433_KEY_EVENT_R4C1_HOLD,
+    RF_433_KEY_EVENT_R4C1_LOOSE,
+
+    RF_433_KEY_EVENT_R4C2_CLICK,
+    RF_433_KEY_EVENT_R4C2_LONG,
+    RF_433_KEY_EVENT_R4C2_HOLD,
+    RF_433_KEY_EVENT_R4C2_LOOSE,
+
+    RF_433_KEY_EVENT_R4C3_CLICK,
+    RF_433_KEY_EVENT_R4C3_LONG,
+    RF_433_KEY_EVENT_R4C3_HOLD,
+    RF_433_KEY_EVENT_R4C3_LOOSE,
+
+    RF_433_KEY_EVENT_R4C4_CLICK,
+    RF_433_KEY_EVENT_R4C4_LONG,
+    RF_433_KEY_EVENT_R4C4_HOLD,
+    RF_433_KEY_EVENT_R4C4_LOOSE,
+
+    RF_433_KEY_EVENT_R5C1_CLICK,
+    RF_433_KEY_EVENT_R5C1_LONG,
+    RF_433_KEY_EVENT_R5C1_HOLD,
+    RF_433_KEY_EVENT_R5C1_LOOSE,
+
+    RF_433_KEY_EVENT_R5C2_CLICK,
+    RF_433_KEY_EVENT_R5C2_LONG,
+    RF_433_KEY_EVENT_R5C2_HOLD,
+    RF_433_KEY_EVENT_R5C2_LOOSE,
+
+    RF_433_KEY_EVENT_R5C3_CLICK,
+    RF_433_KEY_EVENT_R5C3_LONG,
+    RF_433_KEY_EVENT_R5C3_HOLD,
+    RF_433_KEY_EVENT_R5C3_LOOSE,
+
+    RF_433_KEY_EVENT_R5C4_CLICK,
+    RF_433_KEY_EVENT_R5C4_LONG,
+    RF_433_KEY_EVENT_R5C4_HOLD,
+    RF_433_KEY_EVENT_R5C4_LOOSE,
+
+    RF_433_KEY_EVENT_R6C1_CLICK,
+    RF_433_KEY_EVENT_R6C1_LONG,
+    RF_433_KEY_EVENT_R6C1_HOLD,
+    RF_433_KEY_EVENT_R6C1_LOOSE,
+
+    RF_433_KEY_EVENT_R6C2_CLICK,
+    RF_433_KEY_EVENT_R6C2_LONG,
+    RF_433_KEY_EVENT_R6C2_HOLD,
+    RF_433_KEY_EVENT_R6C2_LOOSE,
+
+    RF_433_KEY_EVENT_R6C3_CLICK,
+    RF_433_KEY_EVENT_R6C3_LONG,
+    RF_433_KEY_EVENT_R6C3_HOLD,
+    RF_433_KEY_EVENT_R6C3_LOOSE,
+
+    RF_433_KEY_EVENT_R6C4_CLICK,
+    RF_433_KEY_EVENT_R6C4_LONG,
+    RF_433_KEY_EVENT_R6C4_HOLD,
+    RF_433_KEY_EVENT_R6C4_LOOSE,
+
+    RF_433_KEY_EVENT_R7C1_CLICK,
+    RF_433_KEY_EVENT_R7C1_LONG,
+    RF_433_KEY_EVENT_R7C1_HOLD,
+    RF_433_KEY_EVENT_R7C1_LOOSE,
+
+    RF_433_KEY_EVENT_R7C2_CLICK,
+    RF_433_KEY_EVENT_R7C2_LONG,
+    RF_433_KEY_EVENT_R7C2_HOLD,
+    RF_433_KEY_EVENT_R7C2_LOOSE,
+
+    RF_433_KEY_EVENT_R7C3_CLICK,
+    RF_433_KEY_EVENT_R7C3_LONG,
+    RF_433_KEY_EVENT_R7C3_HOLD,
+    RF_433_KEY_EVENT_R7C3_LOOSE,
+
+    RF_433_KEY_EVENT_R7C4_CLICK,
+    RF_433_KEY_EVENT_R7C4_LONG,
+    RF_433_KEY_EVENT_R7C4_HOLD,
+    RF_433_KEY_EVENT_R7C4_LOOSE,
+
+    RF_433_KEY_EVENT_NONE,
+    // RF_433_KEY_EVENT_MAX,
+
+};
+
+#define RF_433_KEY_VALID_EVENT_NUMS (4) // 单个按键，有效的按键事件数量（短按--CLICK，长按--LONG，长按持续--HOLD，长按后松手--LOOSE）
+
+typedef struct
+{
+    struct key_driver_para rf_433_key_para;
+    u8 rf_433_key_driver_event;   // 存放得到的按键事件，在 key_driver_scan() 中更新
+    u8 rf_433_key_latest_key_val; // 存放最新扫描到的按键键值
+    // u8 rf_433_key_last_key_val; // 存放上一次得到的按键键值
+} rf_433_key_struct_t;
+
+extern rf_433_key_struct_t rf_433_key_structure;
+// extern struct key_driver_para rf_433_key_para; // rf 433 按键扫描参数 结构体
+
+extern volatile u32 rf_433_data;                 // 存放收到的rf433数据
+extern volatile u8 flag_is_received_rf_433_data; // 标志位，是否收到一次数据
+
+void rf_433_key_decode_isr(void); // rf433解码函数
+void rf_433_key_config(void);
+
+void rf_433_key_event_handle(void); // 按键事件处理函数
+
+#endif // #if RF_433_KEY_ENABLE
+
+#endif

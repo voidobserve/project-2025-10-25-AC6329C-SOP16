@@ -1073,7 +1073,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         //     // }
         // }
         
-        #endif 
+        #endif  // TCFG_RF24GKEY_ENABLE
         switch (ad_type) {
         case HCI_EIR_DATATYPE_FLAGS:
             /* log_info("flags:%02x\n",adv_data_pt[0]); */

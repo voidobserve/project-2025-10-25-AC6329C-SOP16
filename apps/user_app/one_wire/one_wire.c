@@ -302,8 +302,11 @@ void one_wire_set_mode(u8 m)
 void one_wire_set_period(u8 p)
 {
     if (fc_effect.base_ins.mode == 0x05)
+    { // 如果是声控模式，直接返回
         return;
+    }
     fc_effect.base_ins.period = p;
+
     printf("base_ins.period = %d", fc_effect.base_ins.period);
 }
 /**

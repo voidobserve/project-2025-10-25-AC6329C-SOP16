@@ -655,13 +655,16 @@ void parse_zd_data(unsigned char *LedCommand)
                     break; // PURPLE
 
                 case 6:
+                {
                     // set_static_mode((WHITE >> 16) & 0xff, (WHITE >> 8) & 0xff, (WHITE >> 0) & 0xff);
+                    fc_effect.Now_state = IS_STATIC;
                     fc_effect.rgb.r = 0xFF;
                     fc_effect.rgb.g = 0xFF;
                     fc_effect.rgb.b = 0xFF;
                     fc_effect.rgb.w = 0xFF;
                     set_fc_effect(); // 效果调度
-                    break; // WHITE
+                }
+                break; // WHITE
                 }
             }
             //---------------------------------动态处理-----------------------------------

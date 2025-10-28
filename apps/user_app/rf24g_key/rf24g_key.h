@@ -3,6 +3,9 @@
 
 #include "includes.h"
 
+#if (TCFG_RF24GKEY_ENABLE)
+
+
 typedef struct
 {
     u8 header1;      //
@@ -126,4 +129,7 @@ extern volatile struct key_driver_para rf24g_scan_para;
 
 extern void rf24g_scan(u8 *recv_buff);
 extern void rf24_key_handle(void);
+
+#endif // #if (TCFG_RF24GKEY_ENABLE)
+
 #endif // end of file

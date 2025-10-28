@@ -3,6 +3,11 @@
         "board_ac6329c_demo_global_build_cfg.h": "c",
         "rf24g_key.h": "c",
         "one_wire.h": "c",
-        "btstack_event.h": "c"
+        "btstack_event.h": "c",
+        "adafruit_typedef.h": "c",
+        "led_strip_sys.h": "c",
+        "led_strand_effect.h": "c",
+        "includes.h": "c",
+        "rf24g_app.h": "c"
     }
 }

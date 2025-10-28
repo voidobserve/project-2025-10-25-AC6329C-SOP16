@@ -30,6 +30,7 @@
 
 #include "../../../apps/user_app/rf24g_key/rf24g_key.h"
 #include "../../../apps/user_app/one_wire/one_wire.h"
+#include "../../../apps/user_app/rf433_key/rf433_key.h" 
 
 OS_SEM LED_TASK_SEM;
 
@@ -329,6 +330,8 @@ ___interrupt
 
     extern void one_wire_send(void);
     one_wire_send(); // steomotor
+
+    rf_433_key_decode_isr(); // rf433解码函数
 }
 
 void user_timer_init(void)
@@ -360,6 +363,8 @@ __initcall(user_timer_init);
 
 void main_while(void)
 {
+    read_flash_device_status_init();
+    full_color_init();
 
     while (1)
     {
@@ -368,8 +373,9 @@ void main_while(void)
         // power_motor_Init();  // 电机
         meteor_period_sub(); // 流星周期控制
 
-        // rf24_key_handle();
-        // RF24G_Key_Handle();
+
+        rf_433_key_event_handle();
+ 
         // printf("main circle\n");// 主循环约10ms
 
         os_time_dly(1);
@@ -413,7 +419,7 @@ void user_msg_handle_task(void)
         {
         case MSG_SEQUENCER_ONE_WIRE_SEND_INFO: // 使能单线发送
         {
-            // printf("recv one wire send info\n");
+            printf("recv one wire send info\n");
             for (u8 i = 0; i < 5; i++) // 控制重复发送次数
             {
                 while (is_one_wire_send_end()) // 如果还未发送完，继续等待
@@ -448,12 +454,16 @@ void my_main(void)
     // fan_gpio_init();
     led_state_init(); // 流星灯
     mcu_com_init();   // 电机一线通信
-
-    read_flash_device_status_init();
-    full_color_init();
+    rf_433_key_config(); // rf433信号接收引脚
+ 
     // os_sem_create(&LED_TASK_SEM, 0);
-    task_create(main_while, NULL, "led_task");
-    task_create(user_msg_handle_task, NULL, "msg_task");
-
+ 
     sys_s_hi_timer_add(NULL, WS2812_circle_task, 10); // 10ms
+ 
+    task_create(user_msg_handle_task, NULL, "msg_task");
+    /*
+        这里要放到最后，防止调用 soft_turn_on_the_light() 给线程发送消息时，
+        接收消息的线程没有创建，导致收不到消息，最后一上电电机会不工作
+    */ 
+    task_create(main_while, NULL, "led_task"); 
 }
