@@ -28,7 +28,7 @@ u8 ws2811fx_set_cycle; // 1：效果跑完一轮
 uint16_t WS2812FX_mode_comet_1(void)
 {
 
-#if 0
+#if 1
     if ((get_effect_p() == 1) && (fc_effect.mode_cycle == 1))
     {
         return (_seg->speed);
@@ -65,6 +65,7 @@ uint16_t WS2812FX_mode_comet_1(void)
     return (_seg->speed);
 #endif
 
+#if 0 // 测试时使用，让流星灯全部点亮，此时可以观察流星灯是否闪烁，流星灯亮度是否足够
     static u8 flag = 1;
     if (flag)
     {
@@ -74,6 +75,7 @@ uint16_t WS2812FX_mode_comet_1(void)
 
     SET_CYCLE;
     return 10000;
+#endif // 测试时使用，让流星灯全部点亮，此时可以观察流星灯是否闪烁，流星灯亮度是否足够
 }
 
 /**
@@ -1605,6 +1607,7 @@ uint16_t WS2812FX_mode_mutil_breath(void)
 
     if (size > (_seg->stop - _seg->start))
         return 0;
+        
     _seg_rt->counter_mode_step = 0;
     _seg_rt->aux_param = 0;
     while (_seg_rt->counter_mode_step <= _seg->stop)
@@ -1615,6 +1618,7 @@ uint16_t WS2812FX_mode_mutil_breath(void)
             WS2812FX_setPixelColor(_seg->start + _seg_rt->counter_mode_step, color);
             _seg_rt->counter_mode_step++;
         }
+
         _seg_rt->aux_param++;
         _seg_rt->aux_param %= _seg->c_n;
     }

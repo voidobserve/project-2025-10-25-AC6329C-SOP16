@@ -2,7 +2,7 @@
 #include "asm/adc_api.h"
 #include "led_strip_drive.h"
 
-#define MAX_SOUND   10
+#define MAX_SOUND 10
 struct MUSIC_VOICE_T
 {
     u8 sound_trg;
@@ -15,8 +15,6 @@ struct MUSIC_VOICE_T
     int v;
     u8 valid;
 };
-
-
 
 struct MUSIC_VOICE_T music_voic = {
 
@@ -48,7 +46,7 @@ u8 get_meteor_result(void)
     p_metemor_trg = music_voic.meteor_trg;
     music_voic.meteor_trg = 0;
     return p_metemor_trg;
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+}
 
 void sound_handle(void)
 {
@@ -56,44 +54,42 @@ void sound_handle(void)
     u8 i;
     // 记录adc值
 
-    if(fc_effect.on_off_flag == DEVICE_ON && (fc_effect.Now_state == IS_light_music || fc_effect.base_ins.mode == 0x05 || fc_effect.star_index == 17 || fc_effect.star_index == 18))
+    if (fc_effect.on_off_flag == DEVICE_ON && (fc_effect.Now_state == IS_light_music || fc_effect.base_ins.mode == 0x05 || fc_effect.star_index == 17 || fc_effect.star_index == 18))
     {
 
 #if 1
         music_voic.sound_buf[music_voic.sound_cnt] = check_mic_adc();
-        music_voic.c_v = music_voic.sound_buf[music_voic.sound_cnt];   //记录当前值
+        music_voic.c_v = music_voic.sound_buf[music_voic.sound_cnt]; // 记录当前值
         music_voic.sound_cnt++;
-    
-        if(music_voic.sound_cnt > (MAX_SOUND-1))
+
+        if (music_voic.sound_cnt > (MAX_SOUND - 1))
         {
             music_voic.sound_cnt = 0;
             music_voic.valid = 1;
             music_voic.v = 0;
-            for(i=0; i < MAX_SOUND; i++)
+            for (i = 0; i < MAX_SOUND; i++)
             {
                 music_voic.v += music_voic.sound_buf[i];
             }
-            music_voic.v = music_voic.v / MAX_SOUND;    //计算平均值
+            music_voic.v = music_voic.v / MAX_SOUND; // 计算平均值
         }
 
-        if(music_voic.valid)
+        if (music_voic.valid)
         {
 
-            if(music_voic.c_v > music_voic.v)
+            if (music_voic.c_v > music_voic.v)
             {
-                if( (music_voic.c_v - music_voic.v) * 100 / music_voic.v > fc_effect.music.s) //很灵敏
+                if ((music_voic.c_v - music_voic.v) * 100 / music_voic.v > fc_effect.music.s) // 很灵敏
                 {
-                    music_voic.sound_trg = 1;  //七彩声控
-                    music_voic.meteor_trg = 1; //流星声控
-
+                    music_voic.sound_trg = 1;  // 七彩声控
+                    music_voic.meteor_trg = 1; // 流星声控
                 }
             }
-
         }
 
 #endif
 
-       #if 0
+#if 0
         adc = check_mic_adc(); 
         if(adc < 1000)
         {
@@ -123,12 +119,10 @@ void sound_handle(void)
                 }
             }
         }
-        #endif
+#endif
     }
     else
     {
         music_voic.valid = 0;
     }
-
 }
-

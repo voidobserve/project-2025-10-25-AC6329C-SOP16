@@ -90,7 +90,7 @@ typedef struct
     direction_e direction;     // 效果的方向
     unsigned char seg_size;    // 段大小
     unsigned char c_n;         // 颜色数量
-    color_t rgb[MAX_NUM_COLORS];
+    color_t rgb[MAX_NUM_COLORS]; // 颜色池
     unsigned short speed; // 由档位决定
 
 } dream_scene_t;
@@ -159,7 +159,8 @@ typedef struct
     unsigned char star_index;
     unsigned short star_speed;      // 流星灯动画的速度值
     unsigned char app_star_speed;   // 反馈给app的，流星灯动画的速度值
-    unsigned char star_speed_index; // 电机模式或电机速度索引
+    
+    unsigned char motor_speed_index; // 电机模式或电机速度索引
 
     unsigned char app_rgb_mode; // 七彩灯的模式索引，一般由app设置，目前加入了遥控器切换
 
@@ -172,5 +173,9 @@ typedef struct
 extern volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 
 void base_Dynamic_Effect(u8 tp_num);
+
+void ls_set_color(uint8_t n, uint32_t c); // 设置fc_effect.dream_scene.rgb的颜色池
+void ls_set_colors(uint8_t n, color_t *c); // 设置段的颜色
+
 
 #endif

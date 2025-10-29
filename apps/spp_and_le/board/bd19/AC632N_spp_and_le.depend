@@ -55346,14 +55346,14 @@
 
 1719196543 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\hardware\hardware.h
 
-1761552789 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.h
+1761708810 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.h
 	"cpu.h"
 	"led_strip_sys.h"
 	"WS2812FX.H"
 	"led_strip_drive.h"
 	"one_wire.h"
 
-1761643075 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.h
+1761701974 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.h
 	"cpu.h"
 
 1761115856 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx.h
@@ -55379,7 +55379,7 @@
 1761293755 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.h
 	"system/includes.h"
 
-1761629932 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
+1761701821 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
 	"system/includes.h"
 	"led_strand_effect.h"
 	"WS2812FX.H"
@@ -55403,7 +55403,7 @@
 	"led_strand_effect.h"
 	"../../../include_lib/driver/cpu/bd19/asm/mcpwm.h"
 
-1761633774 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
+1761708908 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
 	"led_strip_sys.h"
 	"Adafruit_NeoPixel.H"
 	"led_strand_effect.h"
@@ -55412,7 +55412,7 @@
 
 1761095058 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.h
 
-1719994438 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_voice.c
+1761701859 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_voice.c
 	"led_strip_voice.h"
 	"asm/adc_api.h"
 	"led_strip_drive.h"
@@ -55433,7 +55433,7 @@
 	"one_wire.h"
 	"led_strand_effect.h"
 
-1761553218 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
+1761644785 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
 	"cpu.h"
 	"led_strip_sys.h"
 	"paint_tool.h"
@@ -56932,7 +56932,7 @@
 	"debug.h"
 	"uart_update.h"
 
-1761623653 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
+1761707177 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
 	"WS2812FX.h"
 	"ws2812fx_tool.h"
 	"Adafruit_NeoPixel.h"
@@ -56955,6 +56955,9 @@
 1761642176 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.h
 	"includes.h"
 
-1761637924 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
+1761730451 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
 	"rf433_key.h"
+	"../../../apps/user_app/led_strip/led_strip_sys.h"
+	"../../../apps/user_app/led_strip/led_strand_effect.h"
+	"../../../apps/user_app/save_flash/save_flash.h"
 

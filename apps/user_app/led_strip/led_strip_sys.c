@@ -37,13 +37,13 @@ void fc_data_init(void)
     fc_effect.rgb.w = 0;
 #endif
     fc_effect.dream_scene.c_n = 1; // 颜色数量为1
-    fc_effect.app_b = 100 / 2;
+    fc_effect.app_b = 100;
     // fc_effect.app_b = 100 / 10;
     // fc_effect.app_b = 100 / 2;
-    fc_effect.b = 255 / 2; // 测试时不能用最大亮度
+    // fc_effect.b = 255 / 2;
     // fc_effect.b = 10;
 
-    // fc_effect.b = (u16)fc_effect.app_b * 255 / 100;
+    fc_effect.b = (u16)fc_effect.app_b * 255 / 100;
 
     fc_effect.ls_b = (MAX_BRIGHT_RANK - 1);
     // fc_effect.ls_b = (MIN_BRIGHT_VALUE);
@@ -72,7 +72,7 @@ void fc_data_init(void)
     fc_effect.meteor_period = 8;                           // 默认8秒  周期值
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // ms,运行时的计数器
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
-    fc_effect.star_speed_index = 0;                        // 电机模式或电机速度索引
+    fc_effect.motor_speed_index = 0;                        // 电机模式或电机速度索引
 
     // 电机
     fc_effect.base_ins.mode = 4;   // 360转
@@ -99,7 +99,7 @@ void soft_turn_on_the_light(void) // 软开灯处理
     WS2812FX_start(); // 清空动画使用到的缓存，给运行标志位置位
 
     // 开机前，可能关机前电机就开着，或者关机前电机就已经关了，开机后保持状态不变（开机后，恢复电机在关机前的状态）
-    if (fc_effect.star_speed_index >= ARRAY_SIZE(motor_period))
+    if (fc_effect.motor_speed_index >= ARRAY_SIZE(motor_period))
     {
         // 如果开机前，电机的周期索引超过了电机的周期数组大小，说明电机在开机前就是关着的
         one_wire_set_mode(6); // 关闭电机
@@ -108,7 +108,7 @@ void soft_turn_on_the_light(void) // 软开灯处理
     else
     {
         // 如果开机前，电机的周期索引还在电机的周期数组大小内，说明电机在开机前是开着的
-        one_wire_set_period(motor_period[fc_effect.star_speed_index]);
+        one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
         one_wire_set_mode(4); // 360正转
         fc_effect.motor_on_off = DEVICE_ON;
     }
@@ -749,72 +749,40 @@ void ls_set_star_tail(void)
  *
  *********************************************************/
 extern u8 motor_period[6];
-
-#if 0 // 未使用
-// void ls_set_motor_speed(void)
-// {
-//     static u8 start = 1;
-//     if (fc_effect.star_speed_index < 6)
-//     {
-//         if (start)
-//         {
-//             start = 0;
-//             one_wire_set_mode(4); // 360正转
-//             enable_one_wire();
-//             fc_effect.motor_on_off = DEVICE_ON;
-//         }
-//         else
-//         {
-
-//             one_wire_set_period(motor_period[fc_effect.star_speed_index]);
-//             enable_one_wire();
-//         }
-//     }
-//     else
-//     {
-//         start = 1;
-//         fc_effect.motor_on_off = DEVICE_OFF;
-//         one_wire_set_period(motor_period[fc_effect.star_speed_index]);
-//         one_wire_set_mode(6); // 关闭电机
-//         enable_one_wire();    // 启动发送电机数据
-//     }
-
-//     fc_effect.star_speed_index++;
-//     if (fc_effect.star_speed_index >= 7)
-//         fc_effect.star_speed_index = 0;
-// }
-#endif
+ 
 
 void ls_add_motor_speed(void)
 {
     // 目前是索引值越小，电机转速越快
-    if (fc_effect.star_speed_index > 0)
+    if (fc_effect.motor_speed_index > 0)
     {
-        fc_effect.star_speed_index--;
-        one_wire_set_period(motor_period[fc_effect.star_speed_index]);
+        fc_effect.motor_speed_index--;
+        one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
         // enable_one_wire();
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-        printf("fc_effect.star_speed_index = %d", fc_effect.star_speed_index);
+
+        // printf("fc_effect.motor_speed_index = %d", fc_effect.motor_speed_index);
     }
 }
 
 void ls_sub_motor_speed(void)
 {
     // 目前是索引值越小，电机转速越快
-    if (fc_effect.star_speed_index < 5)
+    if (fc_effect.motor_speed_index < 5)
     {
-        fc_effect.star_speed_index++;
-        one_wire_set_period(motor_period[fc_effect.star_speed_index]);
+        fc_effect.motor_speed_index++;
+        one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
         // enable_one_wire();
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-        printf("fc_effect.star_speed_index = %d", fc_effect.star_speed_index);
+
+        // printf("fc_effect.motor_speed_index = %d", fc_effect.motor_speed_index);
     }
 }
 
 void CloseMotor(void)
 {
     fc_effect.motor_on_off = DEVICE_OFF;
-    one_wire_set_period(motor_period[fc_effect.star_speed_index]);
+    one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
     one_wire_set_mode(0x06); // 关闭电机
 
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);

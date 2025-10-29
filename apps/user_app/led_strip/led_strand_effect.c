@@ -122,8 +122,9 @@ static void strand_rainbow(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------跳变效果----------------------------------*/
@@ -141,8 +142,9 @@ void strand_jump_change(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 /*----------------------------------呼吸系列效果----------------------------------*/
 void strand_breath(void)
@@ -160,8 +162,10 @@ void strand_breath(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
+    // WS2812FX_start();
     // WS2812FX_set_running();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 void single_c_breath(void)
@@ -179,8 +183,9 @@ void single_c_breath(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------闪烁效果----------------------------------*/
@@ -198,8 +203,9 @@ void strand_twihkle(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 // 多颜色频闪
 void ls_strobe(void)
@@ -215,8 +221,9 @@ void ls_strobe(void)
 
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 /*----------------------------------流水效果----------------------------------*/
 void strand_flow_water(void)
@@ -243,8 +250,9 @@ void strand_flow_water(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------追光效果----------------------------------*/
@@ -276,8 +284,9 @@ void strand_chas_light(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------炫彩效果----------------------------------*/
@@ -295,8 +304,9 @@ void strand_colorful(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------渐变系列效果----------------------------------*/
@@ -314,8 +324,9 @@ void strand_grandual(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 // 整条灯带渐变，支持多种颜色之间切换
 // 颜色池：fc_effect.dream_scene.rgb[]
@@ -333,8 +344,9 @@ void mutil_c_grandual(void)
 
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 // 纯白色渐变
@@ -351,8 +363,9 @@ void w_grandual(void)
         fc_effect.dream_scene.speed, // 速度
         0);                          // 选项，这里像素点大小：3,反向/反向
 
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /*----------------------------------跳变效果----------------------------------*/
@@ -370,8 +383,9 @@ void standard_jump(void)
 
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-    WS2812FX_start();
-    // WS2812FX_set_running();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 //====================================================================================================
@@ -1034,7 +1048,9 @@ static void ls_music_effect(void)
 
 #endif
 
-    WS2812FX_start();
+    // WS2812FX_start();
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_set_running();
 }
 
 /**
