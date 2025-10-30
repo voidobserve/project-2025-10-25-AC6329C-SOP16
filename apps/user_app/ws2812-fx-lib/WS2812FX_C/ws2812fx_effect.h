@@ -91,7 +91,7 @@ uint16_t breath_rgb(void);
 
 
 
-/***************天奕光纤满天星流星效果*****************/
+/**************光纤满天星流星效果*****************/
 
 uint16_t WS2812FX_mode_comet_1(void);
 uint16_t WS2812FX_mode_comet_2(void);
@@ -105,6 +105,22 @@ uint16_t WS2812FX_mode_comet_6(void);
 uint16_t fc_double_meteor(void);
 void close_metemor(void);
 
+
+uint16_t WS2812FX_mode_comet_1_with_max_brightness(void); // 单色灯带渐变灭灯,做流星效果   兼容正反方向
+uint16_t fc_double_meteor_with_max_brightness(void); // 双流星   兼容正反方向
+uint16_t WS2812FX_mode_comet_3_with_max_brightness(void); // 频闪流水  兼容正反方向
+uint16_t meteor_effect_G_with_max_brightness(void); // 3个灯流水，长度为5个灯，然后另外5个灯随机闪
+uint16_t meteor_effect_H_with_max_brightness(void); // 3个灯流水，长度为5个灯，两次流水，然后另外5个灯随机闪
+uint16_t WS2812FX_mode_comet_4_with_max_brightness(void); // 堆积流水   兼容正反方向
+uint16_t WS2812FX_mode_comet_5_with_max_brightness(void); // 逐点流水 兼容正反方向
+uint16_t WS2812FX_mode_comet_2_with_max_brightness(void); // 两段渐变灭灯流星  从中心靠拢或发散  兼容正反方向
+uint16_t WS2812FX_mode_comet_6_with_max_brightness(void); // 追逐流水
+
+uint16_t meteor_with_max_brightness(void); // 流星发射，声音触发，不支持连续发射，等上个流星发射完成再发射第二个
+uint16_t music_meteor3_with_max_brightness(void); // 流星发射，声音触发，可以连续发射
+
+// u16 colorful_lights_music_mode_single(void); // 七彩灯的单色声控动画
+u16 colorful_lights_breathing(void);
 
 
 

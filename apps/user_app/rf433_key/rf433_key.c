@@ -353,7 +353,19 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R1C1_LONG: // 亮度加
     case RF_433_KEY_EVENT_R1C1_HOLD:
     {
-        ls_add_bright();
+        // 在动态模式下，是增加速度；在声控模式下，是加灵敏度
+        if (IS_STATIC == fc_effect.Now_state)
+        {
+            ls_add_bright();
+        }
+        else if (IS_light_scene == fc_effect.Now_state)
+        {
+            ls_add_speed();
+        }
+        else if (IS_light_music == fc_effect.Now_state)
+        {
+            ls_add_sensitive();
+        }
     }
     break;
 
@@ -361,7 +373,19 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R1C2_LONG: // 亮度减
     case RF_433_KEY_EVENT_R1C2_HOLD:
     {
-        ls_sub_bright();
+        // 在动态模式下，是减慢速度；在声控模式下，是减灵敏度
+        if (IS_STATIC == fc_effect.Now_state)
+        {
+            ls_sub_bright();
+        }
+        else if (IS_light_scene == fc_effect.Now_state)
+        {
+            ls_sub_speed();
+        }
+        else if (IS_light_music == fc_effect.Now_state)
+        {
+            ls_sub_sensitive();
+        }
     }
     break;
 
@@ -420,10 +444,11 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        if (0xFF == fc_effect.rgb.r &&
-            0xFF == fc_effect.rgb.g &&
-            0xFF == fc_effect.rgb.b &&
-            0xFF == fc_effect.rgb.w)
+        fc_effect.Now_state = IS_STATIC;
+        if ((0xFF == fc_effect.rgb.r) &&
+            (0xFF == fc_effect.rgb.g) &&
+            (0xFF == fc_effect.rgb.b) &&
+            (0xFF == fc_effect.rgb.w))
         {
             fc_effect.rgb.r = 0x00;
             fc_effect.rgb.g = 0x00;
@@ -440,33 +465,37 @@ void rf_433_key_event_handle(void)
 
         set_fc_effect(); // 效果调度
     }
+    break;
 
     case RF_433_KEY_EVENT_R3C1_CLICK:
     case RF_433_KEY_EVENT_R3C1_LONG: //
     {
-        u32 color = ((u32)25 << 16) | // 9.8 % 分量
-                    ((u32)25 << 8) |  // 9.8 % 分量
+        u32 color = ((u32)(255) << 16) | // % 分量
+                    ((u32)(165) << 8) |  // % 分量
                     0x00;
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
 
     case RF_433_KEY_EVENT_R3C2_CLICK:
-    case RF_433_KEY_EVENT_R3C2_LONG:    //
-    {                                   // USER_TO_DO 待测试
+    case RF_433_KEY_EVENT_R3C2_LONG: //
+    {                                //
+        // u32 color = ((u32)0x00 << 16) |      // 0 % 分量
+        //             ((u32)(255 - 25) << 8) | // 9.8 % 分量
+        //             (255 - 25);              // 9.8 % 分量
         u32 color = ((u32)0x00 << 16) | // 0 % 分量
-                    ((u32)25 << 8) |    // 9.8 % 分量
-                    25;                 // 9.8 % 分量
+                    ((u32)(255) << 8) | //  % 分量
+                    (255);              //  % 分量
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
 
     case RF_433_KEY_EVENT_R3C3_CLICK:
-    case RF_433_KEY_EVENT_R3C3_LONG:  //
-    {                                 // USER_TO_DO 待测试
-        u32 color = ((u32)25 << 16) | // 9.8 % 分量
-                    ((u32)0 << 8) |   // 0 % 分量
-                    25;               // 9.8 % 分量
+    case RF_433_KEY_EVENT_R3C3_LONG:     //
+    {                                    //
+        u32 color = ((u32)(255) << 16) | // % 分量
+                    ((u32)0 << 8) |      // 0 % 分量
+                    (255);               // % 分量
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
@@ -474,9 +503,10 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R3C4_CLICK:
     case RF_433_KEY_EVENT_R3C4_LONG: // JUMP3 三色跳变
     {
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, BLUE);
+        u8 index = 0;
+        ls_set_color(index++, RED);
+        ls_set_color(index++, GREEN);
+        ls_set_color(index++, BLUE);
         fc_effect.dream_scene.change_type = MODE_JUMP;
         fc_effect.dream_scene.c_n = 3; // 颜色池中的颜色数量
         fc_effect.Now_state = IS_light_scene;
@@ -485,31 +515,40 @@ void rf_433_key_event_handle(void)
     break;
 
     case RF_433_KEY_EVENT_R4C1_CLICK:
-    case RF_433_KEY_EVENT_R4C1_LONG:  //
-    {                                 // USER_TO_DO 待测试
-        u32 color = ((u32)25 << 16) | // 9.8 % 分量
-                    ((u32)0 << 8) |   // 0 % 分量
-                    0;                // 0 % 分量
+    case RF_433_KEY_EVENT_R4C1_LONG: //
+    {
+        // u32 color = ((u32)(255 - 25) << 16) | // 9.8 % 分量
+        //             ((u32)0 << 8) |           // 0 % 分量
+        //             0;                        // 0 % 分量
+        u32 color = ((u32)(255 - 100) << 16) | //  % 分量
+                    ((u32)(165) << 8) |        //  % 分量
+                    0;                         // 0 % 分量
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
 
     case RF_433_KEY_EVENT_R4C2_CLICK:
     case RF_433_KEY_EVENT_R4C2_LONG: //
-    {                                // USER_TO_DO 待测试
-        u32 color = ((u32)0 << 16) | // 0 % 分量
-                    ((u32)25 << 8) | // 9.8 % 分量
-                    10;              // 约3.92 % 分量
+    {
+        // u32 color = ((u32)0 << 16) |         // 0 % 分量
+        //             ((u32)(255 - 25) << 8) | // 9.8 % 分量
+        //             (255 - 10);              // 约3.92 % 分量
+        u32 color = ((u32)0 << 16) |    // 0 % 分量
+                    ((u32)(255) << 8) | //  % 分量
+                    (255 - 100);        //  % 分量
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
 
     case RF_433_KEY_EVENT_R4C3_CLICK:
     case RF_433_KEY_EVENT_R4C3_LONG: //
-    {                                // USER_TO_DO 待测试
-        u32 color = ((u32)10 << 16) | // 约3.92 % 分量
-                    ((u32)0 << 8) | // 0 % 分量
-                    25;              // 9.8 % 分量
+    {
+        // u32 color = ((u32)(255 - 10) << 16) | // 约3.92 % 分量
+        //             ((u32)0 << 8) |           // 0 % 分量
+        //             (255 - 25);               // 9.8 % 分量
+        u32 color = ((u32)(255 - 100) << 16) | // % 分量
+                    ((u32)(0) << 8) |          // 0 % 分量
+                    (255);                     //  % 分量
         set_static_mode((color >> 16) & 0xff, (color >> 8) & 0xff, (color >> 0) & 0xff);
     }
     break;
@@ -517,16 +556,17 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R4C4_CLICK:
     case RF_433_KEY_EVENT_R4C4_LONG: // JUMP7 七色跳变
     {
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, BLUE);
-        ls_set_color(3, YELLOW);
-        ls_set_color(4, CYAN);
-        ls_set_color(5, MAGENTA);
-        ls_set_color(6, WHITE); // 样机是纯白
+        u8 index = 0;
+        ls_set_color(index++, RED);
+        ls_set_color(index++, GREEN);
+        ls_set_color(index++, BLUE);
+        ls_set_color(index++, YELLOW);
+        ls_set_color(index++, CYAN);
+        ls_set_color(index++, MAGENTA);
+        ls_set_color(index++, WHITE); // 样机是纯白
         // ls_set_color(6, ULTRAWHITE);
         fc_effect.dream_scene.change_type = MODE_JUMP;
-        fc_effect.dream_scene.c_n = 7;
+        fc_effect.dream_scene.c_n = index;
         fc_effect.Now_state = IS_light_scene;
 
         set_fc_effect();
@@ -572,21 +612,20 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C4_CLICK:
     case RF_433_KEY_EVENT_R5C4_LONG: // FADE3 三色渐变
     {
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, BLUE);
+        u8 index = 0;
+        ls_set_color(index++, RED);
+        ls_set_color(index++, GREEN);
+        ls_set_color(index++, BLUE);
         fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        fc_effect.dream_scene.c_n = 3;
+        fc_effect.dream_scene.c_n = index;
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
     }
     break;
 
     case RF_433_KEY_EVENT_R6C1_CLICK:
-    case RF_433_KEY_EVENT_R6C1_LONG: // 流星灯开关
+    case RF_433_KEY_EVENT_R6C1_LONG: // 流星灯开关（USER_TO_DO 现在流星灯不亮）
     {
-
-        // fc_effect.star_on_off = tp_sw;
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             fc_effect.star_on_off = DEVICE_ON;
@@ -606,62 +645,116 @@ void rf_433_key_event_handle(void)
             extern void close_metemor(void);
             WS2812FX_stop();
             WS2812FX_setSegment_colorOptions(
-                1,                    // 第0段
-                1,                    // 起始位置
-                fc_effect.led_num,    // 结束位置
-                &close_metemor,       // 效果
-                0,                    // 颜色
-                fc_effect.star_speed, // 速度
-                0);                   // 选项，这里像素点大小：3 REVERSE决定方向
-            // WS2812FX_start();
+                1,                           // 第0段
+                1,                           // 起始位置
+                fc_effect.led_num,           // 结束位置
+                &close_metemor,              // 效果
+                0,                           // 颜色
+                fc_effect.star_speed,        // 速度
+                0);                          // 选项，这里像素点大小：3 REVERSE决定方向
             WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
             WS2812FX_set_running();
         }
     }
     break;
 
-    case RF_433_KEY_EVENT_R6C2_CLICK:
-    case RF_433_KEY_EVENT_R6C2_LONG: // 可能有 减慢 流星灯速度 和 切换流星灯模式功能
+    case RF_433_KEY_EVENT_R6C2_CLICK: // 减慢 流星灯速度
     {
+        ls_sub_star_speed();
+    }
+    break;
+
+    case RF_433_KEY_EVENT_R6C2_LONG: // 切换流星灯模式功能
+    {
+        meteor_set_mode_can_be_cycled();
     }
     break;
 
     case RF_433_KEY_EVENT_R6C3_CLICK:
-    case RF_433_KEY_EVENT_R6C3_LONG: // 可能有 加快 流星灯速度 和 切换流星灯模式功能
+    case RF_433_KEY_EVENT_R6C3_LONG: // 加快 流星灯速度
     {
+        ls_add_star_speed();
     }
     break;
 
     case RF_433_KEY_EVENT_R6C4_CLICK:
     case RF_433_KEY_EVENT_R6C4_LONG: // FADE7 七色渐变
     {
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, BLUE);
-        ls_set_color(3, WHITE);
-        ls_set_color(4, YELLOW);
-        ls_set_color(5, CYAN);
-        ls_set_color(6, PURPLE);
+        u8 index = 0;
+        ls_set_color(index++, RED);
+        ls_set_color(index++, GREEN);
+        ls_set_color(index++, BLUE);
+        ls_set_color(index++, WHITE);
+        ls_set_color(index++, YELLOW);
+        ls_set_color(index++, CYAN);
+        ls_set_color(index++, PURPLE);
         fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        fc_effect.dream_scene.c_n = 7;
+        fc_effect.dream_scene.c_n = index;
         fc_effect.Now_state = IS_light_scene;
+        set_fc_effect();
     }
     break;
 
     case RF_433_KEY_EVENT_R7C1_CLICK:
     case RF_433_KEY_EVENT_R7C1_LONG: // 打开 声控
     {
+        /*
+            如果之前是静态模式，有一次声控信号，让灯光闪一次，然后熄灭
+
+            如果之前是动态模式，进入对应的动态+声控模式
+        */
+        // if (fc_effect.Now_state == IS_STATIC)
+        // {
+        //     fc_effect.dream_scene.change_type = MODE_COLORFUL_MUSIC_SINGLE_COLOR;
+        //     fc_effect.dream_scene.c_n = 1; // 颜色数量
+        //     fc_effect.dream_scene.rgb[0] = fc_effect.rgb;
+        // }
+        // else if (fc_effect.Now_state == IS_light_scene)
+        // {
+        //     fc_effect.dream_scene.change_type = MODE_COLORFUL_MUSIC_DYNAMIC;
+        // }
+
+        if (fc_effect.Now_state == IS_light_music)
+        {
+            fc_effect.music.m++;
+            if (fc_effect.music.m >= 4)
+            {
+                fc_effect.music.m = 0;
+            }
+        }
+        else
+        {
+            // 如果之前不是声控模式，需要保存之前的模式，在退出声控模式时需要恢复
+            fc_effect.state_before_into_music = fc_effect.Now_state;
+        }
+
+        fc_effect.Now_state = IS_light_music;
+        set_fc_effect();
     }
     break;
 
     case RF_433_KEY_EVENT_R7C2_CLICK:
     case RF_433_KEY_EVENT_R7C2_LONG: // 关闭 声控
     {
+        // 关闭声控时，需要回到原来的模式
+
+        // 如果之前是声控模式，需要回到原来的模式
+        if (IS_light_music == fc_effect.Now_state)
+        {
+            fc_effect.Now_state = fc_effect.state_before_into_music;
+            set_fc_effect();
+        }
+        else
+        {
+            // 如果之前不是声控模式，需要保存之前的模式，在退出声控模式时需要恢复
+            // fc_effect.state_before_into_music = fc_effect.Now_state;
+            return;
+        }
     }
     break;
 
     case RF_433_KEY_EVENT_R7C3_CLICK:
-    case RF_433_KEY_EVENT_R7C3_LONG: // BREATH
+    case RF_433_KEY_EVENT_R7C3_LONG: // BREATH（USER_TO_DO 现在按下呼吸灯，没有反应）
     {
         u8 index = 0;
         ls_set_color(index++, RED);
@@ -671,12 +764,14 @@ void rf_433_key_event_handle(void)
 
         ls_set_color(index++, PINK);
         ls_set_color(index++, CYAN);
-        ls_set_color(index++, WHITE); // USER_TO_DO 这里应该是纯白
+        ls_set_color(index++, WHITE); // 这里应该是纯白
 
-        fc_effect.dream_scene.change_type = MODE_MUTIL_BRAETH; //
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH; //
         fc_effect.dream_scene.c_n = index;                     // 有效颜色数量
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
+
+        // printf("breath\n");
     }
     break;
 
@@ -692,7 +787,7 @@ void rf_433_key_event_handle(void)
 
         ls_set_color(index++, PINK);
         ls_set_color(index++, CYAN);
-        ls_set_color(index++, WHITE); // USER_TO_DO 这里应该是纯白
+        ls_set_color(index++, WHITE); // 这里应该是纯白
 
         fc_effect.dream_scene.change_type = MODE_STROBE; //
         fc_effect.dream_scene.c_n = index;               // 有效颜色数量

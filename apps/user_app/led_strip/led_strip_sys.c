@@ -25,7 +25,8 @@ void fc_data_init(void)
     // 灯具
     fc_effect.on_off_flag = DEVICE_ON; // 灯为开启状态
     fc_effect.led_num = 12 + 1;        // 灯带的总灯珠数量（12个流星灯+1七彩灯）
-    fc_effect.Now_state = IS_STATIC;   // 当前运行状态 静态
+    fc_effect.state_before_into_music = IS_STATIC;
+    fc_effect.Now_state = IS_STATIC; // 当前运行状态 静态
     // fc_effect.rgb.r = 0;
     // fc_effect.rgb.g = 0;
     // fc_effect.rgb.b = 0;
@@ -72,7 +73,7 @@ void fc_data_init(void)
     fc_effect.meteor_period = 8;                           // 默认8秒  周期值
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // ms,运行时的计数器
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
-    fc_effect.motor_speed_index = 0;                        // 电机模式或电机速度索引
+    fc_effect.motor_speed_index = 0;                       // 电机模式或电机速度索引
 
     // 电机
     fc_effect.base_ins.mode = 4;   // 360转
@@ -306,11 +307,12 @@ void app_set_sensitive(u8 tp_s)
  */
 void ls_add_sensitive(void)
 {
+    // 数值越小，灵敏度越大
     u8 sen_gap = 10;
     if (fc_effect.Now_state == IS_light_music)
     {
-        if (fc_effect.music.s < (100 - sen_gap))
-            fc_effect.music.s += sen_gap;
+        if (fc_effect.music.s > sen_gap)
+            fc_effect.music.s -= sen_gap;
     }
 
     printf(" fc_effect.music.s= %d", fc_effect.music.s);
@@ -323,13 +325,14 @@ void ls_add_sensitive(void)
  */
 void ls_sub_sensitive(void)
 {
-
+    // 数值越小，灵敏度越大
     u8 sen_gap = 10;
     if (fc_effect.Now_state == IS_light_music)
     {
-        if (fc_effect.music.s > sen_gap)
-            fc_effect.music.s -= sen_gap;
+        if (fc_effect.music.s < (100 - sen_gap))
+            fc_effect.music.s += sen_gap;
     }
+
     printf(" fc_effect.music.s= %d", fc_effect.music.s);
 }
 
@@ -479,6 +482,27 @@ void ls_pause_and_play(void)
         else
             WS2812FX_pause();
     }
+}
+
+/**
+ * @brief 遥控器设置流星灯模式（可以循环）
+ *
+ */
+void meteor_set_mode_can_be_cycled(void)
+{
+    if (DEVICE_OFF == fc_effect.on_off_flag)
+    {
+        return;
+    }
+
+    fc_effect.star_index++;
+    if (fc_effect.star_index > 22) // 超出了索引范围，从头开始
+    {
+        fc_effect.star_index = 0;
+    }
+
+    // 根据索引设置流星灯模式
+    ls_meteor_stat_effect();
 }
 
 /*********************************************************
@@ -709,6 +733,8 @@ void ls_sub_star_speed(void)
 
 const u8 meteor_cycle[5] = {2, 8, 12, 16, 20}; // 2s 8s 12s 16s 20s
 u8 cycle_cntt = 0;
+
+// 由遥控器设置流星灯周期
 void ls_set_star_pro(void)
 {
     if (fc_effect.star_on_off != DEVICE_ON)
@@ -749,7 +775,6 @@ void ls_set_star_tail(void)
  *
  *********************************************************/
 extern u8 motor_period[6];
- 
 
 void ls_add_motor_speed(void)
 {

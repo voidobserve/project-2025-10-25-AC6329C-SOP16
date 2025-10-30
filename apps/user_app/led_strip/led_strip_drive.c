@@ -22,7 +22,6 @@
 // #define _B_PIN      IO_PORTA_07
 // #define _C_PIN      IO_PORTB_06
 
-
 #define MIC_PIN IO_PORTA_08
 #define MIC_CH AD_CH_PA8
 
@@ -80,10 +79,12 @@ void led_gpio_init(void)
 //     gpio_direction_output(IO_PORTA_02,1);
 // }
 
+#define PWM_FEQ (u32)94000
 void led_pwm_init(void)
 {
     // R
     struct pwm_platform_data pwm_p_data;
+#if 1
     pwm_p_data.pwm_aligned_mode = pwm_edge_aligned; // 边沿对齐
     pwm_p_data.pwm_ch_num = pwm_ch0;                // 通道号
     pwm_p_data.frequency = 1000;                    // 1KHz
@@ -118,6 +119,45 @@ void led_pwm_init(void)
     pwm_p_data.h_pin = _C_PIN;                      // 任意引脚
     pwm_p_data.l_pin = -1;                          // 任意引脚,不需要就填-1
     pwm_p_data.complementary_en = 0;                // 两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
+#endif
+
+#if 0
+    pwm_p_data.pwm_aligned_mode = pwm_edge_aligned; // 边沿对齐
+    pwm_p_data.pwm_ch_num = pwm_ch0;                // 通道号
+    pwm_p_data.frequency = PWM_FEQ;                 //
+    pwm_p_data.duty = 0;                            // 上电输出0%占空比
+    pwm_p_data.h_pin = _R_PIN;                      // 任意引脚
+    pwm_p_data.l_pin = -1;                          // 任意引脚,不需要就填-1
+    pwm_p_data.complementary_en = 0;                // 两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
+    mcpwm_init(&pwm_p_data);
+    // G
+    pwm_p_data.pwm_aligned_mode = pwm_edge_aligned; // 边沿对齐
+    pwm_p_data.pwm_ch_num = pwm_ch1;                // 通道号
+    pwm_p_data.frequency = PWM_FEQ;                 //
+    pwm_p_data.duty = 0;                            // 上电输出0%占空比
+    pwm_p_data.h_pin = _G_PIN;                      // 任意引脚
+    pwm_p_data.l_pin = -1;                          // 任意引脚,不需要就填-1
+    pwm_p_data.complementary_en = 0;                // 两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
+    mcpwm_init(&pwm_p_data);
+    // B
+    pwm_p_data.pwm_aligned_mode = pwm_edge_aligned; // 边沿对齐
+    pwm_p_data.pwm_ch_num = pwm_ch2;                // 通道号
+    pwm_p_data.frequency = PWM_FEQ;                 //
+    pwm_p_data.duty = 0;                            // 上电输出0%占空比
+    pwm_p_data.h_pin = _B_PIN;                      // 任意引脚
+    pwm_p_data.l_pin = -1;                          // 任意引脚,不需要就填-1
+    pwm_p_data.complementary_en = 0;                // 两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
+    mcpwm_init(&pwm_p_data);
+    // W
+    pwm_p_data.pwm_aligned_mode = pwm_edge_aligned; // 边沿对齐
+    pwm_p_data.pwm_ch_num = pwm_ch3;                // 通道号
+    pwm_p_data.frequency = PWM_FEQ;                 //
+    pwm_p_data.duty = 0;                            // 上电输出0%占空比
+    pwm_p_data.h_pin = _C_PIN;                      // 任意引脚
+    pwm_p_data.l_pin = -1;                          // 任意引脚,不需要就填-1
+    pwm_p_data.complementary_en = 0;                // 两个引脚的波形, 0: 同步,  1: 互补，互补波形的占空比体现在H引脚上
+#endif
+
     mcpwm_init(&pwm_p_data);
 }
 

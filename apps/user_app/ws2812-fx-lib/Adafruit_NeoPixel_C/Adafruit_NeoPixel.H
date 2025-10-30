@@ -171,4 +171,16 @@ uint16_t   Adafruit_NeoPixel_getNumBytes(void);
 uint32_t Adafruit_NeoPixel_getOriginPixelColor(uint16_t n);
 // 透传写入颜色，没有调整亮度
 void Adafruit_NeoPixel_setPixelColor_raw(uint16_t n, uint32_t c);
+
+// 以最大亮度值给指定位置填充颜色
+void Adafruit_NeoPixel_setPixelColor_rgbw_with_max_brightness(
+    uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
+
+uint32_t Adafruit_NeoPixel_getPixelColor_with_max_brightness(uint16_t n);
+void Adafruit_NeoPixel_setPixelColor_with_max_brightness(uint16_t n, uint32_t c);
+void Adafruit_NeoPixel_fill_with_max_brightness(uint32_t c, uint16_t first, uint16_t count);
+
+
+
+
 #endif /* __ADAFRUIT_NEOPIXEL_H */

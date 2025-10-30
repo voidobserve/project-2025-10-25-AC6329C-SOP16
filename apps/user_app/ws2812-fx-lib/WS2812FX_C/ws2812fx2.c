@@ -151,6 +151,15 @@ void WS2812FX_setPixelColor(uint16_t n, uint32_t c) {
   WS2812FX_setPixelColor_rgbw(n, r, g, b, w);
 }
 
+// 以最大亮度值给指定位置填充颜色
+void WS2812FX_setPixelColor_with_max_brightness(uint16_t n, uint32_t c) {
+  uint8_t w = (c >> 24) & 0xFF;
+  uint8_t r = (c >> 16) & 0xFF;
+  uint8_t g = (c >>  8) & 0xFF;
+  uint8_t b =  c        & 0xFF;
+  WS2812FX_setPixelColor_rgbw_with_max_brightness(n, r, g, b, w);
+}
+
 void WS2812FX_setPixelColor_rgb(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
   WS2812FX_setPixelColor_rgbw(n, r, g, b, 0);
 }
@@ -163,6 +172,17 @@ void WS2812FX_setPixelColor_rgbw(uint16_t n, uint8_t r, uint8_t g, uint8_t b, ui
   else
   {
     Adafruit_NeoPixel_setPixelColor_rgbw(n, r, g, b, w);
+  }
+}
+
+void WS2812FX_setPixelColor_rgbw_with_max_brightness(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+  if(IS_GAMMA)
+  {
+    Adafruit_NeoPixel_setPixelColor_rgbw_with_max_brightness(n, Adafruit_NeoPixel_gamma8(r), Adafruit_NeoPixel_gamma8(g), Adafruit_NeoPixel_gamma8(b), Adafruit_NeoPixel_gamma8(w));
+  }
+  else
+  {
+    Adafruit_NeoPixel_setPixelColor_rgbw_with_max_brightness(n, r, g, b, w);
   }
 }
 

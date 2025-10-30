@@ -119,14 +119,18 @@ void ls_sub_speed(void); // 遥控器控制 -- 减去速度
 void ls_add_bright(void); // 遥控器控制 -- 亮度加
 void ls_sub_bright(void); // 遥控器控制 -- 亮度减
 
+void ls_add_sensitive(void); // 遥控器控制 -- 灵敏度加
+void ls_sub_sensitive(void); // 遥控器控制 -- 灵敏度减
+
 void ls_add_mode_InAPP(void); // 遥控器控制 -- 模式切换 顺序
 void ls_sub_mode_InAPP(void); // 遥控器控制 -- 模式切换 逆序
 
 void ls_add_motor_speed(void); // 遥控器控制 -- 电机速度 变快
 void ls_sub_motor_speed(void); // 遥控器控制 -- 电机速度 变慢
 
-void ls_add_star_speed(void); // 遥控器控制 -- 流星灯速度 变快
-void ls_sub_star_speed(void); // 遥控器控制 -- 流星灯速度 变慢
+void ls_add_star_speed(void);             // 遥控器控制 -- 流星灯速度 变快
+void ls_sub_star_speed(void);             // 遥控器控制 -- 流星灯速度 变慢
+void meteor_set_mode_can_be_cycled(void); // 遥控器设置流星灯模式（可以循环）
 
 void soft_turn_on_the_light(void); // 软开灯处理
 void soft_turn_off_lights(void);   // 软关灯处理

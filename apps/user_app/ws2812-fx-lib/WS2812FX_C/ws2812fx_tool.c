@@ -3,6 +3,9 @@
 #include "Adafruit_NeoPixel.h"
 #include <stdlib.h>
 #include <string.h>
+
+#include "ws2812fx_tool.h"
+
 extern  Segment* _seg; 
 extern  uint16_t _seg_len;
 extern Segment_runtime* _seg_rt;
@@ -130,6 +133,11 @@ void WS2812FX_fade_out() {
   /*return*/ WS2812FX_fade_out_targetColor(_seg->colors[1]);
 }
 
+void WS2812FX_fade_out_with_max_brightness(void)
+{
+    WS2812FX_fade_out_targetColor_with_max_brightness(_seg->colors[1]);
+}
+
 void WS2812FX_fade_out_targetColor(uint32_t targetColor) {
   static const uint8_t rateMapH[] = {0, 1, 1, 1, 2, 3, 4, 6};
   static const uint8_t rateMapL[] = {0, 2, 3, 8, 8, 8, 8, 8};
@@ -168,6 +176,48 @@ void WS2812FX_fade_out_targetColor(uint32_t targetColor) {
       bdelta = abs(bdelta) < 3 ? bdelta : (bdelta >> rateH) + (bdelta >> rateL);
 
       WS2812FX_setPixelColor_rgbw(i, r1 + rdelta, g1 + gdelta, b1 + bdelta, w1 + wdelta);
+    }
+  }
+}
+
+void WS2812FX_fade_out_targetColor_with_max_brightness(uint32_t targetColor) {
+  static const uint8_t rateMapH[] = {0, 1, 1, 1, 2, 3, 4, 6};
+  static const uint8_t rateMapL[] = {0, 2, 3, 8, 8, 8, 8, 8};
+
+  uint8_t rate  = FADE_RATE;
+  uint8_t rateH = rateMapH[rate];
+  uint8_t rateL = rateMapL[rate];
+
+  uint32_t color = targetColor;
+  int w2 = (color >> 24) & 0xff;
+  int r2 = (color >> 16) & 0xff;
+  int g2 = (color >>  8) & 0xff;
+  int b2 =  color        & 0xff;
+
+  for(uint16_t i=_seg->start; i <= _seg->stop; i++) {
+    color = Adafruit_NeoPixel_getPixelColor_with_max_brightness(i); // current color
+    if(rate == 0) { // old fade-to-black algorithm
+      WS2812FX_setPixelColor_with_max_brightness(i, (color >> 1) & 0x7F7F7F7F);
+    } else { // new fade-to-color algorithm
+      int w1 = (color >> 24) & 0xff;
+      int r1 = (color >> 16) & 0xff;
+      int g1 = (color >>  8) & 0xff;
+      int b1 =  color        & 0xff;
+
+      // calculate the color differences between the current and target colors
+      int wdelta = w2 - w1;
+      int rdelta = r2 - r1;
+      int gdelta = g2 - g1;
+      int bdelta = b2 - b1;
+
+      // if the current and target colors are almost the same, jump right to the target
+      // color, otherwise calculate an intermediate color. (fixes rounding issues)
+      wdelta = abs(wdelta) < 3 ? wdelta : (wdelta >> rateH) + (wdelta >> rateL);
+      rdelta = abs(rdelta) < 3 ? rdelta : (rdelta >> rateH) + (rdelta >> rateL);
+      gdelta = abs(gdelta) < 3 ? gdelta : (gdelta >> rateH) + (gdelta >> rateL);
+      bdelta = abs(bdelta) < 3 ? bdelta : (bdelta >> rateH) + (bdelta >> rateL);
+
+      WS2812FX_setPixelColor_rgbw_with_max_brightness(i, r1 + rdelta, g1 + gdelta, b1 + bdelta, w1 + wdelta);
     }
   }
 }

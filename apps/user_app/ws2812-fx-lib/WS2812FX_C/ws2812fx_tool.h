@@ -19,4 +19,6 @@ uint16_t
 uint32_t
   WS2812FX_color_blend(uint32_t, uint32_t, uint8_t);
 
+void WS2812FX_fade_out_targetColor_with_max_brightness(uint32_t targetColor);
+
 #endif

@@ -59,7 +59,8 @@ typedef char __FlashStringHelper;
 #define RED        (uint32_t)0x00FF0000
 #define GREEN      (uint32_t)0x0000FF00
 #define BLUE       (uint32_t)0x000000FF
-#define WHITE      (uint32_t)0xFFFFFFFF
+// #define WHITE      (uint32_t)0xFFFFFFFF
+#define WHITE      (uint32_t)0xFF000000
 #define BLACK      (uint32_t)0x00000000
 #define YELLOW     (uint32_t)0x00FFFF00
 #define CYAN       (uint32_t)0x0000FFFF
@@ -248,6 +249,11 @@ Segment_runtime* getSegmentRuntimes(void);
 
 
 void WS2812FX_set_running(void);
+
+// 以最大亮度值给指定位置填充颜色
+void WS2812FX_setPixelColor_with_max_brightness(uint16_t n, uint32_t c);
+void WS2812FX_setPixelColor_rgbw_with_max_brightness(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
+
 
 
 #endif /* __BSP_WS2812FX_H */
