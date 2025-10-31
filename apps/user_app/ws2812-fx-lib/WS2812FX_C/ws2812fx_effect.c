@@ -65,16 +65,20 @@ uint16_t WS2812FX_mode_comet_1(void)
     return (_seg->speed);
 #endif
 
-#if 0  // 测试时使用，让流星灯全部点亮，此时可以观察流星灯是否闪烁，流星灯亮度是否足够
-    static u8 flag = 1;
-    if (flag)
+#if 0 // 测试时使用，让流星灯全部点亮，此时可以观察流星灯是否闪烁，流星灯亮度是否足够
+    // static u8 flag = 1;
+    // if (flag)
     {
-        flag = 0;
+        // flag = 0;
         Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len); // 测试时使用
     }
 
+    // printf("__FUNC__ %s \n__LINE__ %d\n", __func__, __LINE__);
+    // printf("_seg->start=%u\n", _seg->start);
+    // printf("_seg->stop=%u\n", _seg->stop);
+    // printf("_seg_len=%u\n", _seg_len);
     SET_CYCLE;
-    return 10000;
+    return 1;
 #endif // 测试时使用，让流星灯全部点亮，此时可以观察流星灯是否闪烁，流星灯亮度是否足够
 }
 
@@ -118,7 +122,7 @@ uint16_t WS2812FX_mode_comet_1_with_max_brightness(void)
         SET_CYCLE;
         fc_effect.mode_cycle = 1;
     }
-    
+
     // printf("__FUNC__ %s \n__LINE__ %d\n", __func__, __LINE__);
 
     return (_seg->speed);
@@ -3290,8 +3294,6 @@ u16 colorful_lights_static(void)
 //     return 50;
 // }
 
-
-
 /**
  * @brief 七彩灯的呼吸效果
  *
@@ -3335,8 +3337,8 @@ u16 colorful_lights_breathing(void)
     static volatile u32 temp_step = 0;  // 累计放大了1000倍的步长，超过1000后，才执行动画的下一步骤
     static volatile u16 brightness = 0; // 亮度值
     u32 step = 0;                       // 步长（放大了1000倍）
-    step = ((u32)fc_effect.b + 1) * 10 * 1000 / _seg->speed;
-    // step = ((u32)fc_effect.b - 1) * 10 * 10000 / _seg->speed; // （放大了10000倍）
+    // step = ((u32)fc_effect.b + 1) * 10 * 1000 / _seg->speed;
+    step = ((u32)fc_effect.b + 1) * 10 * 1000 / _seg->speed / 10;// _seg->speed的单位不是1ms，而是0~100，这里多除以10
 
     if (0 == _seg_rt->counter_mode_step &&
         0 == _seg_rt->aux_param &&

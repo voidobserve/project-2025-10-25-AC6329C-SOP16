@@ -83,6 +83,7 @@ void sound_handle(void)
                 {
                     music_voic.sound_trg = 1;  // 七彩声控
                     music_voic.meteor_trg = 1; // 流星声控
+                    WS2812FX_trigger_2();
                 }
             }
         }

@@ -563,7 +563,7 @@ void rf_433_key_event_handle(void)
         ls_set_color(index++, YELLOW);
         ls_set_color(index++, CYAN);
         ls_set_color(index++, MAGENTA);
-        ls_set_color(index++, WHITE); // 样机是纯白
+        ls_set_color(index++, PURE_WHITE); // 样机是纯白
         // ls_set_color(6, ULTRAWHITE);
         fc_effect.dream_scene.change_type = MODE_JUMP;
         fc_effect.dream_scene.c_n = index;
@@ -579,13 +579,20 @@ void rf_433_key_event_handle(void)
         if (fc_effect.motor_on_off == DEVICE_OFF)
         {
             fc_effect.motor_on_off = DEVICE_ON;
+            if (fc_effect.motor_speed_index >= ARRAY_SIZE(motor_period))
+            {
+                fc_effect.motor_speed_index = 0;
+            }
 
             one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
             one_wire_set_mode(4); // 360正转
         }
         else
         {
-            fc_effect.motor_on_off = DEVICE_OFF;
+            fc_effect.motor_on_off = DEVICE_OFF; 
+
+            // 让电机速度索引超出范围，表示是用遥控器停止的电机。下次开机时会检测索引，不启动电机
+            fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); 
             one_wire_set_mode(6); // 停止电机
         }
 
@@ -624,18 +631,20 @@ void rf_433_key_event_handle(void)
     break;
 
     case RF_433_KEY_EVENT_R6C1_CLICK:
-    case RF_433_KEY_EVENT_R6C1_LONG: // 流星灯开关（USER_TO_DO 现在流星灯不亮）
+    case RF_433_KEY_EVENT_R6C1_LONG: // 流星灯开关 
     {
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             fc_effect.star_on_off = DEVICE_ON;
+            // printf("meteor on\n");
         }
         else
         {
             fc_effect.star_on_off = DEVICE_OFF;
+            // printf("meteor off\n");
         }
 
-        if (fc_effect.star_on_off == DEVICE_ON)
+        if (DEVICE_ON == fc_effect.star_on_off)
         {
             ls_meteor_stat_effect();
         }
@@ -684,7 +693,7 @@ void rf_433_key_event_handle(void)
         ls_set_color(index++, RED);
         ls_set_color(index++, GREEN);
         ls_set_color(index++, BLUE);
-        ls_set_color(index++, WHITE);
+        ls_set_color(index++, PURE_WHITE);
         ls_set_color(index++, YELLOW);
         ls_set_color(index++, CYAN);
         ls_set_color(index++, PURPLE);
@@ -747,14 +756,14 @@ void rf_433_key_event_handle(void)
         else
         {
             // 如果之前不是声控模式，需要保存之前的模式，在退出声控模式时需要恢复
-            // fc_effect.state_before_into_music = fc_effect.Now_state;
+            fc_effect.state_before_into_music = fc_effect.Now_state;
             return;
         }
     }
     break;
 
     case RF_433_KEY_EVENT_R7C3_CLICK:
-    case RF_433_KEY_EVENT_R7C3_LONG: // BREATH（USER_TO_DO 现在按下呼吸灯，没有反应）
+    case RF_433_KEY_EVENT_R7C3_LONG: // BREATH 
     {
         u8 index = 0;
         ls_set_color(index++, RED);
@@ -764,10 +773,10 @@ void rf_433_key_event_handle(void)
 
         ls_set_color(index++, PINK);
         ls_set_color(index++, CYAN);
-        ls_set_color(index++, WHITE); // 这里应该是纯白
+        ls_set_color(index++, PURE_WHITE); // 这里应该是纯白
 
         fc_effect.dream_scene.change_type = MODE_COLORFUL_BREATH; //
-        fc_effect.dream_scene.c_n = index;                     // 有效颜色数量
+        fc_effect.dream_scene.c_n = index;                        // 有效颜色数量
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
 
@@ -787,7 +796,7 @@ void rf_433_key_event_handle(void)
 
         ls_set_color(index++, PINK);
         ls_set_color(index++, CYAN);
-        ls_set_color(index++, WHITE); // 这里应该是纯白
+        ls_set_color(index++, PURE_WHITE); // 这里应该是纯白
 
         fc_effect.dream_scene.change_type = MODE_STROBE; //
         fc_effect.dream_scene.c_n = index;               // 有效颜色数量

@@ -402,8 +402,7 @@ void fb_motor_speed(void)
 }
 
 void fb_motor_mode(void)
-{
-
+{ 
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x2F;
     tp_buffer[1] = 0x06;
@@ -760,15 +759,18 @@ void parse_zd_data(unsigned char *LedCommand)
             //---------------------------------外麦声控模式-----------------------------------
             if (LedCommand[0] == 0x06 && LedCommand[1] == 0x06)
             {
-                extern void app_set_music_mode(u8 tp_m);
-                if (fc_effect.music.m_type == EXTERIOR_MIC) // 外模模式
+                extern void app_set_music_mode(u8 tp_m);                
+                if (fc_effect.music.m_type != EXTERIOR_MIC)
                 {
-                    app_set_music_mode(LedCommand[2]);
-                    Send_buffer[6] = 0x06;
-                    Send_buffer[7] = 0x06;
-                    Send_buffer[8] = LedCommand[2];
-                    ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
+                    // 如果不在外部麦克风模式，设置为外部麦克风模式（可能app界面跳转太快，单片机没有收到切换模式的信息）
+                    fc_effect.music.m_type = EXTERIOR_MIC;
                 }
+
+                app_set_music_mode(LedCommand[2]);
+                Send_buffer[6] = 0x06;
+                Send_buffer[7] = 0x06;
+                Send_buffer[8] = LedCommand[2];
+                ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
                 phone_music_soure = 1;
             }
 
@@ -777,6 +779,17 @@ void parse_zd_data(unsigned char *LedCommand)
             {
                 extern void set_music_type(u8 ty);
                 set_music_type(LedCommand[2]);
+
+                fc_effect.Now_state = IS_light_music;
+
+                // printf("fc_effect.music.m = %u\n", fc_effect.music.m);
+                if (fc_effect.music.m >= 4)
+                {
+                    // 如果音乐模式的索引越界，则将索引置为
+                    fc_effect.music.m = 3;
+                }
+                set_fc_effect();
+
                 Send_buffer[6] = 0x06;
                 Send_buffer[7] = 0x07;
                 Send_buffer[8] = LedCommand[2];
@@ -796,20 +809,17 @@ void parse_zd_data(unsigned char *LedCommand)
             // --------------------------------流星模式-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x00 && fc_effect.star_on_off == DEVICE_ON)
             {
-
                 app_set_mereor_mode(LedCommand[2]);
             }
             //-------------------------------- 流星速度-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x01 && fc_effect.star_on_off == DEVICE_ON)
             {
-
                 app_set_mereor_speed(LedCommand[2]);
                 fd_meteor_speed();
             }
             //-------------------------------- 流星开关-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x02)
             {
-
                 app_set_on_off_meteor(LedCommand[2]);
                 fd_meteor_on_off();
             }

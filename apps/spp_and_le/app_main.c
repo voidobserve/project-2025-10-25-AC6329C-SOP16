@@ -419,7 +419,7 @@ void user_msg_handle_task(void)
         {
         case MSG_SEQUENCER_ONE_WIRE_SEND_INFO: // 使能单线发送
         {
-            printf("recv one wire send info\n");
+            // printf("recv one wire send info\n");
             for (u8 i = 0; i < 5; i++) // 控制重复发送次数
             {
                 while (is_one_wire_send_end()) // 如果还未发送完，继续等待

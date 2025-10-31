@@ -59,8 +59,9 @@ typedef char __FlashStringHelper;
 #define RED        (uint32_t)0x00FF0000
 #define GREEN      (uint32_t)0x0000FF00
 #define BLUE       (uint32_t)0x000000FF
-// #define WHITE      (uint32_t)0xFFFFFFFF
-#define WHITE      (uint32_t)0xFF000000
+#define WHITE      (uint32_t)0xFFFFFFFF // （流星灯需要使用到这份数据，如果修改了成0xFF000000，会导致流星灯不亮）
+#define PURE_WHITE (uint32_t)0xFF000000 // 七彩灯使用到的纯白色
+// #define WHITE      (uint32_t)0xFF000000
 #define BLACK      (uint32_t)0x00000000
 #define YELLOW     (uint32_t)0x00FFFF00
 #define CYAN       (uint32_t)0x0000FFFF
@@ -255,6 +256,7 @@ void WS2812FX_setPixelColor_with_max_brightness(uint16_t n, uint32_t c);
 void WS2812FX_setPixelColor_rgbw_with_max_brightness(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
 
 
+void  WS2812FX_trigger_2 (void);
 
 #endif /* __BSP_WS2812FX_H */
 

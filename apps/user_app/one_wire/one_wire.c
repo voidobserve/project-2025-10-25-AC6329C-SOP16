@@ -47,13 +47,17 @@ void pack_base(void)
 
     // send_base_ins |= ((u16)p << 3);
     // send_base_ins |= ((u16)p << 8);
-    send_base_ins |= ((u16)motor_period[p] << 8);
+    send_base_ins |= ((u16)motor_period[p] << 8); // bit8 ~ bit15，电机速度
     
 
     if (fc_effect.base_ins.dir)
     {
-        send_base_ins |= BIT(6);
+        send_base_ins |= BIT(6); // bit6 0:正转，1:反转
     }
+
+    // bit7 0：开灯，1：关灯
+    // send_base_ins &= ~(0x01 << 7); // 实际测试是 关灯
+    // send_base_ins |= (0x01 << 7); // 实际测试是 开灯
 
     // printf("send_base_ins == 0x %x\n", (u16)send_base_ins);
 }

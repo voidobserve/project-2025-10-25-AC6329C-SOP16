@@ -2275,6 +2275,7 @@ obj/Release/apps/user_app/led_strip/led_strip_voice.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,get_meteor_result,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,sound_handle,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,check_mic_adc,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,WS2812FX_trigger_2,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,music_voic,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,fc_effect,l
 obj/Release/apps/user_app/led_strip/paint_tool.o
@@ -2499,6 +2500,7 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_pause,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_resume,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger_2,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_setMode,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_setMode_seg,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_resetSegmentRuntime,pl
@@ -2571,6 +2573,7 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg_len,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg_rt,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_triggered_2,pl
 obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_comet_1,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,get_effect_p,l

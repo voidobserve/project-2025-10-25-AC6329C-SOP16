@@ -51,6 +51,7 @@ keil MDK 编译器不支持二进制表示，因此首先要实现binary.h文件
 static uint16_t _rand16seed;
 static void (*customShow)(void) = NULL;
 uint8_t _running, _triggered;
+u8 _triggered_2;
 static Segment _segments[MAX_NUM_SEGMENTS];                 // array of segments (20 bytes per element)
 static Segment_runtime  _segment_runtimes[MAX_NUM_ACTIVE_SEGMENTS]; // array of segment runtimes (16 bytes per element)
 static uint8_t _active_segments[MAX_NUM_ACTIVE_SEGMENTS];          // array of active segments (1 bytes per element)
@@ -114,7 +115,7 @@ void WS2812FX_service()
         _seg_rt  = &_segment_runtimes[i];
         CLR_FRAME_CYCLE;
 
-        if(now >= _seg_rt->next_time || _triggered) {
+        if(now >= _seg_rt->next_time || _triggered || (_triggered_2 && i == 0)) {
           SET_FRAME;
           doShow = true;
 
@@ -239,6 +240,10 @@ void WS2812FX_resume() {
 
 void WS2812FX_trigger() {
   _triggered = true;
+}
+
+void WS2812FX_trigger_2() {
+  _triggered_2 = true;
 }
 
 void WS2812FX_setMode(mode_ptr m) {

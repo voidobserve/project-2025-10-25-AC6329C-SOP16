@@ -793,6 +793,8 @@ void ls_meteor_stat_effect(void)
                 fc_effect.star_speed,                       // 速度
                 fade_type[0] | 0);                          // 选项，这里像素点大小：3 REVERSE决定方向
             // WS2812FX_start();
+
+            // printf("__FUNC__ %s \n__LINE__ %d\n", __func__, __LINE__);
         }
         else if (fc_effect.star_index == 2) // 单流星
         {

@@ -55346,7 +55346,7 @@
 
 1719196543 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\hardware\hardware.h
 
-1761818658 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.h
+1761874920 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.h
 	"cpu.h"
 	"led_strip_sys.h"
 	"WS2812FX.H"
@@ -55356,7 +55356,7 @@
 1761803544 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.h
 	"cpu.h"
 
-1761794959 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx.h
+1761907104 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx.h
 	"adafruit_typedef.h"
 	<stdint.h>
 	"ws2812_bsp.h"
@@ -55379,7 +55379,7 @@
 1761293755 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.h
 	"system/includes.h"
 
-1761817554 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
+1761874773 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
 	"system/includes.h"
 	"led_strand_effect.h"
 	"WS2812FX.H"
@@ -55390,7 +55390,7 @@
 	"asm/mcpwm.h"
 	"../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.H"
 
-1761805808 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.h
+1761818841 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.h
 
 1761793467 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\adafruit_neopixel_c\adafruit_neopixel.h
 	<stdint.h>
@@ -55403,7 +55403,7 @@
 	"led_strand_effect.h"
 	"../../../include_lib/driver/cpu/bd19/asm/mcpwm.h"
 
-1761818013 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
+1761881982 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
 	"led_strip_sys.h"
 	"Adafruit_NeoPixel.H"
 	"led_strand_effect.h"
@@ -55412,7 +55412,7 @@
 
 1761095058 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.h
 
-1761701859 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_voice.c
+1761907088 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_voice.c
 	"led_strip_voice.h"
 	"asm/adc_api.h"
 	"led_strip_drive.h"
@@ -55428,12 +55428,12 @@
 1719208267 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\paint_tool.h
 	"led_strip_sys.h"
 
-1761614550 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
+1761875703 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
 	"system/includes.h"
 	"one_wire.h"
 	"led_strand_effect.h"
 
-1761644785 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
+1761892079 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
 	"cpu.h"
 	"led_strip_sys.h"
 	"paint_tool.h"
@@ -55477,7 +55477,7 @@
 	"syscfg_id.h"
 	"save_flash.h"
 
-1761791083 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx2.c
+1761907074 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx2.c
 	"WS2812FX.h"
 	"Adafruit_NeoPixel.h"
 	<stdlib.h>
@@ -55491,7 +55491,7 @@
 	<string.h>
 	"ws2812fx_tool.h"
 
-1761641600 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
+1761874717 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
 	"system/includes.h"
 	"app_config.h"
 	"app_action.h"
@@ -56933,7 +56933,7 @@
 	"debug.h"
 	"uart_update.h"
 
-1761818784 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
+1761875144 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
 	"WS2812FX.h"
 	"ws2812fx_tool.h"
 	"Adafruit_NeoPixel.h"
@@ -56956,7 +56956,7 @@
 1761642176 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.h
 	"includes.h"
 
-1761818791 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
+1761875951 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
 	"rf433_key.h"
 	"../../../apps/user_app/led_strip/led_strip_sys.h"
 	"../../../apps/user_app/led_strip/led_strand_effect.h"

@@ -452,7 +452,13 @@ void set_music_type(u8 tp_ty)
 void app_set_music_mode(u8 tp_m)
 {
     if (fc_effect.music.m < MAX_MUSIC_EFFECT_NUMBER)
+    {
         fc_effect.music.m = tp_m;
+    }
+    else
+    {
+        fc_effect.music.m = 0;
+    }
     fc_effect.Now_state = IS_light_music;
     set_fc_effect();
 }
