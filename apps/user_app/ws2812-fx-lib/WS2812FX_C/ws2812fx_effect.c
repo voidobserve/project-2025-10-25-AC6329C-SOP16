@@ -1159,7 +1159,7 @@ uint16_t meteor_with_max_brightness(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_sound_result())
+    if (get_meteor_result())
     {
         trg = 1;
     }
@@ -1284,7 +1284,7 @@ uint16_t music_meteor3_with_max_brightness(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_sound_result())
+    if (get_meteor_result())
     {
         if (i == MAX_RATE - 1)
         {

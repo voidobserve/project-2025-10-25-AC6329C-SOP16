@@ -365,6 +365,7 @@ void rf_433_key_event_handle(void)
         else if (IS_light_music == fc_effect.Now_state)
         {
             ls_add_sensitive();
+            fb_sensitive(); // 向app反馈灵敏度
         }
     }
     break;
@@ -385,6 +386,7 @@ void rf_433_key_event_handle(void)
         else if (IS_light_music == fc_effect.Now_state)
         {
             ls_sub_sensitive();
+            fb_sensitive(); // 向app反馈灵敏度
         }
     }
     break;
@@ -605,6 +607,7 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C2_HOLD:
     {
         ls_sub_motor_speed();
+        fb_motor_speed(); // 向app反馈电机转速
     }
     break;
 
@@ -613,6 +616,7 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C3_HOLD:
     {
         ls_add_motor_speed();
+        fb_motor_speed(); // 向app反馈电机转速
     }
     break;
 
@@ -647,6 +651,7 @@ void rf_433_key_event_handle(void)
         if (DEVICE_ON == fc_effect.star_on_off)
         {
             ls_meteor_stat_effect();
+            fd_meteor_on_off(); // 向app反馈流星开关的状态
         }
         else
         {
@@ -661,8 +666,9 @@ void rf_433_key_event_handle(void)
                 0,                           // 颜色
                 fc_effect.star_speed,        // 速度
                 0);                          // 选项，这里像素点大小：3 REVERSE决定方向
-            WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+            WS2812FX_resetSegmentRuntime(1); // 清除指定段的显示缓存
             WS2812FX_set_running();
+            fd_meteor_on_off(); // 向app反馈流星开关的状态
         }
     }
     break;
@@ -737,6 +743,7 @@ void rf_433_key_event_handle(void)
             fc_effect.state_before_into_music = fc_effect.Now_state;
         }
 
+        fc_effect.music.m_type = EXTERIOR_MIC; // 默认为外接MIC
         fc_effect.Now_state = IS_light_music;
         set_fc_effect();
     }

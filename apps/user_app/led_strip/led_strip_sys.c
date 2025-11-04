@@ -93,7 +93,7 @@ void OpenMortor(void);
 void soft_turn_on_the_light(void) // 软开灯处理
 {
     fc_effect.on_off_flag = DEVICE_ON; // 七彩灯为开启状态
-    fc_effect.star_on_off = DEVICE_ON; // 流星灯打开
+    // fc_effect.star_on_off = DEVICE_ON; // 流星灯打开
 
     // OpenMortor(); // 给对应标志位置位，表示电机打开
     motor_Init();     // 初始化电机相关的变量
@@ -110,7 +110,10 @@ void soft_turn_on_the_light(void) // 软开灯处理
     {
         // 如果开机前，电机的周期索引还在电机的周期数组大小内，说明电机在开机前是开着的
         one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
-        one_wire_set_mode(4); // 360正转
+        if (6 == fc_effect.base_ins.mode) // 开机前，可能之前调用了关机的命令，这个变量会等于关机对应的模式
+        {
+            one_wire_set_mode(4); // 360正转
+        }
         fc_effect.motor_on_off = DEVICE_ON;
     }
 
@@ -127,20 +130,20 @@ void soft_turn_on_the_light(void) // 软开灯处理
 void CloseMotor(void);
 void soft_turn_off_lights(void) // 软关灯处理
 {
-    if (fc_effect.on_off_flag == DEVICE_ON)
-    {
-        fc_effect.on_off_flag = DEVICE_OFF;
+    // if (fc_effect.on_off_flag == DEVICE_ON)
+    // {
+    fc_effect.on_off_flag = DEVICE_OFF;
 
-        CloseMotor(); // 关闭电机
+    CloseMotor(); // 关闭电机
 
-        WS2812FX_stop();
-        WS2812FX_strip_off(); // 清空缓存
+    WS2812FX_stop();
+    WS2812FX_strip_off(); // 清空缓存
 
-        fb_led_on_off_state();  // 与app同步设备的开关状态
-        save_user_data_area3(); // 保存参数配置到flash
+    fb_led_on_off_state();  // 与app同步设备的开关状态
+    save_user_data_area3(); // 保存参数配置到flash
 
-        printf("soft_turn_off_lights\n");
-    }
+    printf("soft_turn_off_lights\n");
+    // }
 }
 
 /*********************************************************
@@ -307,12 +310,18 @@ void app_set_sensitive(u8 tp_s)
  */
 void ls_add_sensitive(void)
 {
-    // 数值越小，灵敏度越大
+    // 数值越大，灵敏度越大
     u8 sen_gap = 10;
     if (fc_effect.Now_state == IS_light_music)
     {
-        if (fc_effect.music.s > sen_gap)
-            fc_effect.music.s -= sen_gap;
+        if (fc_effect.music.s < (100 - sen_gap))
+        {
+            fc_effect.music.s += sen_gap;
+        }
+        else
+        {
+            fc_effect.music.s = 100;
+        }
     }
 
     printf(" fc_effect.music.s= %d", fc_effect.music.s);
@@ -325,12 +334,18 @@ void ls_add_sensitive(void)
  */
 void ls_sub_sensitive(void)
 {
-    // 数值越小，灵敏度越大
+    // 数值越大，灵敏度越大
     u8 sen_gap = 10;
     if (fc_effect.Now_state == IS_light_music)
     {
-        if (fc_effect.music.s < (100 - sen_gap))
-            fc_effect.music.s += sen_gap;
+        if (fc_effect.music.s > sen_gap)
+        {
+            fc_effect.music.s -= sen_gap;
+        }
+        else
+        {
+            fc_effect.music.s = 0;
+        }
     }
 
     printf(" fc_effect.music.s= %d", fc_effect.music.s);

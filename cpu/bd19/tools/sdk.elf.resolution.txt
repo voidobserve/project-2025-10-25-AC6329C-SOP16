@@ -2275,7 +2275,9 @@ obj/Release/apps/user_app/led_strip/led_strip_voice.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,get_meteor_result,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,sound_handle,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,check_mic_adc,l
--r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,WS2812FX_trigger_2,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,memmove,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,WS2812FX_trigger_by_colorful_lights,l
+-r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,WS2812FX_trigger_by_meteor_lights,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,music_voic,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,fc_effect,l
 obj/Release/apps/user_app/led_strip/paint_tool.o
@@ -2343,7 +2345,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,os_time_dly,
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,get_on_off_state,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,set_on_off_led,l
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,parse_alarm_data,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,set_static_mode,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,base_Dynamic_Effect,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,app_set_bright,l
@@ -2372,10 +2373,10 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_draw_tool,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,Ble_Addr,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ZD_HCI_handle,l
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,alarm_clock,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,time_clock,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,counting_flag,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,set_time,l
+-r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_period,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_switch_led,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_countdown,pl
 obj/Release/apps/user_app/rf24g_key/rf24g_app.o
@@ -2395,6 +2396,7 @@ obj/Release/apps/user_app/rf433_key/rf433_key.o
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_add_bright,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_add_speed,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_add_sensitive,l
+-r=obj/Release/apps/user_app/rf433_key/rf433_key.o,fb_sensitive,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_sub_bright,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_sub_speed,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_sub_sensitive,l
@@ -2406,8 +2408,10 @@ obj/Release/apps/user_app/rf433_key/rf433_key.o
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,one_wire_set_mode,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,os_taskq_post,
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_sub_motor_speed,l
+-r=obj/Release/apps/user_app/rf433_key/rf433_key.o,fb_motor_speed,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_add_motor_speed,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,ls_meteor_stat_effect,l
+-r=obj/Release/apps/user_app/rf433_key/rf433_key.o,fd_meteor_on_off,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,WS2812FX_stop,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,WS2812FX_setSegment_colorOptions,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,close_metemor,l
@@ -2500,7 +2504,8 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_pause,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_resume,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger,pl
--r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger_2,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger_by_colorful_lights,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_trigger_by_meteor_lights,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_setMode,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_setMode_seg,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_resetSegmentRuntime,pl
@@ -2570,10 +2575,11 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,WS2812FX_random16_lim,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_running,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_triggered,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_triggered_by_colorful_lights,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_triggered_by_meteor_lights,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg_len,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_seg_rt,pl
--r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx2.o,_triggered_2,pl
 obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_comet_1,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,get_effect_p,l
@@ -2608,6 +2614,7 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_copyPixels,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor_with_max_brightness,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,get_meteor_result,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_setPixelColor_rgbw_with_max_brightness,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor1,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,printf,l

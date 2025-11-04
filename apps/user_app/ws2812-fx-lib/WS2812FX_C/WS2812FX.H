@@ -256,7 +256,8 @@ void WS2812FX_setPixelColor_with_max_brightness(uint16_t n, uint32_t c);
 void WS2812FX_setPixelColor_rgbw_with_max_brightness(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
 
 
-void  WS2812FX_trigger_2 (void);
+void  WS2812FX_trigger_by_colorful_lights(void);
+void WS2812FX_trigger_by_meteor_lights(void);
 
 #endif /* __BSP_WS2812FX_H */
 

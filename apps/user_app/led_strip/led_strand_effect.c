@@ -782,7 +782,6 @@ void ls_meteor_stat_effect(void)
         // 流星效果                                    单流星
         if (fc_effect.star_index == 1)
         {
-
             WS2812FX_stop();
             WS2812FX_setSegment_colorOptions(
                 1,                        // 第0段
@@ -1031,6 +1030,7 @@ void ls_meteor_stat_effect(void)
         }
         else if (fc_effect.star_index == 19 || fc_effect.star_index == 20 || fc_effect.star_index == 21) //
         {
+            // 单色灯带渐变灭灯,做流星效果   兼容正反方向
             strand_meteor(fc_effect.star_index);
         }
         else if (fc_effect.star_index == 22)

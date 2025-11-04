@@ -358,7 +358,8 @@ void fb_sensitive(void)
 {
 
     uint8_t tp_buffer[6];
-    tp_buffer[0] = 0x02;
+    // tp_buffer[0] = 0x02; // 可能是格式不对，导致app没有收到灵敏度
+    tp_buffer[0] = 0x2F;
     tp_buffer[1] = 0x05;
     tp_buffer[2] = fc_effect.music.s;
 
@@ -402,7 +403,7 @@ void fb_motor_speed(void)
 }
 
 void fb_motor_mode(void)
-{ 
+{
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x2F;
     tp_buffer[1] = 0x06;
@@ -473,34 +474,34 @@ void parse_zd_data(unsigned char *LedCommand)
         os_time_dly(1);
 
         //-------------------发送闹钟1定时数据--------------------------
-        Send_buffer[6] = 0x05;
-        Send_buffer[7] = 0x00;
-        Send_buffer[8] = alarm_clock[0].hour;
-        Send_buffer[9] = alarm_clock[0].minute;
-        Send_buffer[10] = alarm_clock[0].on_off;
-        Send_buffer[11] = alarm_clock[0].mode;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
-        os_time_dly(1);
+        // Send_buffer[6] = 0x05;
+        // Send_buffer[7] = 0x00;
+        // Send_buffer[8] = alarm_clock[0].hour;
+        // Send_buffer[9] = alarm_clock[0].minute;
+        // Send_buffer[10] = alarm_clock[0].on_off;
+        // Send_buffer[11] = alarm_clock[0].mode;
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
+        // os_time_dly(1);
 
-        //-------------------发送闹钟2定时数据--------------------------
-        Send_buffer[6] = 0x05;
-        Send_buffer[7] = 0x01;
-        Send_buffer[8] = alarm_clock[1].hour;
-        Send_buffer[9] = alarm_clock[1].minute;
-        Send_buffer[10] = alarm_clock[1].on_off;
-        Send_buffer[11] = alarm_clock[1].mode;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
-        os_time_dly(1);
+        // //-------------------发送闹钟2定时数据--------------------------
+        // Send_buffer[6] = 0x05;
+        // Send_buffer[7] = 0x01;
+        // Send_buffer[8] = alarm_clock[1].hour;
+        // Send_buffer[9] = alarm_clock[1].minute;
+        // Send_buffer[10] = alarm_clock[1].on_off;
+        // Send_buffer[11] = alarm_clock[1].mode;
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
+        // os_time_dly(1);
 
-        //-------------------发送闹钟3定时数据--------------------------
-        Send_buffer[6] = 0x05;
-        Send_buffer[7] = 0x02;
-        Send_buffer[8] = alarm_clock[2].hour;
-        Send_buffer[9] = alarm_clock[2].minute;
-        Send_buffer[10] = alarm_clock[2].on_off;
-        Send_buffer[11] = alarm_clock[2].mode;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
-        os_time_dly(1);
+        // //-------------------发送闹钟3定时数据--------------------------
+        // Send_buffer[6] = 0x05;
+        // Send_buffer[7] = 0x02;
+        // Send_buffer[8] = alarm_clock[2].hour;
+        // Send_buffer[9] = alarm_clock[2].minute;
+        // Send_buffer[10] = alarm_clock[2].on_off;
+        // Send_buffer[11] = alarm_clock[2].mode;
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
+        // os_time_dly(1);
 
         //-------------------发送RGB接口模式--------------------------
         Send_buffer[6] = 0x04;
@@ -574,42 +575,41 @@ void parse_zd_data(unsigned char *LedCommand)
             time_clock.week = LedCommand[5];
         }
         //-----------------------------------接收到闹钟数据-----------------------------------------
-        if (LedCommand[0] == 0x05)
-        {
+        // if (LedCommand[0] == 0x05)
+        // {
+        //     Send_buffer[6] = 0x05;
+        //     Send_buffer[7] = LedCommand[1]; // 闹钟序号
+        //     Send_buffer[8] = LedCommand[2];
+        //     Send_buffer[9] = LedCommand[3];
+        //     Send_buffer[10] = LedCommand[4];
+        //     Send_buffer[11] = LedCommand[5];
+        //     ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
 
-            Send_buffer[6] = 0x05;
-            Send_buffer[7] = LedCommand[1]; // 闹钟序号
-            Send_buffer[8] = LedCommand[2];
-            Send_buffer[9] = LedCommand[3];
-            Send_buffer[10] = LedCommand[4];
-            Send_buffer[11] = LedCommand[5];
-            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
-
-            if (LedCommand[1] == 0x00)
-            {
-                alarm_clock[0].hour = LedCommand[2];
-                alarm_clock[0].minute = LedCommand[3];
-                alarm_clock[0].on_off = LedCommand[4];
-                alarm_clock[0].mode = LedCommand[5];
-                parse_alarm_data(0);
-            }
-            if (LedCommand[1] == 0x01)
-            {
-                alarm_clock[1].hour = LedCommand[2];
-                alarm_clock[1].minute = LedCommand[3];
-                alarm_clock[1].on_off = LedCommand[4];
-                alarm_clock[1].mode = LedCommand[5];
-                parse_alarm_data(1);
-            }
-            if (LedCommand[1] == 0x02)
-            {
-                alarm_clock[2].hour = LedCommand[2];
-                alarm_clock[2].minute = LedCommand[3];
-                alarm_clock[2].on_off = LedCommand[4];
-                alarm_clock[2].mode = LedCommand[5];
-                parse_alarm_data(2);
-            }
-        }
+        //     if (LedCommand[1] == 0x00)
+        //     {
+        //         alarm_clock[0].hour = LedCommand[2];
+        //         alarm_clock[0].minute = LedCommand[3];
+        //         alarm_clock[0].on_off = LedCommand[4];
+        //         alarm_clock[0].mode = LedCommand[5];
+        //         parse_alarm_data(0);
+        //     }
+        //     if (LedCommand[1] == 0x01)
+        //     {
+        //         alarm_clock[1].hour = LedCommand[2];
+        //         alarm_clock[1].minute = LedCommand[3];
+        //         alarm_clock[1].on_off = LedCommand[4];
+        //         alarm_clock[1].mode = LedCommand[5];
+        //         parse_alarm_data(1);
+        //     }
+        //     if (LedCommand[1] == 0x02)
+        //     {
+        //         alarm_clock[2].hour = LedCommand[2];
+        //         alarm_clock[2].minute = LedCommand[3];
+        //         alarm_clock[2].on_off = LedCommand[4];
+        //         alarm_clock[2].mode = LedCommand[5];
+        //         parse_alarm_data(2);
+        //     }
+        // }
         //--------------------------下面所有的操作都需要在开灯状态下操作-----------------------------------
 
         if (get_on_off_state())
@@ -759,7 +759,7 @@ void parse_zd_data(unsigned char *LedCommand)
             //---------------------------------外麦声控模式-----------------------------------
             if (LedCommand[0] == 0x06 && LedCommand[1] == 0x06)
             {
-                extern void app_set_music_mode(u8 tp_m);                
+                extern void app_set_music_mode(u8 tp_m);
                 if (fc_effect.music.m_type != EXTERIOR_MIC)
                 {
                     // 如果不在外部麦克风模式，设置为外部麦克风模式（可能app界面跳转太快，单片机没有收到切换模式的信息）
@@ -799,8 +799,7 @@ void parse_zd_data(unsigned char *LedCommand)
             //---------------------------------设置麦克风灵，电机，流星敏度-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x05)
             {
-
-                app_set_sensitive(100 - LedCommand[2]);
+                app_set_sensitive(LedCommand[2]);
                 fb_sensitive();
             }
 
@@ -809,6 +808,7 @@ void parse_zd_data(unsigned char *LedCommand)
             // --------------------------------流星模式-----------------------------------
             if (LedCommand[0] == 0x2F && LedCommand[1] == 0x00 && fc_effect.star_on_off == DEVICE_ON)
             {
+                extern void app_set_mereor_mode(u8 tp_m); // app设置流星灯模式
                 app_set_mereor_mode(LedCommand[2]);
             }
             //-------------------------------- 流星速度-----------------------------------
@@ -837,10 +837,10 @@ void parse_zd_data(unsigned char *LedCommand)
             {
 
                 extern void one_wire_set_mode(u8 m);
-                extern void enable_one_wire(void);
+                // extern void enable_one_wire(void);
 
                 one_wire_set_mode(LedCommand[2]); // 配置模式
-                os_time_dly(1);
+                // os_time_dly(1);
                 // enable_one_wire();  //使用发送数据
 
                 extern u8 counting_flag;
@@ -849,6 +849,8 @@ void parse_zd_data(unsigned char *LedCommand)
                 if (LedCommand[2] == 0 && counting_flag == 0)
                 {
                     fc_effect.motor_on_off = DEVICE_OFF;
+                    fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机
+                    
                     counting_flag = 1; // 开始计时
                     set_time = 1;      // 允许修改时间
                 }
@@ -866,8 +868,24 @@ void parse_zd_data(unsigned char *LedCommand)
             {
                 extern void one_wire_set_period(u8 p);
                 one_wire_set_period(LedCommand[2]);
-                os_time_dly(1);
-                // enable_one_wire();
+
+                // 如果app传过来的数值不在motor_period数组中，下面的代码会出问题
+                // 更新 fc_effect.star_speed_index 索引值，后续重新上电要根据这个索引值来找到对应的电机转速
+                for (u8 i = 0; i < ARRAY_SIZE(motor_period); i++)
+                {
+                    if (motor_period[i] == fc_effect.base_ins.period)
+                    {
+                        fc_effect.motor_speed_index = i;
+                        break;
+                    }
+
+                    if (i == ARRAY_SIZE(motor_period) - 1)
+                    {
+                        // 如果到最后一个元素，都没有找到对应的索引值
+                        // 让索引值超出数组的索引范围，表示关闭电机
+                        fc_effect.motor_speed_index = ARRAY_SIZE(motor_period);
+                    }
+                }
 
                 os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
                 fb_motor_speed();
