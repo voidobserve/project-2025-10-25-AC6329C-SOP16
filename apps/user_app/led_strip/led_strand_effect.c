@@ -729,8 +729,68 @@ static void ls_scene_effect(void)
         single_c_breath();
         break;
 
-    case MODE_COLORFUL_BREATH:
+    case MODO_COLORFUL_LIGHTS_FLASH: // 七彩灯频闪
+
+        WS2812FX_setSegment_colorOptions(
+            0,                           // 第0段
+            0,                           // 起始位置
+            0,                           // 结束位置
+            &colorful_lights_flash,      // 效果  // 七彩灯渐变
+            0,                           // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed, // 速 度
+            NO_OPTIONS                   // 选项
+        );
+
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_set_running();
+
+        break;
+
+    case MODE_COLORFUL_LIGHTS_JUMP: // 七彩灯跳变
+
+        WS2812FX_setSegment_colorOptions(
+            0,                           // 第0段
+            0,                           // 起始位置
+            0,                           // 结束位置
+            &colorful_lights_jump,       // 效果  // 七彩灯渐变
+            0,                           // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed, // 速 度
+            NO_OPTIONS                   // 选项
+        );
+
+        WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
+        ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_set_running();
+
+        break;
+
+    case MODE_COLORFUL_LIGHTS_GRADUAL: // 七彩灯渐变
+
+        // 注意，提供的颜色数量至少要有两个，否则函数内部会越界访问
+
+        WS2812FX_setSegment_colorOptions(
+            0,                           // 第0段
+            0,                           // 起始位置
+            0,                           // 结束位置
+            &colorful_lights_gradual,    // 效果  // 七彩灯渐变
+            0,                           // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed, // 速 度
+            NO_OPTIONS                   // 选项
+        );
+
+        // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+        // ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_set_running();
+        break;
+
+    case MODE_COLORFUL_LIGHTS_BREATH: // 七彩灯呼吸
     {
+        /*
+            注意，进入这里不会重新开始跑动画（样机对应的七彩灯呼吸在调节速度不会重新开始跑动画）
+
+            如果需要重新开始跑动画，在进入这里之前，需要先调用 WS2812FX_resetSegmentRuntime(0);
+        */
         WS2812FX_setSegment_colorOptions(
             0,                           // 第0段
             0,                           // 起始位置
@@ -743,11 +803,26 @@ static void ls_scene_effect(void)
 
         WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
         ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-
-        WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
         WS2812FX_set_running();
     }
     break;
+
+    case MODE_COLORFUL_LIGHTS_AUTO: // 七彩灯的自动模式
+
+        WS2812FX_setSegment_colorOptions(
+            0,                           // 第0段
+            0,                           // 起始位置
+            0,                           // 结束位置
+            &colorful_lights_auto,       // 效果  // 七彩灯自动（颜色和颜色数量在函数内部设置，这里不用再设置）
+            0,                           // 颜色，WS2812FX_setColors设置
+            fc_effect.dream_scene.speed, // 速 度
+            NO_OPTIONS                   // 选项
+        );
+
+        // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
+        // ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+        WS2812FX_set_running();
+        break;
 
     default:
         break;
@@ -1042,7 +1117,8 @@ void ls_meteor_stat_effect(void)
         WS2812FX_set_running();
     }
 
-    save_user_data_area3(); // 保存参数配置到flash
+    // save_user_data_area3(); // 保存参数配置到flash
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 
 /**
@@ -1051,7 +1127,7 @@ void ls_meteor_stat_effect(void)
  */
 static void ls_music_effect(void)
 {
-
+#if 1
     extern uint16_t fc_music_gradual(void);
     extern uint16_t fc_music_breath(void);
     extern uint16_t fc_music_static(void);
@@ -1094,6 +1170,41 @@ static void ls_music_effect(void)
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
     WS2812FX_set_running();
+#endif
+
+#if 0
+    // USER_TO_DO 这里还没有完善
+    void *music_effect_addr = NULL;
+    switch (fc_effect.music.m)
+    {
+    case 0:
+        music_effect_addr = &colorful_lights_sound_gradual_max_brightness;
+        break;
+    case 1:
+        music_effect_addr = &colorful_lights_sound_breath_max_brightness;
+        break;
+    case 2:
+        music_effect_addr = &colorful_lights_sound_static_max_brightness;
+        break;
+    case 3:
+        music_effect_addr = &colorful_lights_sound_twinkle_max_brightness;
+        break;
+    default:
+        break;
+    }
+
+    WS2812FX_setSegment_colorOptions(
+        0,                       // 第0段
+        0,                       // 起始位置
+        0,                       // 结束位置
+        music_effect_addr,       // 效果
+        WHITE,                   // 颜色，WS2812FX_setColors设置
+        100,                     // 速度
+        SIZE_MEDIUM | FADE_XSLOW // 选项，这里像素点大小：3,反向/反向
+    );
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+    WS2812FX_running_flag_set(); // USER_TO_DO 这里的函数名还没有换好
+#endif
 }
 
 /**

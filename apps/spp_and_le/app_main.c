@@ -28,9 +28,14 @@
 #define LOG_CLI_ENABLE
 #include "debug.h"
 
-#include "../../../apps/user_app/rf24g_key/rf24g_key.h"
+// #include "../../../apps/user_app/rf24g_key/rf24g_key.h"
 #include "../../../apps/user_app/one_wire/one_wire.h"
-#include "../../../apps/user_app/rf433_key/rf433_key.h" 
+#include "../../../apps/user_app/rf433_key/rf433_key.h"
+#include "../../../apps/user_app/rf433_key/rf433_learn.h"
+#include "../../../apps/user_app/led_strip/led_strip_sys.h"
+#include "../../../apps/user_app/led_strip/led_strand_effect.h"
+#include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
+#include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.h"
 
 OS_SEM LED_TASK_SEM;
 
@@ -368,16 +373,20 @@ void main_while(void)
 
     while (1)
     {
-        effect_stepmotor(); // 声控，电机的音乐效果
-        stepmotor();        // 无霍尔时，电机停止指令计时
-        // power_motor_Init();  // 电机
+#if RF_433_LEARN_ENABLE
+        rf_433_key_learn();
+#endif // #if RF_433_LEARN_ENABLE
+
+        effect_stepmotor();  // 声控，电机的音乐效果
+        stepmotor();         // 无霍尔时，电机停止指令计时
         meteor_period_sub(); // 流星周期控制
 
-
         rf_433_key_event_handle();
- 
+
         // printf("main circle\n");// 主循环约10ms
 
+        save_user_data_time_count_down();
+        save_user_data_handle();
         os_time_dly(1);
     }
 }
@@ -428,8 +437,59 @@ void user_msg_handle_task(void)
                     os_time_dly(1);
                 }
 
-                enable_one_wire(); 
+                enable_one_wire();
             }
+        }
+        break;
+
+        case MSG_RF_433_LEARN_SUCCEED:
+        {
+            // rf433学习/对码完成，闪烁几次当前的七彩灯
+
+            WS2812FX_setSegment_colorOptions(
+                0,                                         // 第0段
+                0,                                         // 起始位置
+                0,                                         // 结束位置
+                &colorful_lights_flash_when_learn_success, // 效果
+                0,                                         // 颜色，WS2812FX_setColors设置
+                fc_effect.dream_scene.speed * 5,           // 速度
+                0);                                        // 选项，这里像素点大小：3
+
+            WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+            ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+            WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
+            WS2812FX_set_running();
+        }
+        break;
+
+        case MSG_RF_433_LEARN_SUCCEED_HANDLE_DONE:
+        {
+            // rf433 学习/对码成功的七彩灯动画完成，回到原来的动画
+
+            if (DEVICE_ON == fc_effect.on_off_flag)
+            {                    // 如果设备开启
+                set_fc_effect(); // 设置七彩灯的动画
+            }
+            else
+            {
+                // 让七彩灯关闭
+                WS2812FX_setSegment_colorOptions(
+                    0,                             // 第0段
+                    0,                             // 起始位置
+                    0,                             // 结束位置
+                    &colorful_lights_effect_close, // 效果
+                    0,                             // 颜色
+                    0,                             // 速度
+                    0);                            // 选项，这里像素点大小：3 REVERSE决定方向
+                WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
+                WS2812FX_set_running();
+            }
+        }
+        break;
+
+        case MSG_USER_SAVE_INFO:
+        {
+            save_user_data_enable();
         }
         break;
         }
@@ -452,18 +512,18 @@ void my_main(void)
     led_pwm_init();  // 七彩灯输出口对应的pwm
     mic_gpio_init(); // mic
     // fan_gpio_init();
-    led_state_init(); // 流星灯
-    mcu_com_init();   // 电机一线通信
+    led_state_init();    // 流星灯
+    mcu_com_init();      // 电机一线通信
     rf_433_key_config(); // rf433信号接收引脚
- 
+
     // os_sem_create(&LED_TASK_SEM, 0);
- 
+
     sys_s_hi_timer_add(NULL, WS2812_circle_task, 10); // 10ms
- 
+
     task_create(user_msg_handle_task, NULL, "msg_task");
     /*
         这里要放到最后，防止调用 soft_turn_on_the_light() 给线程发送消息时，
         接收消息的线程没有创建，导致收不到消息，最后一上电电机会不工作
-    */ 
-    task_create(main_while, NULL, "led_task"); 
+    */
+    task_create(main_while, NULL, "led_task");
 }

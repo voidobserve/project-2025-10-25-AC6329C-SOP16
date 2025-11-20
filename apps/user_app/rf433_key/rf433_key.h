@@ -38,7 +38,7 @@
 // #define RF_433_KEY_SCAN_EFFECTIVE_TIME_OUT (500)
 
 /*
-    定义遥控器按键键值
+    定义遥控器按键键值（按接收到的波形，从左到右排列）
 */
 enum
 {
@@ -230,21 +230,24 @@ enum
 
 };
 
+
+
 #define RF_433_KEY_VALID_EVENT_NUMS (4) // 单个按键，有效的按键事件数量（短按--CLICK，长按--LONG，长按持续--HOLD，长按后松手--LOOSE）
+
 
 typedef struct
 {
     struct key_driver_para rf_433_key_para;
     u8 rf_433_key_driver_event;   // 存放得到的按键事件，在 key_driver_scan() 中更新
     u8 rf_433_key_latest_key_val; // 存放最新扫描到的按键键值
-    // u8 rf_433_key_last_key_val; // 存放上一次得到的按键键值
 } rf_433_key_struct_t;
 
 extern rf_433_key_struct_t rf_433_key_structure;
-// extern struct key_driver_para rf_433_key_para; // rf 433 按键扫描参数 结构体
 
-extern volatile u32 rf_433_data;                 // 存放收到的rf433数据
+extern volatile u32 recv_rf_433_data;                 // 存放收到的rf433数据
 extern volatile u8 flag_is_received_rf_433_data; // 标志位，是否收到一次数据
+
+
 
 void rf_433_key_decode_isr(void); // rf433解码函数
 void rf_433_key_config(void);

@@ -9,6 +9,9 @@
         "led_strand_effect.h": "c",
         "includes.h": "c",
         "rf24g_app.h": "c",
-        "save_flash.h": "c"
+        "save_flash.h": "c",
+        "rf433_key.h": "c",
+        "ws2812fx_effect.h": "c",
+        "ws2812fx.h": "c"
     }
 }

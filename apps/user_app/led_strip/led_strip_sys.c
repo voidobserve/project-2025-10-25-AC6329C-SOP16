@@ -6,6 +6,7 @@
 
 #include "../../../apps/user_app/protocol/dp_data_tran.h"
 #include "../../../apps/user_app/one_wire/one_wire.h"
+#include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 
 #define MAX_BRIGHT_RANK 10
 #define MAX_SPEED_RANK 10
@@ -92,10 +93,9 @@ void OpenMortor(void);
  *********************************************************/
 void soft_turn_on_the_light(void) // 软开灯处理
 {
+#if 0
     fc_effect.on_off_flag = DEVICE_ON; // 七彩灯为开启状态
-    // fc_effect.star_on_off = DEVICE_ON; // 流星灯打开
-
-    // OpenMortor(); // 给对应标志位置位，表示电机打开
+ 
     motor_Init();     // 初始化电机相关的变量
     WS2812FX_start(); // 清空动画使用到的缓存，给运行标志位置位
 
@@ -121,8 +121,34 @@ void soft_turn_on_the_light(void) // 软开灯处理
 
     set_fc_effect();         // 七彩灯动画效果设置
     ls_meteor_stat_effect(); // 流星灯动画效果设置 这个函数里面会写入一次flash
-    fb_led_on_off_state();   // 与app同步开关状态
-    save_user_data_area3();  // 保存参数配置到flash
+    fb_led_on_off_state();   // 与app同步开关状态 
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
+
+    printf("soft_turn_on_the_light\n");
+#endif
+
+    fc_effect.on_off_flag = DEVICE_ON;
+
+    motor_Init();
+
+    if (DEVICE_ON == fc_effect.motor_on_off)
+    {
+        // 如果在开机前，电机是开着的，则恢复电机在开机前的状态
+        if (6 == fc_effect.base_ins.mode)
+        {
+            // 如果电机的模式是6（关闭），则改为4
+            fc_effect.base_ins.mode = 4;
+        }
+    }
+
+    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+    // printf("fc_effect.motor_speed_index %u\n", (u16)fc_effect.motor_speed_index); // 打印电机的速度索引
+
+    set_fc_effect();         // 设置七彩灯的动画
+    ls_meteor_stat_effect(); // 设置流星灯的动画
+
+    fb_led_on_off_state(); // 与app同步开关状态
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 
     printf("soft_turn_on_the_light\n");
 }
@@ -130,8 +156,7 @@ void soft_turn_on_the_light(void) // 软开灯处理
 void CloseMotor(void);
 void soft_turn_off_lights(void) // 软关灯处理
 {
-    // if (fc_effect.on_off_flag == DEVICE_ON)
-    // {
+#if 0
     fc_effect.on_off_flag = DEVICE_OFF;
 
     CloseMotor(); // 关闭电机
@@ -139,11 +164,49 @@ void soft_turn_off_lights(void) // 软关灯处理
     WS2812FX_stop();
     WS2812FX_strip_off(); // 清空缓存
 
-    fb_led_on_off_state();  // 与app同步设备的开关状态
-    save_user_data_area3(); // 保存参数配置到flash
+    fb_led_on_off_state(); // 与app同步设备的开关状态
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 
     printf("soft_turn_off_lights\n");
-    // }
+#endif
+
+    fc_effect.on_off_flag = DEVICE_OFF;
+
+    // 改成只发送关闭电机的控制命令，不给 fc_effect.motor_on_off 赋值为 DEVICE_OFF
+    one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
+    one_wire_set_mode(6); // 关闭电机
+    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+
+    // 关闭七彩灯：（让七彩灯一直熄灭）
+    WS2812FX_setSegment_colorOptions(
+        0,                             // 第0段
+        0,                             // 起始位置
+        0,                             // 结束位置
+        &colorful_lights_effect_close, // 效果
+        0,                             // 颜色
+        0,                             // 速度
+        0);                            // 选项，这里像素点大小：3 REVERSE决定方向
+    WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
+    WS2812FX_set_running();
+
+    WS2812FX_setSegment_colorOptions(
+        1,                           // 第0段
+        1,                           // 起始位置
+        fc_effect.led_num - 1,       // 结束位置
+        &close_metemor,              // 效果
+        0,                           // 颜色
+        fc_effect.star_speed,        // 速度
+        0);                          // 选项，这里像素点大小：3 REVERSE决定方向
+    WS2812FX_resetSegmentRuntime(1); // 清除指定段的显示缓存
+    WS2812FX_set_running();
+
+    // WS2812FX_stop();
+    // WS2812FX_strip_off();
+
+    fb_led_on_off_state(); // 与app同步开关状态
+    // save_user_data_area3(); // 保存参数配置到flash
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
+    printf("soft_turn_off_lights\n");
 }
 
 /*********************************************************
@@ -484,9 +547,24 @@ void app_set_music_mode(u8 tp_m)
  */
 void ls_set_music_mode(void)
 {
-    fc_effect.music.m++;
-    fc_effect.music.m %= MAX_MUSIC_EFFECT_NUMBER;
-    fc_effect.Now_state = IS_light_music;
+    if (IS_light_music != fc_effect.Now_state)
+    {
+        // 如果进入声控模式前，不处于声控模式
+        fc_effect.Now_state = IS_light_music;
+
+        if (fc_effect.music.m >= MAX_MUSIC_EFFECT_NUMBER)
+        {
+            // 如果进入声控模式前，声控模式的索引超出了范围
+            fc_effect.music.m = 0;
+        }
+    }
+    else
+    {
+        // 如果本身就处于声控模式
+        fc_effect.music.m++;
+        fc_effect.music.m %= MAX_MUSIC_EFFECT_NUMBER;
+    }
+    
     set_fc_effect();
 }
 
@@ -597,7 +675,6 @@ void app_set_on_off_meteor(u8 tp_sw)
 
     else
     {
-        extern void close_metemor(void);
         WS2812FX_stop();
         WS2812FX_setSegment_colorOptions(
             1,                    // 第0段
@@ -936,6 +1013,24 @@ void set_static_mode(u8 r, u8 g, u8 b)
 }
 
 /**
+ * @brief 七彩灯设置为静态模式，颜色值由传参设定
+ *
+ * @param colors_structure 结构体必须包含 r、g、b、w 成员
+ *
+ */
+void colorful_lights_set_static_mode(color_t colors_structure)
+{
+    fc_effect.Now_state = IS_STATIC;
+
+    fc_effect.rgb.r = colors_structure.r;
+    fc_effect.rgb.g = colors_structure.g;
+    fc_effect.rgb.b = colors_structure.b;
+    fc_effect.rgb.w = colors_structure.w;
+
+    set_fc_effect(); // 效果调度
+}
+
+/**
  * @brief APP设置暖白光的颜色
  *
  */
@@ -1221,8 +1316,8 @@ void full_color_init(void)
     WS2812FX_setBrightness(fc_effect.b);
     set_on_off_led(fc_effect.on_off_flag);
 
-    extern void count_down_run(void);
-    extern void time_clock_handler(void);
+    // extern void count_down_run(void);
+    // extern void time_clock_handler(void);
     // sys_s_hi_timer_add(NULL, count_down_run, 10); // 注册按键扫描定时器
     // sys_s_hi_timer_add(NULL, ir_timer_handler, 10);   // 注册按键扫描定时器
     // sys_s_hi_timer_add(NULL, time_clock_handler, 10); // 注册按键扫描定时器

@@ -904,7 +904,8 @@ void parse_led_strip_data(u8 *pBuf, u8 len)
     parse_zd_data(pBuf);
     /* 为兼容全彩的协议 */
 
-    save_user_data_area3();
+    // save_user_data_area3();
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 
 void tuya_fb_sw_state(void)

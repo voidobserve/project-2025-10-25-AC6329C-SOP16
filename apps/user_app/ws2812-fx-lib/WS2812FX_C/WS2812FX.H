@@ -66,7 +66,8 @@ typedef char __FlashStringHelper;
 #define YELLOW     (uint32_t)0x00FFFF00
 #define CYAN       (uint32_t)0x0000FFFF
 #define MAGENTA    (uint32_t)0x00FF00FF
-#define PURPLE     (uint32_t)0x00400080
+// #define PURPLE     (uint32_t)0x00400080
+#define PURPLE     (uint32_t)0x00FF00FF
 #define ORANGE     (uint32_t)0x00FF3000
 #define PINK       (uint32_t)0x00FF1493
 #define GRAY       (uint32_t)0x00101010

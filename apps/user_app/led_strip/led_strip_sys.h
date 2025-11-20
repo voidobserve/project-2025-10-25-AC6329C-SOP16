@@ -111,6 +111,19 @@ typedef enum
     IR_TIMER_120MIN = 120 * 60 * 1000,
 } AUTO_TIME_T;
 
+enum
+{
+    MSG_SEQUENCER_NONE = 0x00,
+    MSG_SEQUENCER_ONE_WIRE_SEND_INFO, // 使能单线发送
+    // MSG_METEOR_LIGHTS_ON,             // 流星灯开启
+
+    MSG_RF_433_LEARN_FAIL,  // 学习/对码 失败（原因：超时）
+    MSG_RF_433_LEARN_SUCCEED, // 学习/对码 成功（完成）
+    MSG_RF_433_LEARN_SUCCEED_HANDLE_DONE, // 学习/对码 成功对应的处理事件完成
+
+    MSG_USER_SAVE_INFO, // 将数据写入flash
+};
+
 void set_static_mode(u8 r, u8 g, u8 b);
 
 void ls_add_speed(void); // 遥控器控制 -- 添加速度
@@ -134,5 +147,7 @@ void meteor_set_mode_can_be_cycled(void); // 遥控器设置流星灯模式（�
 
 void soft_turn_on_the_light(void); // 软开灯处理
 void soft_turn_off_lights(void);   // 软关灯处理
+ 
+void colorful_lights_set_static_mode(color_t colors_structure); // 七彩灯设置为静态模式，颜色值由传参设定
 
 #endif

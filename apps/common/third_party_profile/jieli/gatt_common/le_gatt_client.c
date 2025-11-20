@@ -1052,8 +1052,8 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
 
         if (length >= report_pt->length || (length + i) >= report_pt->length) {
             /*过滤非标准包格式*/
-            printf("!!!error_adv_packet:");
-            put_buf(report_pt->data, report_pt->length);
+            // printf("!!!error_adv_packet:");
+            // put_buf(report_pt->data, report_pt->length);
             break;
         }
 

@@ -18,11 +18,7 @@ typedef struct
     u8 music_mode;     //音乐律动下的转动模式
 }base_ins_t;
 
-enum
-{
-    MSG_SEQUENCER_NONE = 0x00,
-    MSG_SEQUENCER_ONE_WIRE_SEND_INFO, // 使能单线发送
-};
+
 
 
 extern volatile u16 send_base_ins;
