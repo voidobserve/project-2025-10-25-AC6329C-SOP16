@@ -12,6 +12,7 @@
         "save_flash.h": "c",
         "rf433_key.h": "c",
         "ws2812fx_effect.h": "c",
-        "ws2812fx.h": "c"
+        "ws2812fx.h": "c",
+        "WS2812FX.H": "cpp"
     }
 }

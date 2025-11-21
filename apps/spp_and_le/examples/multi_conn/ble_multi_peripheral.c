@@ -36,9 +36,9 @@
 #if CONFIG_APP_MULTI && CONFIG_BT_GATT_SERVER_NUM
 
 #if LE_DEBUG_PRINT_EN
-//#define log_info            y_printf
-#define log_info(x, ...)  printf("[MUL-PER]" x " ", ## __VA_ARGS__)
-#define log_info_hexdump  put_buf
+// #define log_info            y_printf
+#define log_info(x, ...) printf("[MUL-PER]" x " ", ##__VA_ARGS__)
+#define log_info_hexdump put_buf
 
 #else
 #define log_info(...)
@@ -46,52 +46,50 @@
 #endif
 
 // 广播周期 (unit:0.625ms)
-#define ADV_INTERVAL_MIN          (160 * 5)//
+#define ADV_INTERVAL_MIN (160 * 5) //
 
 //---------------
-//连接参数更新请求设置
-//是否使能参数请求更新,0--disable, 1--enable
-static uint8_t multi_connection_update_enable = 1; ///0--disable, 1--enable
-//当前请求的参数表index
-//参数表
+// 连接参数更新请求设置
+// 是否使能参数请求更新,0--disable, 1--enable
+static uint8_t multi_connection_update_enable = 1; /// 0--disable, 1--enable
+// 当前请求的参数表index
+// 参数表
 static const struct conn_update_param_t multi_connection_param_table[] = {
-    {16, 24, 10, 600},//11
-    {12, 28, 10, 600},//3.7
-    {8,  20, 10, 600},
+    {16, 24, 10, 600}, // 11
+    {12, 28, 10, 600}, // 3.7
+    {8, 20, 10, 600},
 };
 
+// 共可用的参数组数
+#define CONN_PARAM_TABLE_CNT (sizeof(multi_connection_param_table) / sizeof(struct conn_update_param_t))
 
-//共可用的参数组数
-#define CONN_PARAM_TABLE_CNT      (sizeof(multi_connection_param_table)/sizeof(struct conn_update_param_t))
-
-#define EIR_TAG_STRING   0xd6, 0x05, 0x08, 0x00, 'J', 'L', 'A', 'I', 'S', 'D','K'
+#define EIR_TAG_STRING 0xd6, 0x05, 0x08, 0x00, 'J', 'L', 'A', 'I', 'S', 'D', 'K'
 static const char user_tag_string[] = {EIR_TAG_STRING};
 
-static u8 multi_adv_data[ADV_RSP_PACKET_MAX];//max is 31
-static u8 multi_scan_rsp_data[ADV_RSP_PACKET_MAX];//max is 31
+static u8 multi_adv_data[ADV_RSP_PACKET_MAX];      // max is 31
+static u8 multi_scan_rsp_data[ADV_RSP_PACKET_MAX]; // max is 31
 static u8 multi_test_read_write_buf[4];
 
 static adv_cfg_t multi_server_adv_config;
 static u8 pair_bond_enalbe;
 
-
 hci_con_handle_t ZD_HCI_handle;
 
-//配对信息表
-#define PER_PAIR_BOND_ENABLE    CONFIG_BT_SM_SUPPORT_ENABLE
-#define PER_PAIR_BOND_TAG       0x53
-#define DIRECT_ADV_MAX_CNT      2
-static  u8 pair_bond_info[8]; //tag + addr_type + address
-static  u8 direct_adv_count;  //定向广播次数
-static  u8 cur_peer_addr_info[7];//当前连接对方地址信息
+// 配对信息表
+#define PER_PAIR_BOND_ENABLE CONFIG_BT_SM_SUPPORT_ENABLE
+#define PER_PAIR_BOND_TAG 0x53
+#define DIRECT_ADV_MAX_CNT 2
+static u8 pair_bond_info[8];     // tag + addr_type + address
+static u8 direct_adv_count;      // 定向广播次数
+static u8 cur_peer_addr_info[7]; // 当前连接对方地址信息
 
 //------------------------------------------------------
-//广播参数设置
+// 广播参数设置
 extern const char *bt_get_local_name();
 extern void clr_wdt(void);
 static void multi_adv_config_set(void);
 //------------------------------------------------------
-//for ANCS
+// for ANCS
 static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size);
 static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer, uint16_t buffer_size);
 static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param);
@@ -102,9 +100,8 @@ const gatt_server_cfg_t mul_server_init_cfg = {
     .event_packet_handler = &multi_event_packet_handler,
 };
 
-
 //-------------------------------------------------------------------------------------
-//vm 绑定对方信息读写
+// vm 绑定对方信息读写
 static int multi_pair_vm_do(u8 *info, u8 info_len, u8 rw_flag)
 {
 #if PER_PAIR_BOND_ENABLE
@@ -112,30 +109,36 @@ static int multi_pair_vm_do(u8 *info, u8 info_len, u8 rw_flag)
     int vm_len = info_len;
 
     log_info("-conn_pair_info vm_do:%d\n", rw_flag);
-    if (rw_flag == 0) {
+    if (rw_flag == 0)
+    {
         ret = syscfg_read(CFG_BLE_BONDING_REMOTE_INFO, (u8 *)info, vm_len);
-        if (!ret) {
+        if (!ret)
+        {
             log_info("-null--\n");
             memset(info, 0xff, info_len);
         }
-        if (info[0] != PER_PAIR_BOND_TAG) {
+        if (info[0] != PER_PAIR_BOND_TAG)
+        {
             return -1;
         }
-    } else {
+    }
+    else
+    {
         syscfg_write(CFG_BLE_BONDING_REMOTE_INFO, (u8 *)info, vm_len);
     }
 #endif
     return 0;
 }
 
-//清配对信息
+// 清配对信息
 int multi_server_clear_pair(void)
 {
 #if PER_PAIR_BOND_ENABLE
     ble_gatt_server_disconnect_all();
     memset(pair_bond_info, 0, sizeof(pair_bond_info));
     multi_pair_vm_do(pair_bond_info, sizeof(pair_bond_info), 1);
-    if (BLE_ST_ADV == ble_gatt_server_get_work_state()) {
+    if (BLE_ST_ADV == ble_gatt_server_get_work_state())
+    {
         ble_gatt_server_adv_enable(0);
         multi_adv_config_set();
         ble_gatt_server_adv_enable(1);
@@ -144,18 +147,19 @@ int multi_server_clear_pair(void)
     return 0;
 }
 
-
-//配置连接参数更新
+// 配置连接参数更新
 static void multi_send_connetion_update_deal(u16 conn_handle)
 {
-    if (multi_connection_update_enable) {
-        if (0 == ble_gatt_server_connetion_update_request(conn_handle, multi_connection_param_table, CONN_PARAM_TABLE_CNT)) {
+    if (multi_connection_update_enable)
+    {
+        if (0 == ble_gatt_server_connetion_update_request(conn_handle, multi_connection_param_table, CONN_PARAM_TABLE_CNT))
+        {
             multi_connection_update_enable = 0;
         }
     }
 }
 
-//回连状态，主动使能通知
+// 回连状态，主动使能通知
 static void multi_resume_all_ccc_enable(u16 conn_handle, u8 update_request)
 {
     log_info("resume_all_ccc_enable\n");
@@ -168,33 +172,34 @@ static void multi_resume_all_ccc_enable(u16 conn_handle, u8 update_request)
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_ae04_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY);
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_ae05_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_INDICATE);
     ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_ae3c_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY);
-    ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_fff1_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY);//中道ILAMP
-    if (update_request) {
+    ble_gatt_server_characteristic_ccc_set(conn_handle, ATT_CHARACTERISTIC_fff1_01_CLIENT_CONFIGURATION_HANDLE, ATT_OP_NOTIFY); // 中道ILAMP
+    if (update_request)
+    {
         multi_send_connetion_update_deal(conn_handle);
     }
 }
 
-
 //-------------------------------------------------------------------------------------
-//处理gatt_common 模块返回的事件，hci & gatt
+// 处理gatt_common 模块返回的事件，hci & gatt
 static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_param)
 {
     /* log_info("event: %02x,size= %d\n",event,size); */
 
-    switch (event) {
+    switch (event)
+    {
 
     case GATT_COMM_EVENT_CAN_SEND_NOW:
         break;
 
     case GATT_COMM_EVENT_SERVER_INDICATION_COMPLETE:
-        log_info("INDICATION_COMPLETE:con_handle= %04x,att_handle= %04x\n", \
+        log_info("INDICATION_COMPLETE:con_handle= %04x,att_handle= %04x\n",
                  little_endian_read_16(packet, 0), little_endian_read_16(packet, 2));
         break;
 
     case GATT_COMM_EVENT_CONNECTION_COMPLETE:
         log_info("connection_handle:%04x\n", little_endian_read_16(packet, 0));
         log_info("peer_address_info:");
-        ZD_HCI_handle = little_endian_read_16(packet, 0);  //中道app返回用的句柄
+        ZD_HCI_handle = little_endian_read_16(packet, 0); // 中道app返回用的句柄
         put_buf(&ext_param[7], 7);
         memcpy(cur_peer_addr_info, &ext_param[7], 7);
         multi_connection_update_enable = 1;
@@ -203,8 +208,10 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
 
     case GATT_COMM_EVENT_DISCONNECT_COMPLETE:
         log_info("disconnect_handle:%04x,reason= %02x\n", little_endian_read_16(packet, 0), packet[2]);
-        if (packet[2] == 8) {
-            if (pair_bond_info[0] == PER_PAIR_BOND_TAG) {
+        if (packet[2] == 8)
+        {
+            if (pair_bond_info[0] == PER_PAIR_BOND_TAG)
+            {
                 direct_adv_count = DIRECT_ADV_MAX_CNT;
                 multi_adv_config_set();
             }
@@ -213,16 +220,20 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
 
     case GATT_COMM_EVENT_ENCRYPTION_CHANGE:
         log_info("ENCRYPTION_CHANGE:handle=%04x,state=%d,process =%02x", little_endian_read_16(packet, 0), packet[2], packet[3]);
-        if (packet[3] == LINK_ENCRYPTION_RECONNECT) {
+        if (packet[3] == LINK_ENCRYPTION_RECONNECT)
+        {
             log_info("reconnect...\n");
             multi_resume_all_ccc_enable(little_endian_read_16(packet, 0), 1);
-            if (memcmp(&pair_bond_info[1], cur_peer_addr_info, 7)) {
+            if (memcmp(&pair_bond_info[1], cur_peer_addr_info, 7))
+            {
                 log_info("update peer\n");
                 memcpy(&pair_bond_info[1], cur_peer_addr_info, 7);
                 pair_bond_info[0] = PER_PAIR_BOND_TAG;
                 multi_pair_vm_do(pair_bond_info, sizeof(pair_bond_info), 1);
             }
-        } else {
+        }
+        else
+        {
             log_info("first pair...\n");
 #if PER_PAIR_BOND_ENABLE
             memcpy(&pair_bond_info[1], cur_peer_addr_info, 7);
@@ -240,9 +251,12 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
 
     case GATT_COMM_EVENT_DIRECT_ADV_TIMEOUT:
         log_info("DIRECT_ADV_TIMEOUT:%d", direct_adv_count);
-        if (direct_adv_count) {
+        if (direct_adv_count)
+        {
             direct_adv_count--;
-        } else {
+        }
+        else
+        {
             multi_adv_config_set();
         }
         break;
@@ -250,7 +264,6 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
     case GATT_COMM_EVENT_SERVER_STATE:
         log_info("server_state: handle=%02x,%02x\n", little_endian_read_16(packet, 1), packet[0]);
         break;
-
 
     case GATT_COMM_EVENT_CONNECTION_UPDATE_REQUEST_RESULT:
         break;
@@ -263,7 +276,6 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
     }
     return 0;
 }
-
 
 /*************************************************************************************************/
 /*!
@@ -282,50 +294,55 @@ static int multi_event_packet_handler(int event, u8 *packet, u16 size, u8 *ext_p
 // @param offset defines start of attribute value
 static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint16_t att_handle, uint16_t offset, uint8_t *buffer, uint16_t buffer_size)
 {
-    uint16_t  att_value_len = 0;
+    uint16_t att_value_len = 0;
     uint16_t handle = att_handle;
 
     log_info("read_callback,conn_handle =%04x, handle=%04x,buffer=%08x\n", connection_handle, handle, (u32)buffer);
 
-    switch (handle) {
+    switch (handle)
+    {
 
-// >>>>>>>>>>>>>>>>>>>>>>>>  中道  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+        // >>>>>>>>>>>>>>>>>>>>>>>>  中道  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
         char *gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
-        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
+        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len)
+        {
             break;
         }
 
-        if (buffer) {
+        if (buffer)
+        {
             memcpy(buffer, &gap_name[offset], buffer_size);
             att_value_len = buffer_size;
             log_info("\n------read gap_name: %s\n", gap_name);
         }
         break;
     case ATT_CHARACTERISTIC_fff1_01_CLIENT_CONFIGURATION_HANDLE:
-        if (buffer) {
+        if (buffer)
+        {
             buffer[0] = att_get_ccc_config(handle);
             buffer[1] = 0;
         }
         att_value_len = 2;
         break;
 
-// >>>>>>>>>>>>>>>>>>>>>>>>  中道  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+        // >>>>>>>>>>>>>>>>>>>>>>>>  中道  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-
-    case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE: {
+    case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE:
+    {
         char *gap_name = ble_comm_get_gap_name();
         att_value_len = strlen(gap_name);
 
-        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
+        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len)
+        {
             break;
         }
 
-        if (buffer) {
+        if (buffer)
+        {
             memcpy(buffer, &gap_name[offset], buffer_size);
             att_value_len = buffer_size;
             log_info("\n------read gap_name: %s\n", gap_name);
@@ -335,11 +352,13 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
 
     case ATT_CHARACTERISTIC_ae10_01_VALUE_HANDLE:
         att_value_len = sizeof(multi_test_read_write_buf);
-        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len) {
+        if ((offset >= att_value_len) || (offset + buffer_size) > att_value_len)
+        {
             break;
         }
 
-        if (buffer) {
+        if (buffer)
+        {
             memcpy(buffer, &multi_test_read_write_buf[offset], buffer_size);
             att_value_len = buffer_size;
         }
@@ -350,7 +369,8 @@ static uint16_t multi_att_read_callback(hci_con_handle_t connection_handle, uint
     case ATT_CHARACTERISTIC_ae05_01_CLIENT_CONFIGURATION_HANDLE:
     case ATT_CHARACTERISTIC_ae3c_01_CLIENT_CONFIGURATION_HANDLE:
     case ATT_CHARACTERISTIC_2a05_01_CLIENT_CONFIGURATION_HANDLE:
-        if (buffer) {
+        if (buffer)
+        {
             buffer[0] = ble_gatt_server_characteristic_ccc_get(connection_handle, handle);
             buffer[1] = 0;
         }
@@ -385,25 +405,25 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
 
     log_info("write_callback,conn_handle =%04x, handle =%04x,size =%d\n", connection_handle, handle, buffer_size);
 
-    switch (handle) {
+    switch (handle)
+    {
 
-    //>>>>>>>>>>>>>>>>>>>> 中道蓝牙属性  <<<<<<<<<<<<<<<<<<<<<<<<<
+        //>>>>>>>>>>>>>>>>>>>> 中道蓝牙属性  <<<<<<<<<<<<<<<<<<<<<<<<<
 
     case ATT_CHARACTERISTIC_fff1_01_CLIENT_CONFIGURATION_HANDLE:
         log_info("\n------write ccc:%04x,%02x\n", handle, buffer[0]);
-        multi_send_connetion_update_deal(connection_handle);  //使用多从机+主机
+        multi_send_connetion_update_deal(connection_handle); // 使用多从机+主机
         att_set_ccc_config(handle, buffer[0]);
         break;
 
     case ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE:
         log_info("\n-fff1_rx(%d):", buffer_size);
         printf_buf(buffer, buffer_size);
-        extern void parse_led_strip_data(u8 *pBuf, u8 len);
-        parse_led_strip_data(buffer,buffer_size);
+        extern void parse_led_strip_data(u8 * pBuf, u8 len);
+        parse_led_strip_data(buffer, buffer_size);
         break;
 
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        //>>>>>>>>>>>>>>>>>>>>>>>>>   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     case ATT_CHARACTERISTIC_2a00_01_VALUE_HANDLE:
         break;
@@ -420,7 +440,8 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
 
     case ATT_CHARACTERISTIC_ae10_01_VALUE_HANDLE:
         tmp16 = sizeof(multi_test_read_write_buf);
-        if ((offset >= tmp16) || (offset + buffer_size) > tmp16) {
+        if ((offset >= tmp16) || (offset + buffer_size) > tmp16)
+        {
             break;
         }
         memcpy(&multi_test_read_write_buf[offset], buffer, buffer_size);
@@ -430,8 +451,9 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
         log_info("\n-ae01_rx(%d):", buffer_size);
         put_buf(buffer, buffer_size);
 
-        //收发测试，自动发送收到的数据;for test
-        if (ble_comm_att_check_send(connection_handle, buffer_size)) {
+        // 收发测试，自动发送收到的数据;for test
+        if (ble_comm_att_check_send(connection_handle, buffer_size))
+        {
             log_info("-loop send1\n");
             ble_comm_att_send_data(connection_handle, ATT_CHARACTERISTIC_ae02_01_VALUE_HANDLE, buffer, buffer_size, ATT_OP_AUTO_READ_CCC);
         }
@@ -441,8 +463,9 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
         log_info("\n-ae_rx(%d):", buffer_size);
         put_buf(buffer, buffer_size);
 
-        //收发测试，自动发送收到的数据;for test
-        if (ble_comm_att_check_send(connection_handle, buffer_size)) {
+        // 收发测试，自动发送收到的数据;for test
+        if (ble_comm_att_check_send(connection_handle, buffer_size))
+        {
             log_info("-loop send2\n");
             ble_comm_att_send_data(connection_handle, ATT_CHARACTERISTIC_ae05_01_VALUE_HANDLE, buffer, buffer_size, ATT_OP_AUTO_READ_CCC);
         }
@@ -477,14 +500,12 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
 }
 
 //------------------------------------------------------
-//生成adv包数据，写入buff
-static u8  adv_name_ok = 0;//name 优先存放在ADV包
+// 生成adv包数据，写入buff
+static u8 adv_name_ok = 0; // name 优先存放在ADV包
 static int multi_make_set_adv_data(void)
 {
 
-
-
-u8 offset = 0;
+    u8 offset = 0;
     u8 *buf = multi_adv_data;
 
     offset += make_eir_packet_val(&buf[offset], offset, HCI_EIR_DATATYPE_FLAGS, FLAGS_GENERAL_DISCOVERABLE_MODE | FLAGS_EDR_NOT_SUPPORTED, 1);
@@ -501,6 +522,8 @@ u8 offset = 0;
     }
 #endif
 
+// 广播头
+#if 0
 	u8 info[13];    //客户机型数据
     info[0] = 'Z';
     info[1] = 'D';
@@ -510,11 +533,26 @@ u8 offset = 0;
     info[5] = 0x5E;
     info[6] = 0x89;
     le_controller_get_mac(&info[7]);    //获取ble的蓝牙public地址
-
     offset += make_eir_packet_data(&buf[offset],offset,HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA,info,13);
+#endif
 
+#if 1
+    u8 index = 0;
+    u8 info[14]; // 客户机型数据
+    info[index++] = 'Z';
+    info[index++] = 'D';
+    info[index++] = 0x00; //
+    info[index++] = 0x01;
+    info[index++] = 0x04;
+    info[index++] = 0x89;
+    info[index++] = 0x00;
+    info[index++] = 0x01;
+    le_controller_get_mac(&info[index]); // 获取ble的蓝牙public地址
+    offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, info, ARRAY_SIZE(info));
+#endif
 
-    if (offset > ADV_RSP_PACKET_MAX) {
+    if (offset > ADV_RSP_PACKET_MAX)
+    {
         puts("***multi_adv_data overflow!!!!!!\n");
         return -1;
     }
@@ -523,18 +561,6 @@ u8 offset = 0;
     multi_server_adv_config.adv_data_len = offset;
     multi_server_adv_config.adv_data = multi_adv_data;
     return 0;
-
-
-
-
-
-
-
-
-
-
-
-
 
     // u8 offset = 0;
     // u8 *buf = multi_adv_data;
@@ -561,34 +587,33 @@ u8 offset = 0;
     // multi_server_adv_config.adv_data_len = offset;
     // multi_server_adv_config.adv_data = multi_adv_data;
     // return 0;
-
-
-
-
 }
 
-//生成rsp包数据，写入buff
+// 生成rsp包数据，写入buff
 static int multi_make_set_rsp_data(void)
 {
     u8 offset = 0;
     u8 *buf = multi_scan_rsp_data;
 
 #if RCSP_BTMATE_EN
-    u8  tag_len = sizeof(user_tag_string);
+    u8 tag_len = sizeof(user_tag_string);
     offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, (void *)user_tag_string, tag_len);
 #endif
 
-    if (!adv_name_ok) {
+    if (!adv_name_ok)
+    {
         char *gap_name = ble_comm_get_gap_name();
         u8 name_len = strlen(gap_name);
         u8 vaild_len = ADV_RSP_PACKET_MAX - (offset + 2);
-        if (name_len > vaild_len) {
+        if (name_len > vaild_len)
+        {
             name_len = vaild_len;
         }
         offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_COMPLETE_LOCAL_NAME, (void *)gap_name, name_len);
     }
 
-    if (offset > ADV_RSP_PACKET_MAX) {
+    if (offset > ADV_RSP_PACKET_MAX)
+    {
         puts("***rsp_data overflow!!!!!!\n");
         return -1;
     }
@@ -600,7 +625,7 @@ static int multi_make_set_rsp_data(void)
     return 0;
 }
 
-//广播参数设置
+// 广播参数设置
 static void multi_adv_config_set(void)
 {
     int ret = 0;
@@ -612,27 +637,32 @@ static void multi_adv_config_set(void)
     multi_server_adv_config.adv_channel = ADV_CHANNEL_ALL;
     memcpy(multi_server_adv_config.direct_address_info, &pair_bond_info[1], 7);
 
-    if (direct_adv_count) {
+    if (direct_adv_count)
+    {
         multi_server_adv_config.adv_type = ADV_DIRECT_IND;
         direct_adv_count--;
-    } else {
+    }
+    else
+    {
         multi_server_adv_config.adv_type = ADV_IND;
     }
 
-    if (ret) {
+    if (ret)
+    {
         log_info("adv_setup_init fail!!!\n");
         return;
     }
     ble_gatt_server_set_adv_config(&multi_server_adv_config);
 }
 
-//server init
+// server init
 void multi_server_init(void)
 {
     log_info("%s", __FUNCTION__);
 
 #if PER_PAIR_BOND_ENABLE
-    if (0 == multi_pair_vm_do(pair_bond_info, sizeof(pair_bond_info), 0)) {
+    if (0 == multi_pair_vm_do(pair_bond_info, sizeof(pair_bond_info), 0))
+    {
         log_info("server already bond dev");
         put_buf(pair_bond_info, sizeof(pair_bond_info));
         direct_adv_count = DIRECT_ADV_MAX_CNT;
@@ -641,16 +671,12 @@ void multi_server_init(void)
 
     ble_gatt_server_set_profile(multi_profile_data, sizeof(multi_profile_data));
     multi_adv_config_set();
-
 }
 
-//server exit
+// server exit
 void multi_server_exit(void)
 {
     log_info("%s", __FUNCTION__);
-
 }
 
 #endif
-
-

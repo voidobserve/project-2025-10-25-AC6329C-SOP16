@@ -344,8 +344,7 @@ void fb_bright(void)
 }
 
 void fb_speed(void)
-{
-
+{ 
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x04;
     tp_buffer[1] = 0x04;

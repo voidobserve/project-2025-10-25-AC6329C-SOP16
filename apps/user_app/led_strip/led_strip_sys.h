@@ -126,11 +126,11 @@ enum
 
 void set_static_mode(u8 r, u8 g, u8 b);
 
-void ls_add_speed(void); // 遥控器控制 -- 添加速度
-void ls_sub_speed(void); // 遥控器控制 -- 减去速度
+// void ls_add_speed(void); // 遥控器控制 -- 添加速度
+// void ls_sub_speed(void); // 遥控器控制 -- 减去速度
 
-void ls_add_bright(void); // 遥控器控制 -- 亮度加
-void ls_sub_bright(void); // 遥控器控制 -- 亮度减
+// void ls_add_bright(void); // 遥控器控制 -- 亮度加
+// void ls_sub_bright(void); // 遥控器控制 -- 亮度减
 
 void ls_add_sensitive(void); // 遥控器控制 -- 灵敏度加
 void ls_sub_sensitive(void); // 遥控器控制 -- 灵敏度减

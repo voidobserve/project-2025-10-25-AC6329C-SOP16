@@ -12,8 +12,7 @@
 extern Segment *_seg;
 extern uint16_t _seg_len;
 extern Segment_runtime *_seg_rt;
-extern u8 get_effect_p(void);
-extern u8 get_sound_result(void);
+extern u8 get_effect_p(void); 
 uint8_t music_trg = 0;
 uint8_t music_step = 0;
 uint8_t step2_flag, music_dly, change_mode, cycle_t;
@@ -1062,7 +1061,7 @@ uint16_t music_mode1(void)
     // const u8 rate[12] = {0,1,1,2,2,3,3,4,5,5,6,6};
     const u8 rate[12] = {253, 250, 240, 230, 220, 200, 180, 130, 100, 75, 50, 0};
 
-    if (get_sound_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         uint32_t color = _seg->colors[0];
         int w1 = (color >> 24) & 0xff;
@@ -1111,7 +1110,7 @@ uint16_t meteor(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_sound_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         trg = 1;
     }
@@ -1162,7 +1161,7 @@ uint16_t meteor_with_max_brightness(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_meteor_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         trg = 1;
     }
@@ -1210,7 +1209,7 @@ uint16_t meteor1(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_sound_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         if (i == MAX_RATE - 1)
         {
@@ -1249,7 +1248,7 @@ uint16_t music_meteor3(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_sound_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         if (i == MAX_RATE - 1)
         {
@@ -1287,7 +1286,7 @@ uint16_t music_meteor3_with_max_brightness(void)
     int g = (_seg->colors[0] >> 8) & 0xff;
     int b = _seg->colors[0] & 0xff;
 
-    if (get_meteor_result())
+    if (get_sound_triggered_by_meteor_lights())
     {
         if (i == MAX_RATE - 1)
         {
@@ -1310,27 +1309,27 @@ uint16_t music_meteor3_with_max_brightness(void)
     return (30);
 }
 
-uint16_t music_mode2(void)
-{
-    static u8 b;
+// uint16_t music_mode2(void)
+// {
+//     static u8 b;
 
-    Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
+//     Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
 
-    if (get_sound_result())
-    {
-        b = 255;
-        WS2812FX_setBrightness(255);
-    }
-    else
-    {
-        // if(b>10)
-        //   b-=10;
-        // else
-        b = 0;
-        WS2812FX_setBrightness(b);
-    }
-    return 10;
-}
+//     if (get_sound_result())
+//     {
+//         b = 255;
+//         WS2812FX_setBrightness(255);
+//     }
+//     else
+//     {
+//         // if(b>10)
+//         //   b-=10;
+//         // else
+//         b = 0;
+//         WS2812FX_setBrightness(b);
+//     }
+//     return 10;
+// }
 #pragma endregion
 //----------------------------------声控流星效果 END---------------------------------
 
@@ -1608,137 +1607,137 @@ void mode9(void)
 }
 
 // 各种效果的大集合
-uint16_t music_1(void)
-{
-    music_dly = 30;
-    if (music_step == 0) // 倒序2个灯逐点流水
-    {
-        mode1();
-    }
-    else if (music_step == 1) // 顺序2个点一组，一共2组，第一组从0开始，第二组从一半开始
-    {
-        mode3();
-    }
-    else if (music_step == 2) // 倒序2个点一组，一共2组，第一组从0开始，第二组从一半开始
-    {
-        mode4();
-    }
-    else if (music_step == 3) // 两边向中间走,逐点
-    {
-        mode5();
-    }
-    else if (music_step == 4) // 2点中间向两边走，逐点
-    {
-        mode6();
-    }
-    else if (music_step == 5) // 顺序2个点一组，一共2组，第一组从0开始，第二组从一半开始
-    {
-        mode3();
-    }
-    else if (music_step == 6) // 倒序2个点一组，一共2组，第一组从0开始，第二组从一半开始
-    {
-        mode4();
-    }
-    if (music_step == 7) // 正向流水
-    {
+// uint16_t music_1(void)
+// {
+//     music_dly = 30;
+//     if (music_step == 0) // 倒序2个灯逐点流水
+//     {
+//         mode1();
+//     }
+//     else if (music_step == 1) // 顺序2个点一组，一共2组，第一组从0开始，第二组从一半开始
+//     {
+//         mode3();
+//     }
+//     else if (music_step == 2) // 倒序2个点一组，一共2组，第一组从0开始，第二组从一半开始
+//     {
+//         mode4();
+//     }
+//     else if (music_step == 3) // 两边向中间走,逐点
+//     {
+//         mode5();
+//     }
+//     else if (music_step == 4) // 2点中间向两边走，逐点
+//     {
+//         mode6();
+//     }
+//     else if (music_step == 5) // 顺序2个点一组，一共2组，第一组从0开始，第二组从一半开始
+//     {
+//         mode3();
+//     }
+//     else if (music_step == 6) // 倒序2个点一组，一共2组，第一组从0开始，第二组从一半开始
+//     {
+//         mode4();
+//     }
+//     if (music_step == 7) // 正向流水
+//     {
 
-        if (_seg_rt->counter_mode_step < _seg_len)
-        {
-            WS2812FX_setPixelColor(_seg_rt->counter_mode_step, WHITE);
-        }
-        else
-        {
-            WS2812FX_setPixelColor(_seg_rt->counter_mode_step - _seg_len, BLACK);
-        }
-        _seg_rt->counter_mode_step++;
-        _seg_rt->counter_mode_step %= _seg_len * 2;
-        if (_seg_rt->counter_mode_step == 0)
-        {
-            cycle_cnt();
-        }
-    }
-    else if (music_step == 8) // 反向流水
-    {
+//         if (_seg_rt->counter_mode_step < _seg_len)
+//         {
+//             WS2812FX_setPixelColor(_seg_rt->counter_mode_step, WHITE);
+//         }
+//         else
+//         {
+//             WS2812FX_setPixelColor(_seg_rt->counter_mode_step - _seg_len, BLACK);
+//         }
+//         _seg_rt->counter_mode_step++;
+//         _seg_rt->counter_mode_step %= _seg_len * 2;
+//         if (_seg_rt->counter_mode_step == 0)
+//         {
+//             cycle_cnt();
+//         }
+//     }
+//     else if (music_step == 8) // 反向流水
+//     {
 
-        if (_seg_rt->counter_mode_step < _seg_len)
-        {
-            WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step, WHITE);
-        }
-        else
-        {
-            WS2812FX_setPixelColor(2 * _seg_len - _seg_rt->counter_mode_step - 1, BLACK);
-        }
-        _seg_rt->counter_mode_step++;
-        _seg_rt->counter_mode_step %= _seg_len * 2;
-        if (_seg_rt->counter_mode_step == 0)
-        {
-            cycle_cnt();
-        }
-    }
-    else if (music_step == 9) // 倒序2个灯逐点流水
-    {
-        mode1();
-    }
-    else if (music_step == 10) // 顺序2个灯逐点流水
-    {
-        mode2();
-    }
-    else if (music_step == 11)
-    {
-        mode7();
-    }
-    else if (music_step == 12) // 两边向中间走,逐点
-    {
-        mode5();
-    }
-    else if (music_step == 13) // 2点中间向两边走，逐点
-    {
-        mode6();
-    }
-    else if (music_step == 14) // 假频谱
-    {
-        mode8();
-    }
-    else if (music_step == 15) // 随机闪烁
-    {
-        mode9();
-        if (change_mode)
-        {
-            change_mode = 0;
-            Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
-            _seg_rt->counter_mode_step = _seg_len / 2;
-            _seg_rt->aux_param = 0;
-        }
-    }
-    else if (music_step == 16) // 假频谱
-    {
-        mode8();
-    }
-    else if (music_step == 17) // 随机闪烁
-    {
-        mode9();
-    }
-    else if (music_step == 18) // 顺序2个灯逐点流水
-    {
-        mode2();
-    }
+//         if (_seg_rt->counter_mode_step < _seg_len)
+//         {
+//             WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step, WHITE);
+//         }
+//         else
+//         {
+//             WS2812FX_setPixelColor(2 * _seg_len - _seg_rt->counter_mode_step - 1, BLACK);
+//         }
+//         _seg_rt->counter_mode_step++;
+//         _seg_rt->counter_mode_step %= _seg_len * 2;
+//         if (_seg_rt->counter_mode_step == 0)
+//         {
+//             cycle_cnt();
+//         }
+//     }
+//     else if (music_step == 9) // 倒序2个灯逐点流水
+//     {
+//         mode1();
+//     }
+//     else if (music_step == 10) // 顺序2个灯逐点流水
+//     {
+//         mode2();
+//     }
+//     else if (music_step == 11)
+//     {
+//         mode7();
+//     }
+//     else if (music_step == 12) // 两边向中间走,逐点
+//     {
+//         mode5();
+//     }
+//     else if (music_step == 13) // 2点中间向两边走，逐点
+//     {
+//         mode6();
+//     }
+//     else if (music_step == 14) // 假频谱
+//     {
+//         mode8();
+//     }
+//     else if (music_step == 15) // 随机闪烁
+//     {
+//         mode9();
+//         if (change_mode)
+//         {
+//             change_mode = 0;
+//             Adafruit_NeoPixel_fill(WHITE, _seg->start, _seg_len);
+//             _seg_rt->counter_mode_step = _seg_len / 2;
+//             _seg_rt->aux_param = 0;
+//         }
+//     }
+//     else if (music_step == 16) // 假频谱
+//     {
+//         mode8();
+//     }
+//     else if (music_step == 17) // 随机闪烁
+//     {
+//         mode9();
+//     }
+//     else if (music_step == 18) // 顺序2个灯逐点流水
+//     {
+//         mode2();
+//     }
 
-    if (get_sound_result())
-    {
-        music_trg = 0;
-    }
-    else
-    {
-        if (music_trg < 100)
-            music_trg++;
-        else
-        {
-            music_dly = 5000;
-            music_step = 0;
-        }
-    }
-    return music_dly;
-}
+//     if (get_sound_result())
+//     {
+//         music_trg = 0;
+//     }
+//     else
+//     {
+//         if (music_trg < 100)
+//             music_trg++;
+//         else
+//         {
+//             music_dly = 5000;
+//             music_step = 0;
+//         }
+//     }
+//     return music_dly;
+// }
 
 #pragma endregion
 //-----------------------------------流星效果II END ---------------------------------
@@ -3041,7 +3040,7 @@ uint16_t WS2812FX_mutil_c_gradual(void)
         index++;
         c0 = _seg->colors[index];
     }
-    // _seg->colors[1]:目标颜色
+    // _seg->colors[1]:目标颜色  c1，目标颜色
     uint32_t color = WS2812FX_color_blend(c1, c0, lum);
 
     Adafruit_NeoPixel_fill(color, _seg->start, _seg_len);
@@ -3156,7 +3155,7 @@ uint16_t fc_music_gradual(void)
 
     uint32_t color = WS2812FX_color_wheel(_seg_rt->counter_mode_step);
     Adafruit_NeoPixel_fill(color, _seg->start, _seg_len);
-    if (get_sound_result())
+    if (get_sound_triggered_by_colorful_lights())
     {
         _seg_rt->counter_mode_step += 20;
     }
@@ -3174,7 +3173,7 @@ uint16_t fc_music_breath(void)
 {
 
     static uint32_t color1;
-    if (get_sound_result())
+    if (get_sound_triggered_by_colorful_lights())
     {
 
         color1 = WS2812FX_color_wheel(_seg_rt->aux_param);
@@ -3206,7 +3205,7 @@ uint16_t fc_music_static(void)
     extern u8 music_trigger;
     uint32_t color1;
 
-    if (get_sound_result())
+    if (get_sound_triggered_by_colorful_lights())
     {
 
         color1 = WS2812FX_color_wheel(_seg_rt->aux_param);
@@ -3222,7 +3221,7 @@ uint16_t fc_music_twinkle(void)
 {
     extern u8 music_trigger;
     uint32_t color1;
-    if (get_sound_result())
+    if (get_sound_triggered_by_colorful_lights())
     {
 
         color1 = WS2812FX_color_wheel(_seg_rt->aux_param);

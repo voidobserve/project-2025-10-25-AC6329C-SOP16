@@ -149,9 +149,9 @@ typedef struct
     unsigned char on_off_flag; // 开关状态
     unsigned char led_num;     // 灯点数
     unsigned char sequence;    // RGB通道顺序
-    unsigned char b;           // 本地亮度
-    unsigned char app_b;       // 反馈给APP亮度
-    unsigned char app_speed;   // 反馈给APP速度
+    unsigned char b;           // 本地亮度 brightness 范围： 0 ~ 255
+    unsigned char app_b;       // 反馈给APP亮度 范围： 0 ~ 100
+    unsigned char app_speed;   // 反馈给APP速度 范围： 0 ~ 100
     unsigned char ls_b;        // 遥控调亮度
     unsigned char ls_speed;    // 遥控调速度
 
@@ -161,6 +161,7 @@ typedef struct
     unsigned char mode_cycle;    // 1:模式完成一个循环。0：正在跑，和meteor_period搭配用
     u16 period_cnt;              // ms,运行时的计数器
 
+    u8 colorful_lights_sensitivity; // 声控模式下，七彩灯的灵敏度 范围： 0 ~ 100
     Now_state_e state_before_into_music; // 七彩灯 进入声控模式之前，处于哪种模式
     Now_state_e Now_state;               // 当前运行模式
     // smear_adjust_t smear_adjust; // 涂抹功能
@@ -174,6 +175,7 @@ typedef struct
     unsigned char star_on_off; // 流星开关
     unsigned char star_index;
     unsigned short star_speed;    // 流星灯动画的速度值
+    u8 meteor_lights_sensitivity; // 声控模式下，流星灯的灵敏度
     unsigned char app_star_speed; // 反馈给app的，流星灯动画的速度值
 
     unsigned char motor_speed_index; // 电机模式或电机速度索引

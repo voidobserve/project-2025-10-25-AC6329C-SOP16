@@ -28,43 +28,43 @@ void fc_data_init(void)
     fc_effect.led_num = 12 + 1;        // 灯带的总灯珠数量（12个流星灯+1七彩灯）
     fc_effect.state_before_into_music = IS_STATIC;
     fc_effect.Now_state = IS_STATIC; // 当前运行状态 静态
-    // fc_effect.rgb.r = 0;
-    // fc_effect.rgb.g = 0;
-    // fc_effect.rgb.b = 0;
     fc_effect.rgb.r = 255;
-    // fc_effect.rgb.g = 255;
-    // fc_effect.rgb.b = 255;
+    fc_effect.rgb.g = 0;
+    fc_effect.rgb.b = 0;
 #ifdef LED_STRIP_RGBW
     // fc_effect.rgb.w = 255;
     fc_effect.rgb.w = 0;
 #endif
     fc_effect.dream_scene.c_n = 1; // 颜色数量为1
-    fc_effect.app_b = 100;
-    // fc_effect.app_b = 100 / 10;
-    // fc_effect.app_b = 100 / 2;
-    // fc_effect.b = 255 / 2;
-    // fc_effect.b = 10;
-
+    fc_effect.app_b = 100;         // 反馈给app的亮度
     fc_effect.b = (u16)fc_effect.app_b * 255 / 100;
 
     fc_effect.ls_b = (MAX_BRIGHT_RANK - 1);
     // fc_effect.ls_b = (MIN_BRIGHT_VALUE);
 
-    fc_effect.app_speed = 80;
-    fc_effect.dream_scene.speed = 100;
+    fc_effect.app_speed = 50;
+    /*
+        MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+        一般只用 200 ~ 2000 这个范围，
+        这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+    */
+    fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
     fc_effect.ls_speed = 3;
     fc_effect.sequence = NEO_RBGW;
     fc_effect.auto_f = IS_PAUSE;
+
     fc_effect.music.s = 80;
     fc_effect.music.m = 0;
     fc_effect.music.m_type = 0;
+
+    fc_effect.colorful_lights_sensitivity = 80; // 七彩灯声控模式下，对应的灵敏度
 
     fc_effect.app_rgb_mode = 0;
     // 闹钟
     // zd_countdown[0].set_on_off = DEVICE_OFF;
     // zd_countdown[1].set_on_off = DEVICE_OFF;
     // zd_countdown[2].set_on_off = DEVICE_OFF;
-
+    // ====================================================================
     // 流星
     fc_effect.star_on_off = DEVICE_ON;
     fc_effect.star_index = 1;
@@ -75,6 +75,7 @@ void fc_data_init(void)
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // ms,运行时的计数器
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
     fc_effect.motor_speed_index = 0;                       // 电机模式或电机速度索引
+    fc_effect.meteor_lights_sensitivity = 80;              // 流星灯声控模式下，对应的灵敏度
 
     // 电机
     fc_effect.base_ins.mode = 4;   // 360转
@@ -82,6 +83,7 @@ void fc_data_init(void)
     fc_effect.base_ins.dir = 0;    // 0: 正转  1：
     fc_effect.base_ins.music_mode = 0;
     fc_effect.motor_on_off = DEVICE_ON;
+    fc_effect.base_ins.sensitivity = 80;
 }
 
 void OpenMortor(void);
@@ -187,7 +189,7 @@ void soft_turn_off_lights(void) // 软关灯处理
         0,                             // 速度
         0);                            // 选项，这里像素点大小：3 REVERSE决定方向
     WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 
     WS2812FX_setSegment_colorOptions(
         1,                           // 第0段
@@ -198,13 +200,12 @@ void soft_turn_off_lights(void) // 软关灯处理
         fc_effect.star_speed,        // 速度
         0);                          // 选项，这里像素点大小：3 REVERSE决定方向
     WS2812FX_resetSegmentRuntime(1); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 
     // WS2812FX_stop();
     // WS2812FX_strip_off();
 
     fb_led_on_off_state(); // 与app同步开关状态
-    // save_user_data_area3(); // 保存参数配置到flash
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     printf("soft_turn_off_lights\n");
 }
@@ -228,6 +229,7 @@ const u16 led_speed_array[MAX_SPEED_RANK] = {
  */
 void app_set_bright(u8 tp_b)
 {
+#if 0
     if (fc_effect.Now_state == IS_STATIC)
     {
         if (tp_b < MIN_BRIGHT_VALUE)
@@ -236,6 +238,21 @@ void app_set_bright(u8 tp_b)
         fc_effect.app_b = tp_b; // 反馈给app的亮度
         WS2812FX_setBrightness(fc_effect.b);
     }
+#endif
+
+    if (tp_b > 100)
+    {
+        tp_b = 100;
+    }
+
+    fc_effect.app_b = tp_b;
+    /*
+        七彩灯的亮度值范围： 0 ~ 255 ，
+        但是只用到 25（255的10%） ~ 255，
+        这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+    */
+    fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+    WS2812FX_setBrightness(fc_effect.b);
 }
 
 /**
@@ -254,12 +271,13 @@ u16 get_max_sp(void)
 
 /**
  * @brief APP设置速度
- *
+ *          USER_TO_DO 这里的速度跟新增的动画速度值不一致，可能需要修改
  *
  * @param tp_speed  0-100  0是最慢  100是最快
  */
 void app_set_speed(u8 tp_speed)
 {
+#if 0
     if (fc_effect.Now_state == IS_light_scene)
     {
         fc_effect.dream_scene.speed = MIN_SLOW_SPEED - (MIN_SLOW_SPEED * tp_speed / 100);
@@ -270,6 +288,26 @@ void app_set_speed(u8 tp_speed)
         }
         set_fc_effect();
     }
+#endif
+
+    if (fc_effect.Now_state != IS_light_scene)
+    {
+        // 如果七彩灯不处于对应的动态模式，则返回
+        return;
+    }
+
+    if (tp_speed > 100)
+    {
+        tp_speed = 100;
+    }
+
+    fc_effect.app_speed = tp_speed;
+    /*
+        MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+        一般只用 200 ~ 2000 这个范围，
+        这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+    */
+    fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
 }
 
 /**
@@ -277,83 +315,83 @@ void app_set_speed(u8 tp_speed)
  *
  * @param b
  */
-void ls_add_bright(void)
-{
+// void ls_add_bright(void)
+// {
 
-    if (fc_effect.Now_state == IS_STATIC)
-    {
-        if (fc_effect.ls_b < (MAX_BRIGHT_RANK - 1))
-            fc_effect.ls_b++;
-        fc_effect.app_b = (fc_effect.ls_b + 1) * 10;
-        fc_effect.b = led_b_array[fc_effect.ls_b];
-        fb_bright();
-        WS2812FX_setBrightness(fc_effect.b);
-    }
+//     if (fc_effect.Now_state == IS_STATIC)
+//     {
+//         if (fc_effect.ls_b < (MAX_BRIGHT_RANK - 1))
+//             fc_effect.ls_b++;
+//         fc_effect.app_b = (fc_effect.ls_b + 1) * 10;
+//         fc_effect.b = led_b_array[fc_effect.ls_b];
+//         fb_bright();
+//         WS2812FX_setBrightness(fc_effect.b);
+//     }
 
-    // printf(" fc_effect.b = %d", fc_effect.b);
-}
+//     // printf(" fc_effect.b = %d", fc_effect.b);
+// }
 
 /**
  * @brief 遥控减亮度
  *
  * @param b
  */
-void ls_sub_bright(void)
-{
-    if (fc_effect.Now_state == IS_STATIC)
-    {
-        if (fc_effect.ls_b > 0)
-            fc_effect.ls_b--;
+// void ls_sub_bright(void)
+// {
+//     if (fc_effect.Now_state == IS_STATIC)
+//     {
+//         if (fc_effect.ls_b > 0)
+//             fc_effect.ls_b--;
 
-        fc_effect.app_b = (fc_effect.ls_b + 1) * 10;
-        fc_effect.b = led_b_array[fc_effect.ls_b];
-        fb_bright();
-        WS2812FX_setBrightness(fc_effect.b);
-    }
+//         fc_effect.app_b = (fc_effect.ls_b + 1) * 10;
+//         fc_effect.b = led_b_array[fc_effect.ls_b];
+//         fb_bright();
+//         WS2812FX_setBrightness(fc_effect.b);
+//     }
 
-    // printf(" fc_effect.b = %d", fc_effect.b);
-}
+//     // printf(" fc_effect.b = %d", fc_effect.b);
+// }
 
 /**
  * @brief 遥控加速度
  *
  */
-void ls_add_speed(void)
-{
-    if (fc_effect.Now_state == IS_light_scene)
-    {
-        // 数值越小，速度越快：
-        if (fc_effect.ls_speed > 0)
-            fc_effect.ls_speed--;
-        fc_effect.app_speed = 100 - (fc_effect.ls_speed) * 10;
-        fc_effect.dream_scene.speed = led_speed_array[fc_effect.ls_speed];
-        fb_speed();
-        set_fc_effect();
-    }
+// void ls_add_speed(void)
+// {
+//     if (fc_effect.Now_state == IS_light_scene)
+//     {
+//         // 数值越小，速度越快：
+//         if (fc_effect.ls_speed > 0)
+//             fc_effect.ls_speed--;
+//         fc_effect.app_speed = 100 - (fc_effect.ls_speed) * 10;
+//         fc_effect.dream_scene.speed = led_speed_array[fc_effect.ls_speed];
+//         fb_speed();
+//         set_fc_effect();
+//     }
 
-    // printf("  fc_effect.dream_scene.speed = %d", fc_effect.dream_scene.speed);
-}
+//     // printf("  fc_effect.dream_scene.speed = %d", fc_effect.dream_scene.speed);
+// }
 
 /**
  * @brief 遥控减速度
  *
  */
-void ls_sub_speed(void)
-{
+// void ls_sub_speed(void)
+// {
 
-    if (fc_effect.Now_state == IS_light_scene)
-    {
-        // 数值越大，速度越慢：
-        if (fc_effect.ls_speed < (MAX_SPEED_RANK - 1))
-            fc_effect.ls_speed++;
-        fc_effect.app_speed = 100 - (fc_effect.ls_speed) * 10;
-        fc_effect.dream_scene.speed = led_speed_array[fc_effect.ls_speed];
-        fb_speed();
-        set_fc_effect();
-    }
+//     if (fc_effect.Now_state == IS_light_scene)
+//     {
+//         // 数值越大，速度越慢：
+//         if (fc_effect.ls_speed < (MAX_SPEED_RANK - 1))
+//             fc_effect.ls_speed++;
+//         fc_effect.app_speed = 100 - (fc_effect.ls_speed) * 10;
+//         fc_effect.dream_scene.speed = led_speed_array[fc_effect.ls_speed];
+//         fb_speed();
+//         set_fc_effect();
+//     }
 
-    // printf("  fc_effect.dream_scene.speed = %d", fc_effect.dream_scene.speed);
-}
+//     // printf("  fc_effect.dream_scene.speed = %d", fc_effect.dream_scene.speed);
+// }
 
 /**
  * @brief  app设置灵敏度
@@ -564,7 +602,7 @@ void ls_set_music_mode(void)
         fc_effect.music.m++;
         fc_effect.music.m %= MAX_MUSIC_EFFECT_NUMBER;
     }
-    
+
     set_fc_effect();
 }
 

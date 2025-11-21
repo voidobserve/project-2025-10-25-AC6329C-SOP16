@@ -131,6 +131,10 @@ unsigned long string_hex_Byte(char* str, unsigned char Byte_num);
 unsigned short dp_extract_data_handle(unsigned char *buff);
 extern void printf_buf(u8 *buf, u32 len);
 
+
+void fb_motor_speed(void); // 向app反馈电机速度值
+void fd_meteor_speed(void); // 向app反馈流星灯速度值
+
 #endif
 
 

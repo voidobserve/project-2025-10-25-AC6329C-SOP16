@@ -1,6 +1,8 @@
 #include "rf433_key.h"
 #include "rf433_learn.h"
 
+#include "../../../apps/user_app/one_wire/one_wire.h"
+
 #include "../../../apps/user_app/led_strip/led_strip_sys.h"
 #include "../../../apps/user_app/led_strip/led_strand_effect.h"
 
@@ -373,99 +375,144 @@ void rf_433_key_event_handle(void)
     switch (rf_433_key_event)
     {
     case RF_433_KEY_EVENT_R1C1_CLICK:
-    case RF_433_KEY_EVENT_R1C1_LONG: // 亮度加
-        // case RF_433_KEY_EVENT_R1C1_HOLD:
+    case RF_433_KEY_EVENT_R1C1_LONG:
+    case RF_433_KEY_EVENT_R1C1_HOLD:
+    {
+        if (IS_STATIC == fc_effect.Now_state)
         {
-            // // 在动态模式下，是增加速度；在声控模式下，是加灵敏度
-            // if (IS_STATIC == fc_effect.Now_state)
-            // {
-            //     ls_add_bright();
-            // }
-            // else if (IS_light_scene == fc_effect.Now_state)
-            // {
-            //     ls_add_speed();
-            // }
-            // else if (IS_light_music == fc_effect.Now_state)
-            // {
-            //     ls_add_sensitive();
-            //     fb_sensitive(); // 向app反馈灵敏度
-            // }
-
-            if (IS_STATIC == fc_effect.Now_state)
+            const u8 step = 10;
+            if (fc_effect.app_b < 100 - step)
             {
-                /*
-                    单色模式下，调节亮度
-                    只修改七彩灯的亮度，不能通过 WS2812FX_setBrightness() 函数调节亮度，
-                    这样会连流星灯的亮度也修改
-                */
-                // if (fc_effect.ls_b < (MAX_BRIGHT_RANK - 1))
-                // {
-                //     fc_effect.ls_b++;
-                // }
-
-                // fc_effect.app_b = (fc_effect.ls_b + 1) * 10;
-                // fc_effect.b = led_b_array[fc_effect.ls_b];
-
-                // printf("fc_effect.ls_b %u\n", (u16)fc_effect.ls_b);
-                // printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
-                printf("fc_effect.b %u\n", (u16)fc_effect.b);
-                fb_bright();
-            }
-#if 0
-            else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
-                     (MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type ||
-                      MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type ||
-                      MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type ||
-                      MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type ||
-                      MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type))
-            {
-                // 七彩灯动态模式下，调节速度
-                // 注意：速度值是越小越快
-                // 得到速度等级：
-                if (fc_effect.ls_speed > 0)
-                {
-                    fc_effect.ls_speed--;
-                }
-
-                fc_effect.dream_scene.speed = colorful_lights_speed_array[fc_effect.ls_speed]; // 根据速度等级进行查表，得到速度值
-                fc_effect.app_speed = 100 - (fc_effect.ls_speed) * 10;                         // 根据速度等级得到要反馈给app的速度值
-                fb_speed();                                                                    // 给app反馈速度值
-                WS2812FX_setSpeed_seg(0, fc_effect.dream_scene.speed);                         // 通过库提供的接口修改速度，而不是修改速度后再调用一次动画函数
-                printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
-            }
-#endif
-            else if (IS_light_music == fc_effect.Now_state)
-            {
-                // 七彩灯声控模式下，调节灵敏度
-                // colorful_lights_sound_sensitivity_add();
-
-                // fb_sensitive(); // 向app反馈灵敏度
+                fc_effect.app_b += step;
             }
             else
             {
-                // 其他模式，直接退出，不执行后续的读写flash操作
-                return;
+                fc_effect.app_b = 100;
             }
+
+            /*
+                七彩灯的亮度值范围： 0 ~ 255 ，
+                但是只用到 25（255的10%） ~ 255，
+                这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+            */
+            fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            WS2812FX_setBrightness(fc_effect.b);
+            printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+            printf("fc_effect.b %u\n", (u16)fc_effect.b);
+            fb_bright();
         }
-        break;
+        else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
+                 (MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type))
+        {
+            // 七彩灯动态模式下，调节速度
+            // 注意：速度值是越小越快
+            const u8 step = 10;
+            if (fc_effect.app_speed < 100 - step)
+            {
+                fc_effect.app_speed += step;
+            }
+            else
+            {
+                fc_effect.app_speed = 100;
+            }
+
+            /*
+                MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+                一般只用 200 ~ 2000 这个范围，
+                这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+            */
+            fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+            printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+            printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+            fb_speed();
+        }
+        else if (IS_light_music == fc_effect.Now_state)
+        {
+            // 七彩灯声控模式下，调节灵敏度
+            colorful_lights_sound_sensitivity_add();
+            fc_effect.music.s = fc_effect.colorful_lights_sensitivity;
+            fb_sensitive(); // 向app反馈灵敏度
+        }
+        else
+        {
+            // 其他模式，直接退出，不执行后续的读写flash操作
+            return;
+        }
+    }
+    break;
 
     case RF_433_KEY_EVENT_R1C2_CLICK:
     case RF_433_KEY_EVENT_R1C2_LONG: // 亮度减
     case RF_433_KEY_EVENT_R1C2_HOLD:
     {
-        // 在动态模式下，是减慢速度；在声控模式下，是减灵敏度
         if (IS_STATIC == fc_effect.Now_state)
         {
-            ls_sub_bright();
+            // 注意：不能让灯光亮度减到0%，灯光会熄灭
+            const u8 step = 10;
+            if (fc_effect.app_b > 0 + step)
+            {
+                fc_effect.app_b -= step;
+            }
+            else
+            {
+                fc_effect.app_b = 0;
+            }
+
+            /*
+                七彩灯的亮度值范围： 0 ~ 255 ，
+                但是只用到 25（255的10%） ~ 255，
+                这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+            */
+            fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            WS2812FX_setBrightness(fc_effect.b);
+            printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+            printf("fc_effect.b %u\n", (u16)fc_effect.b);
+            fb_bright();
         }
-        else if (IS_light_scene == fc_effect.Now_state)
+        else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
+                 (MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type ||
+                  MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type))
         {
-            ls_sub_speed();
+            // 七彩灯动态模式下，调节速度
+            // 注意：速度值是越小越快
+            const u8 step = 10;
+            if (fc_effect.app_speed > 0 + step)
+            {
+                fc_effect.app_speed -= step;
+            }
+            else
+            {
+                fc_effect.app_speed = 0;
+            }
+
+            /*
+                MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+                一般只用 200 ~ 2000 这个范围，
+                这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+            */
+            fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+            printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+            printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+            fb_speed();
         }
         else if (IS_light_music == fc_effect.Now_state)
         {
-            ls_sub_sensitive();
+            // 七彩灯声控模式下，调节灵敏度
+            colorful_lights_sound_sensitivity_sub();
+            fc_effect.music.s = fc_effect.colorful_lights_sensitivity;
             fb_sensitive(); // 向app反馈灵敏度
+        }
+        else
+        {
+            // 其他模式，直接退出，不执行后续的读写flash操作
+            return;
         }
     }
     break;
@@ -641,8 +688,8 @@ void rf_433_key_event_handle(void)
         u8 motor_mode = 0x00; // 默认是关机
         if (fc_effect.motor_on_off == DEVICE_ON)
         {
-            motor_mode = 0x06;                                      // 关机命令
-            fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机，下一次重新上电让电机默认关闭
+            motor_mode = 0x06; // 关机命令
+            // fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机，下一次重新上电让电机默认关闭
             fc_effect.motor_on_off = DEVICE_OFF;
         }
         else
@@ -712,18 +759,30 @@ void rf_433_key_event_handle(void)
         }
 
         fc_effect.base_ins.mode = (fc_effect.base_ins.mode + 1) % 6;
-
-        // 没有观察到电机反转
-        // if (fc_effect.base_ins.mode == 2)
+  
+        // fc_effect.base_ins.mode = 0;
+        // fc_effect.base_ins.mode = 1;
+        // fc_effect.base_ins.mode = 2;
+        // fc_effect.base_ins.mode = 3;
+        // fc_effect.base_ins.mode = 4;
+        /*
+            没有观察到电机的正反转
+        */ 
+        // static u8 dir = 0;
+        // if (dir)
         // {
         //     fc_effect.base_ins.dir = 1;
+        //     dir = 0;
         // }
         // else
         // {
         //     fc_effect.base_ins.dir = 0;
+        //     dir = 1;
         // }
 
-        printf("motor mode %u \n", (u16)fc_effect.base_ins.mode);
+        // printf("fc_effect.base_ins.dir %u\n", (u16)fc_effect.base_ins.dir);
+
+        // printf("motor mode %u \n", (u16)fc_effect.base_ins.mode);
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
     }
     break;
@@ -837,6 +896,44 @@ void rf_433_key_event_handle(void)
             如果在一般的电机模式，控制电机转速
             如果在声控的电机的模式，控制电机灵敏度
         */
+        if (DEVICE_OFF == fc_effect.motor_on_off)
+        {
+            // 电机没有启动，不调节电机转速
+            return;
+        }
+
+        // 判断电机是否处于普通模式
+        if (5 != fc_effect.base_ins.mode)
+        {
+            u8 index = 0;
+            for (; index < ARRAY_SIZE(motor_period); index++) // 找到当前电机速度索引对应的下标
+            {
+                if (motor_period[index] == fc_effect.base_ins.period)
+                {
+                    break;
+                }
+            }
+
+            // 在 motor_period[] 中，索引值越小，电机速度越快
+            if (index > 0)
+            {
+                index--;
+                fc_effect.base_ins.period = motor_period[index];
+            }
+
+            one_wire_set_period(motor_period[index]);
+            fc_effect.motor_speed_index = index;
+            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            fb_motor_speed(); // 向app反馈电机的转速
+        }
+        else
+        {
+            // 如果电机处于声控模式，调节灵敏度
+            motor_sound_sensitivity_add();
+            fc_effect.music.s = fc_effect.base_ins.sensitivity;
+            fb_sensitive(); // 向app反馈灵敏度
+        }
     }
     break;
 
@@ -872,8 +969,6 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R7C2_LONG:
     {
         // 声控模式
-
-        // USER_TO_DO 这里面可能没有用最大的亮度 
         ls_set_music_mode();
     }
     break;
@@ -948,6 +1043,46 @@ void rf_433_key_event_handle(void)
             如果在普通电机模式，控制电机转速
             如果在声控电机模式，控制电机灵敏度
         */
+        // 电机转速 减
+
+        if (DEVICE_OFF == fc_effect.motor_on_off)
+        {
+            // 电机没有启动，不调节电机转速
+            return;
+        }
+
+        // 判断电机是否处于普通模式
+        if (5 != fc_effect.base_ins.mode)
+        {
+            u8 index = 0;
+            for (; index < ARRAY_SIZE(motor_period); index++) // 找到当前电机速度索引对应的下标
+            {
+                if (motor_period[index] == fc_effect.base_ins.period)
+                {
+                    break;
+                }
+            }
+
+            // 在 motor_period[] 中，索引值越小，电机速度越快
+            if (index < ARRAY_SIZE(motor_period) - 1)
+            {
+                index++;
+                fc_effect.base_ins.period = motor_period[index];
+            }
+
+            one_wire_set_period(motor_period[index]);
+            fc_effect.motor_speed_index = index;
+            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            fb_motor_speed(); // 向app反馈电机的转速
+        }
+        else
+        {
+            // 如果电机处于声控模式，调节灵敏度
+            motor_sound_sensitivity_sub();
+            fc_effect.music.s = fc_effect.base_ins.sensitivity;
+            fb_sensitive(); // 向app反馈灵敏度
+        }
     }
     break;
 

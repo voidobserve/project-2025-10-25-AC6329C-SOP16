@@ -236,7 +236,7 @@ void WS2812FX_start() {
 }
 
 // 给内部的 _running 设置为 true
-void WS2812FX_set_running(void)
+void WS2812FX_running_flag_set(void)
 {
     _running = true;
 }
@@ -269,12 +269,12 @@ void WS2812FX_trigger() {
 //   _triggered_2 = true;
 // }
 
-void WS2812FX_trigger_by_colorful_lights(void)
+void WS2812FX_triggered_by_colorful_lights(void)
 {
   _triggered_by_colorful_lights = true;
 }
 
-void WS2812FX_trigger_by_meteor_lights(void)
+void WS2812FX_triggered_by_meteor_lights(void)
 {
   _triggered_by_meteor_lights = true;
 }

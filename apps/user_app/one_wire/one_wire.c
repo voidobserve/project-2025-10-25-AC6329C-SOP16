@@ -32,23 +32,24 @@ void pack_base(void)
     send_base_ins = 0;
     send_base_ins |= fc_effect.base_ins.mode; // bit0 ~ bit2 电机模式
 
-    for (p = 0; p < 6; p++)
+
+    // 验证速度值范围是否正确
     {
-        if (motor_period[p] == fc_effect.base_ins.period)
+        for (p = 0; p < 6; p++)
         {
-            break;
+            if (motor_period[p] == fc_effect.base_ins.period)
+            {
+                break;
+            }
         }
-    }
 
-    if (p > 5)
-    {
-        p = 0;
-    }
+        if (p > 5)
+        {
+            p = 0;
+        }
 
-    // send_base_ins |= ((u16)p << 3);
-    // send_base_ins |= ((u16)p << 8);
-    send_base_ins |= ((u16)motor_period[p] << 8); // bit8 ~ bit15，电机速度
-    
+        send_base_ins |= ((u16)motor_period[p] << 8); // bit8 ~ bit15，电机速度
+    }
 
     if (fc_effect.base_ins.dir)
     {
@@ -65,7 +66,7 @@ void pack_base(void)
 // #define INS_LEN (7) // 指令长度
 // #define INS_LEN (16 - 1) // 指令长度
 #define INS_LEN (16) // 指令长度
-#define W_0_5MS 4      // 脉宽0.5ms
+#define W_0_5MS 4    // 脉宽0.5ms
 #define W_1MS 8
 #define W_2MS 16
 static volatile u8 send_cnt = 0;
@@ -434,10 +435,10 @@ void effect_stepmotor(void)
     if (fc_effect.base_ins.mode == 0x05)
     {
 
-        if (get_sound_result())
+        if (get_sound_triggered_by_motor())
         {
             set_stepmotor_fast();
-            printf("1111\n");
+            // printf("1111\n");
             stepmotor_sound_cnt = 0;
         }
 
@@ -445,9 +446,10 @@ void effect_stepmotor(void)
         {
             stepmotor_sound_cnt++;
         }
+
         if (stepmotor_sound_cnt >= 100)
         {
-            printf("2222\n");
+            // printf("2222\n");
             set_stepmotor_slow();
         }
     }

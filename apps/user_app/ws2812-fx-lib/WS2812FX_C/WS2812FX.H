@@ -250,15 +250,15 @@ Segment_runtime* getSegmentRuntime_seg(uint8_t);
 Segment_runtime* getSegmentRuntimes(void);
 
 
-void WS2812FX_set_running(void);
+void WS2812FX_running_flag_set(void);
 
 // 以最大亮度值给指定位置填充颜色
 void WS2812FX_setPixelColor_with_max_brightness(uint16_t n, uint32_t c);
 void WS2812FX_setPixelColor_rgbw_with_max_brightness(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
 
 
-void  WS2812FX_trigger_by_colorful_lights(void);
-void WS2812FX_trigger_by_meteor_lights(void);
+void WS2812FX_triggered_by_colorful_lights(void);
+void WS2812FX_triggered_by_meteor_lights(void);
 
 #endif /* __BSP_WS2812FX_H */
 

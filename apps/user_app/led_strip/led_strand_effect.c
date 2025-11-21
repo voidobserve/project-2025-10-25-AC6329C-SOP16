@@ -98,7 +98,7 @@ static void static_mode(void)
 
     // WS2812FX_start(); // 不能在这里清空显示的缓存，会导致流星灯也闪烁（流星灯会重新开始跑）
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 
     // printf("fc_effect.rgb.r %u\n", fc_effect.rgb.r);
     // printf("fc_effect.rgb.g %u\n", fc_effect.rgb.g);
@@ -124,7 +124,7 @@ static void strand_rainbow(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------跳变效果----------------------------------*/
@@ -144,7 +144,7 @@ void strand_jump_change(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 /*----------------------------------呼吸系列效果----------------------------------*/
 void strand_breath(void)
@@ -163,10 +163,8 @@ void strand_breath(void)
     WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
 
-    // WS2812FX_start();
-    // WS2812FX_set_running();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
     // printf("__FUNC__ %s \n__LINE__ %d\n", __func__, __LINE__);
 }
 
@@ -187,7 +185,7 @@ void single_c_breath(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------闪烁效果----------------------------------*/
@@ -207,7 +205,7 @@ void strand_twihkle(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 // 多颜色频闪
 void ls_strobe(void)
@@ -225,7 +223,7 @@ void ls_strobe(void)
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 /*----------------------------------流水效果----------------------------------*/
 void strand_flow_water(void)
@@ -254,7 +252,7 @@ void strand_flow_water(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------追光效果----------------------------------*/
@@ -288,7 +286,7 @@ void strand_chas_light(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------炫彩效果----------------------------------*/
@@ -308,7 +306,7 @@ void strand_colorful(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------渐变系列效果----------------------------------*/
@@ -328,7 +326,7 @@ void strand_grandual(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 // 整条灯带渐变，支持多种颜色之间切换
 // 颜色池：fc_effect.dream_scene.rgb[]
@@ -348,7 +346,7 @@ void mutil_c_grandual(void)
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 // 纯白色渐变
@@ -367,7 +365,7 @@ void w_grandual(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 /*----------------------------------跳变效果----------------------------------*/
@@ -387,7 +385,7 @@ void standard_jump(void)
     ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 //====================================================================================================
@@ -418,7 +416,7 @@ void strand_meteor(u8 index)
         fade_type[index - 19] | option);            // 选项，这里像素点大小：3,反向/反向
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 void double_meteor(void)
@@ -447,7 +445,7 @@ void double_meteor(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 }
 
 //====================================================================================================
@@ -467,7 +465,7 @@ void base_Dynamic_Effect(u8 tp_num)
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
         ls_set_color(2, RED);
-        fc_effect.dream_scene.change_type = MODE_JUMP;
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP;
         fc_effect.dream_scene.c_n = 3;
         fc_effect.Now_state = IS_light_scene;
         break;
@@ -480,21 +478,25 @@ void base_Dynamic_Effect(u8 tp_num)
         ls_set_color(4, YELLOW);
         ls_set_color(5, CYAN);
         ls_set_color(6, PURPLE);
-        fc_effect.dream_scene.change_type = MODE_JUMP;
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP;
         fc_effect.dream_scene.c_n = 7;
         fc_effect.Now_state = IS_light_scene;
         break;
 
     case 0x09: // 3色渐变
+    {
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
         ls_set_color(2, RED);
-        fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
         fc_effect.dream_scene.c_n = 3;
         fc_effect.Now_state = IS_light_scene;
-        break;
+    }
 
-    case 0x0A: // 七彩渐变
+    break;
+
+    case 0x0A:
+    { //  七色渐变
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
         ls_set_color(2, RED);
@@ -502,167 +504,348 @@ void base_Dynamic_Effect(u8 tp_num)
         ls_set_color(4, YELLOW);
         ls_set_color(5, CYAN);
         ls_set_color(6, PURPLE);
-        fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
         fc_effect.dream_scene.c_n = 7;
         fc_effect.Now_state = IS_light_scene;
-        break;
+    }
+    break;
 
     case 0x0B:
-        ls_set_color(0, RED);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, RED);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 红色呼吸
+            ls_set_color(0, RED);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x0c:
-        ls_set_color(0, BLUE);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, BLUE);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 蓝色呼吸
+            ls_set_color(0, BLUE);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
+
     case 0x0D:
-        ls_set_color(0, GREEN);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, GREEN);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 绿色呼吸
+            ls_set_color(0, GREEN);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x0E:
-        ls_set_color(0, CYAN);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, CYAN);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 青色呼吸
+            ls_set_color(0, CYAN);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x0F:
-        ls_set_color(0, YELLOW);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, YELLOW);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 黄色呼吸
+            ls_set_color(0, YELLOW);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x10:
-        ls_set_color(0, PURPLE);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, PURPLE);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 紫色呼吸
+            ls_set_color(0, PURPLE);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
-    case 0x11: // 混白色渐变
-        ls_set_color(0, WHITE);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+    case 0x11:
+        // { // 混白色渐变
+        //     ls_set_color(0, WHITE);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 混白色呼吸（白色呼吸）
+            ls_set_color(0, WHITE);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
-    case 0x12: // 纯白色渐变
-        ls_set_color(0, WHITE);
-        ls_set_color(1, BLACK);
-        fc_effect.dream_scene.change_type = MODE_BREATH_W;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+    case 0x12:
+        // {// 纯白色渐变
+        //     ls_set_color(0, WHITE);
+        //     ls_set_color(1, BLACK);
+        //     fc_effect.dream_scene.change_type = MODE_BREATH_W;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 纯白色呼吸
+            fc_effect.dream_scene.rgb[0].w = 0xFF;
+            fc_effect.dream_scene.rgb[0].r = 0x00;
+            fc_effect.dream_scene.rgb[0].g = 0x00;
+            fc_effect.dream_scene.rgb[0].b = 0x00;
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x13:
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // { // 红绿渐变，APP对应的是红绿呼吸
+        //     ls_set_color(0, RED);
+        //     ls_set_color(1, GREEN);
+        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 红绿渐变
+            ls_set_color(0, RED);
+            ls_set_color(1, GREEN);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+            fc_effect.dream_scene.c_n = 2;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x14:
-        ls_set_color(0, BLUE);
-        ls_set_color(1, RED);
-        fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, BLUE);
+        //     ls_set_color(1, RED);
+        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 红蓝渐变
+            ls_set_color(0, BLUE);
+            ls_set_color(1, RED);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+            fc_effect.dream_scene.c_n = 2;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x15:
-        ls_set_color(0, GREEN);
-        ls_set_color(1, BLUE);
-        fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        fc_effect.dream_scene.c_n = 2;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, GREEN);
+        //     ls_set_color(1, BLUE);
+        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
+        //     fc_effect.dream_scene.c_n = 2;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 绿蓝渐变
+            ls_set_color(0, GREEN);
+            ls_set_color(1, BLUE);
+            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+            fc_effect.dream_scene.c_n = 2;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
-    case 0x16: // 七色频闪
-        ls_set_color(0, BLUE);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, RED);
-        ls_set_color(3, WHITE);
-        ls_set_color(4, YELLOW);
-        ls_set_color(5, CYAN);
-        ls_set_color(6, PURPLE);
+    case 0x16:
+        // { // 七色频闪
+        //     ls_set_color(0, BLUE);
+        //     ls_set_color(1, GREEN);
+        //     ls_set_color(2, RED);
+        //     ls_set_color(3, WHITE);
+        //     ls_set_color(4, YELLOW);
+        //     ls_set_color(5, CYAN);
+        //     ls_set_color(6, PURPLE);
 
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 7;
-        fc_effect.Now_state = IS_light_scene;
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 7;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
+        { // 七色频闪
+            ls_set_color(0, BLUE);
+            ls_set_color(1, GREEN);
+            ls_set_color(2, RED);
+            ls_set_color(3, WHITE);
+            ls_set_color(4, YELLOW);
+            ls_set_color(5, CYAN);
+            ls_set_color(6, PURPLE);
+
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 7;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x17:
-        ls_set_color(0, RED);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, RED);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
+        { // 红色频闪
+            ls_set_color(0, RED);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x18:
-        ls_set_color(0, BLUE);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
+        // { // 蓝色频闪
+        //     ls_set_color(0, BLUE);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
+        { // 蓝色频闪
+            ls_set_color(0, BLUE);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x19:
-        ls_set_color(0, GREEN);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
+        // {
+        //     ls_set_color(0, GREEN);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
+        { // 绿色频闪
+            ls_set_color(0, GREEN);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
     case 0x1a:
+        // {
+        //     ls_set_color(0, CYAN);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
-        ls_set_color(0, CYAN);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
-
+        { // 青色频闪
+            ls_set_color(0, CYAN);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
 
     case 0x1b:
+        // {
+        //     ls_set_color(0, YELLOW);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
-        ls_set_color(0, YELLOW);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
-
+        { // 黄色频闪
+            ls_set_color(0, YELLOW);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
+
     case 0x1c:
+        // {
+        //     ls_set_color(0, PURPLE);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
 
-        ls_set_color(0, PURPLE);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
+        { // 紫色频闪
+            ls_set_color(0, PURPLE);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
-    case 0x1e:
-        ls_set_color(0, WHITE);
-        fc_effect.dream_scene.change_type = MODE_STROBE;
-        fc_effect.dream_scene.c_n = 1;
-        fc_effect.Now_state = IS_light_scene;
+
+    case 0x1d:
+        // {
+        //     ls_set_color(0, WHITE);
+        //     fc_effect.dream_scene.change_type = MODE_STROBE;
+        //     fc_effect.dream_scene.c_n = 1;
+        //     fc_effect.Now_state = IS_light_scene;
+        // }
+
+        { // 混白色频闪
+            ls_set_color(0, WHITE);
+            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+            fc_effect.dream_scene.c_n = 1;
+            fc_effect.Now_state = IS_light_scene;
+        }
         break;
     }
+
+    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存（调用相应的动画前，需要重新开始跑）
     set_fc_effect();
 }
 
@@ -743,7 +926,7 @@ static void ls_scene_effect(void)
 
         WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
         ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
 
         break;
 
@@ -761,7 +944,7 @@ static void ls_scene_effect(void)
 
         WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
         ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
 
         break;
 
@@ -781,7 +964,7 @@ static void ls_scene_effect(void)
 
         // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
         // ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
         break;
 
     case MODE_COLORFUL_LIGHTS_BREATH: // 七彩灯呼吸
@@ -803,7 +986,7 @@ static void ls_scene_effect(void)
 
         WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
         ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
     }
     break;
 
@@ -821,7 +1004,7 @@ static void ls_scene_effect(void)
 
         // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量
         // ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
         break;
 
     default:
@@ -1114,7 +1297,7 @@ void ls_meteor_stat_effect(void)
         }
 
         WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
-        WS2812FX_set_running();
+        WS2812FX_running_flag_set();
     }
 
     // save_user_data_area3(); // 保存参数配置到flash
@@ -1127,7 +1310,7 @@ void ls_meteor_stat_effect(void)
  */
 static void ls_music_effect(void)
 {
-#if 1
+#if 0
     extern uint16_t fc_music_gradual(void);
     extern uint16_t fc_music_breath(void);
     extern uint16_t fc_music_static(void);
@@ -1169,11 +1352,10 @@ static void ls_music_effect(void)
 
     // WS2812FX_start();
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_set_running();
+    WS2812FX_running_flag_set();
 #endif
 
-#if 0
-    // USER_TO_DO 这里还没有完善
+#if 1
     void *music_effect_addr = NULL;
     switch (fc_effect.music.m)
     {
@@ -1203,7 +1385,7 @@ static void ls_music_effect(void)
         SIZE_MEDIUM | FADE_XSLOW // 选项，这里像素点大小：3,反向/反向
     );
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_running_flag_set(); // USER_TO_DO 这里的函数名还没有换好
+    WS2812FX_running_flag_set();     //
 #endif
 }
 
@@ -1234,7 +1416,7 @@ static void ls_music_effect(void)
 //         WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
 //         ls_set_colors(1, &fc_effect.dream_scene.rgb);
 //         WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-//         WS2812FX_set_running();
+//         WS2812FX_running_flag_set();
 //     }
 //     break;
 

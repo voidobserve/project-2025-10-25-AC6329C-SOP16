@@ -458,7 +458,7 @@ void user_msg_handle_task(void)
             WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
             ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
             WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-            WS2812FX_set_running();
+            WS2812FX_running_flag_set();
         }
         break;
 
@@ -482,7 +482,7 @@ void user_msg_handle_task(void)
                     0,                             // 速度
                     0);                            // 选项，这里像素点大小：3 REVERSE决定方向
                 WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
-                WS2812FX_set_running();
+                WS2812FX_running_flag_set();
             }
         }
         break;
