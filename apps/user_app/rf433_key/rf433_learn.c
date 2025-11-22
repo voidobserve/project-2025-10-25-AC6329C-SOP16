@@ -52,7 +52,6 @@ void rf_433_learn_status_update(RF_433_LEARN_STATUS_T status)
  */
 void rf_433_key_learn(void)
 {
-
     static u8 flag_is_learn_exit = 0; // 标志位，学习/对码状态是否退出
     static u16 learn_times_cnt = 0;
 
@@ -62,12 +61,18 @@ void rf_433_key_learn(void)
         return;
     }
 
+    // static u16 cnt = 0; // 发送对码成功消息的时间间隔计数（只在测试时使用）
+    // if (cnt < 65535)
+    // {
+    //     cnt++;
+    // }
+
     learn_times_cnt++;
     if (learn_times_cnt >= RF_433_KEY_LEARN_TIMES_ARTER_PWR_ON / RF_433_KEY_LEARN_FUNC_PERIOD)
     {
         // 超过了学习/对码的时间，自动退出
         learn_times_cnt = 0;
-        flag_is_learn_exit = 1;
+        flag_is_learn_exit = 1; // 测试时屏蔽
 
         // 给处理用户消息的线程发送信息
         // os_taskq_post("msg_task", 1, MSG_RF_433_LEARN_FAIL);
@@ -87,10 +92,15 @@ void rf_433_key_learn(void)
         rf_433_key_structure.rf_433_key_driver_event = RF_433_KEY_EVENT_NONE;
 
         learn_times_cnt = 0;
-        flag_is_learn_exit = 1;
+        flag_is_learn_exit = 1; // 测试时屏蔽
 
-        // 给处理用户消息的线程发送信息
-        os_taskq_post("msg_task", 1, MSG_RF_433_LEARN_SUCCEED);
+        // if (cnt >= 300)
+        {
+            // cnt = 0;
+            // 给处理用户消息的线程发送信息
+            os_taskq_post("msg_task", 1, MSG_RF_433_LEARN_SUCCEED);
+            // printf("send msg to msg_task\n");
+        }
 
         printf("rf 433 learn succeed\n");
     }

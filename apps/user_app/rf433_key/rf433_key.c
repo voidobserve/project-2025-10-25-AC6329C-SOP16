@@ -97,7 +97,7 @@ static u8 rf_433_key_get_value(void)
         last_rf_433_data = recv_rf_433_data;
 #if RF_433_LEARN_ENABLE
         recv_rf_433_addr = recv_rf_433_data >> 8; // 存放接收到的遥控器的地址；客户给到的遥控器，后面8位是键值，前面16位是地址
-#endif
+#endif                                            // #if RF_433_LEARN_ENABLE
         time_out_cnt = RF_433_KEY_SCAN_EFFECTIVE_TIME_OUT / RF_433_KEY_SCAN_CIRCLE_TIMES;
         ret = (u8)(recv_rf_433_data & 0xFF);
 
@@ -343,12 +343,24 @@ void rf_433_key_event_handle(void)
     if (rf_433_addr != cur_rf_433_addr)
     {
         // 学习/对码 之后的地址与当前接收到的地址不一致，直接返回，不处理事件
+
+        // 不能在这里清除事件，会影响对码操作
         // rf_433_key_structure.rf_433_key_latest_key_val = NO_KEY;
         // rf_433_key_structure.rf_433_key_driver_event = RF_433_KEY_EVENT_NONE;
 
         // printf("recv_rf_433_addr != cur_rf_433_addr\n");
         return;
     }
+
+    // 如果还在执行学习成功的动画，需要等动画结束再继续响应
+
+    if (RF_433_LEARN_STATUS_PROCESSING == rf_433_learn_status_get())
+    {
+        rf_433_key_structure.rf_433_key_latest_key_val = NO_KEY;
+        rf_433_key_structure.rf_433_key_driver_event = RF_433_KEY_EVENT_NONE;
+        return;
+    }
+
 #endif // #if RF_433_LEARN_ENABLE
 #endif
 
@@ -749,7 +761,7 @@ void rf_433_key_event_handle(void)
     {
         // 电机模式切换
         // 1.匀速转，2，正转+反转，3，带暂停的转动，4，速度可变模式，5，音频节奏转动
-        // USER_TO_DO 可能要先套用现有的模式
+        // USER_TO_DO 目前先套用现有的模式，后续可能要电机驱动芯片来修改
         // 测试发现电机一直是同一个方向，没有切换模式
 
         if (DEVICE_OFF == fc_effect.motor_on_off)
@@ -758,8 +770,19 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        fc_effect.base_ins.mode = (fc_effect.base_ins.mode + 1) % 6;
-  
+        // fc_effect.base_ins.mode = (fc_effect.base_ins.mode + 1) % 6;
+        // if (fc_effect.base_ins.mode == 0)
+        // {
+        //     // 不让 fc_effect.base_ins.mode == 0（对应停止转动），改成1
+        //     fc_effect.base_ins.mode = 1;
+        // }
+
+        /*
+            将 fc_effect.base_ins.mode 限制在 1~5，
+            不让 fc_effect.base_ins.mode == 0，（0--对应停止转动）
+        */
+        fc_effect.base_ins.mode = fc_effect.base_ins.mode % 5 + 1;
+
         // fc_effect.base_ins.mode = 0;
         // fc_effect.base_ins.mode = 1;
         // fc_effect.base_ins.mode = 2;
@@ -767,7 +790,7 @@ void rf_433_key_event_handle(void)
         // fc_effect.base_ins.mode = 4;
         /*
             没有观察到电机的正反转
-        */ 
+        */
         // static u8 dir = 0;
         // if (dir)
         // {
@@ -782,8 +805,9 @@ void rf_433_key_event_handle(void)
 
         // printf("fc_effect.base_ins.dir %u\n", (u16)fc_effect.base_ins.dir);
 
-        // printf("motor mode %u \n", (u16)fc_effect.base_ins.mode);
+        printf("motor mode %u \n", (u16)fc_effect.base_ins.mode);
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+        fb_motor_mode(); // 向app反馈电机模式
     }
     break;
 
@@ -829,9 +853,10 @@ void rf_433_key_event_handle(void)
     {
         // 七色跳变 JUMP
         if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type)
+            MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type &&
+            7 == fc_effect.dream_scene.c_n)
         {
-            // 如果本来就是七彩灯的跳变模式，不做处理 （目前只会是遥控器控制会进入这里）
+            // 如果本来就是七彩灯的跳变模式，不做处理
             return;
         }
 
@@ -865,11 +890,20 @@ void rf_433_key_event_handle(void)
     {
         // 七彩渐变 FADE
         if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type)
+            MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type &&
+            7 == fc_effect.dream_scene.c_n)
         {
             // 如果当前是七彩灯渐变模式，不做处理
             return;
         }
+
+        ls_set_color(0, BLUE);
+        ls_set_color(1, GREEN);
+        ls_set_color(2, RED);
+        ls_set_color(3, WHITE);
+        ls_set_color(4, YELLOW);
+        ls_set_color(5, CYAN);
+        ls_set_color(6, PURPLE);
 
         if ((fc_effect.dream_scene.change_type != MODE_COLORFUL_LIGHTS_GRADUAL) ||
             (fc_effect.Now_state != IS_light_scene))
@@ -882,6 +916,7 @@ void rf_433_key_event_handle(void)
         }
 
         fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+        fc_effect.dream_scene.c_n = 7; // 有效颜色数量
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
     }

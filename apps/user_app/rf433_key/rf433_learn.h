@@ -3,7 +3,7 @@
 
 #include "includes.h"
 
-#define RF_433_LEARN_ENABLE 0
+#define RF_433_LEARN_ENABLE 1
 
 #if RF_433_LEARN_ENABLE
 
@@ -28,8 +28,8 @@ extern volatile u32 recv_rf_433_addr; // 存放接收到的433信号的遥控器
 void rf_433_addr_update(u32 addr); // 更新rf433遥控器的地址
 u32 rf_433_addr_get(void);         // 获取rf433遥控器的地址
 
-// RF_433_LEARN_STATUS_T rf_433_learn_status_get(void);
-// void rf_433_learn_status_update(RF_433_LEARN_STATUS_T status);
+RF_433_LEARN_STATUS_T rf_433_learn_status_get(void);
+void rf_433_learn_status_update(RF_433_LEARN_STATUS_T status);
 
 void rf_433_key_learn(void); // rf433学习/对码
 

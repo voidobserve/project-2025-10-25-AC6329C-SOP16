@@ -326,10 +326,22 @@ void fd_meteor_cycle(void)
 void fd_meteor_on_off(void)
 {
     uint8_t tp_buffer[6];
+    u8 data = DEVICE_OFF;
     tp_buffer[0] = 0x2F;
     tp_buffer[1] = 0x02;
-    tp_buffer[2] = fc_effect.star_on_off;
 
+    // 目前在 app 中，1表示开启，2表示关闭
+    if (DEVICE_ON == fc_effect.star_on_off)
+    {
+        data = 1;
+    }
+    else
+    {
+        data = 2;
+    }
+
+    tp_buffer[2] = data;
+    // tp_buffer[2] = fc_effect.star_on_off;
     zd_fb_2_app(tp_buffer, 3);
 }
 
@@ -344,7 +356,7 @@ void fb_bright(void)
 }
 
 void fb_speed(void)
-{ 
+{
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x04;
     tp_buffer[1] = 0x04;
@@ -721,12 +733,37 @@ void parse_zd_data(unsigned char *LedCommand)
 
                 if (fc_effect.music.m_type == PHONE_MIC) // 手机麦模式
                 {
+                    // app_set_bright(LedCommand[5]);
 
-                    app_set_bright(LedCommand[5]);
                     if (phone_music_soure == 1)
                     {
                         phone_music_soure = 0;
-                        set_static_mode(LedCommand[2], LedCommand[3], LedCommand[4]);
+                        // set_static_mode(LedCommand[2], LedCommand[3], LedCommand[4]);
+
+                        // 改成使用最大亮度：
+                        fc_effect.Now_state = IS_IN_MODE_PHONE_MIC;
+
+                        fc_effect.rgb.r = LedCommand[2];
+                        fc_effect.rgb.g = LedCommand[3];
+                        fc_effect.rgb.b = LedCommand[4]; 
+
+                        // printf("r = %d, g = %d, b = %d", r, g, b);
+
+                        if (fc_effect.rgb.r == 0xFF &&
+                            fc_effect.rgb.g == 0xFF &&
+                            fc_effect.rgb.b == 0xFF)
+                        {
+
+                            fc_effect.rgb.r = 0;
+                            fc_effect.rgb.g = 0;
+                            fc_effect.rgb.b = 0;
+                            fc_effect.rgb.w = 255;
+                        }
+                        else
+                        {
+                            fc_effect.rgb.w = 0;
+                        }
+                        set_fc_effect(); // 效果调度
                     }
                     else
                     {
@@ -849,7 +886,7 @@ void parse_zd_data(unsigned char *LedCommand)
                 {
                     fc_effect.motor_on_off = DEVICE_OFF;
                     fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机
-                    
+
                     counting_flag = 1; // 开始计时
                     set_time = 1;      // 允许修改时间
                 }

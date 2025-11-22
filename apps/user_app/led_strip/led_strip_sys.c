@@ -68,11 +68,10 @@ void fc_data_init(void)
     // 流星
     fc_effect.star_on_off = DEVICE_ON;
     fc_effect.star_index = 1;
-    fc_effect.star_speed = 30; // 变化速度
-    // fc_effect.star_speed = 3000; // 变化速度（数值越小，速度越快）
-    fc_effect.app_star_speed = 100;
-    fc_effect.meteor_period = 8;                           // 默认8秒  周期值
-    fc_effect.period_cnt = fc_effect.meteor_period * 1000; // ms,运行时的计数器
+    fc_effect.app_star_speed = 80;
+    fc_effect.star_speed = (u32)330 * fc_effect.app_star_speed / 100;
+    fc_effect.meteor_period = 10;                          // 默认 10 秒  周期值
+    fc_effect.period_cnt = fc_effect.meteor_period * 1000; // 周期值计数值，单位 ms
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
     fc_effect.motor_speed_index = 0;                       // 电机模式或电机速度索引
     fc_effect.meteor_lights_sensitivity = 80;              // 流星灯声控模式下，对应的灵敏度
@@ -150,6 +149,7 @@ void soft_turn_on_the_light(void) // 软开灯处理
     ls_meteor_stat_effect(); // 设置流星灯的动画
 
     fb_led_on_off_state(); // 与app同步开关状态
+    fd_meteor_on_off();    // 向app反馈流星灯开关的状态
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 
     printf("soft_turn_on_the_light\n");
@@ -206,6 +206,7 @@ void soft_turn_off_lights(void) // 软关灯处理
     // WS2812FX_strip_off();
 
     fb_led_on_off_state(); // 与app同步开关状态
+    fd_meteor_on_off();    // 向app反馈流星灯开关的状态
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     printf("soft_turn_off_lights\n");
 }
@@ -253,6 +254,9 @@ void app_set_bright(u8 tp_b)
     */
     fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
     WS2812FX_setBrightness(fc_effect.b);
+
+    printf("app_brightness = %u\n", (u16)fc_effect.app_b);
+    printf("fc_effect.b = %u\n", (u16)fc_effect.b);
 }
 
 /**
@@ -308,6 +312,9 @@ void app_set_speed(u8 tp_speed)
         这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
     */
     fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+
+    printf("app_speed = %u\n", (u16)fc_effect.app_speed);
+    printf("fc_effect.dream_scene.speed = %u\n", fc_effect.dream_scene.speed);
 }
 
 /**
@@ -400,7 +407,10 @@ void app_set_speed(u8 tp_speed)
  */
 void app_set_sensitive(u8 tp_s)
 {
-
+    // 目前是同时设置所有的灵敏度
+    fc_effect.colorful_lights_sensitivity = tp_s;
+    fc_effect.meteor_lights_sensitivity = tp_s;
+    fc_effect.base_ins.sensitivity = tp_s;
     fc_effect.music.s = tp_s;
 }
 
@@ -689,40 +699,59 @@ u8 get_effect_p(void)
 void app_set_meteor_pro(u8 tp_p)
 {
 
+    // if (tp_p >= 2 && tp_p <= 20)
+    // {
+    //     fc_effect.meteor_period = tp_p;
+    //     fc_effect.period_cnt = 0;
+    // }
+
     if (tp_p >= 2 && tp_p <= 20)
     {
         fc_effect.meteor_period = tp_p;
-        fc_effect.period_cnt = 0;
+        fc_effect.period_cnt = (u16)fc_effect.meteor_period * 1000;
     }
+
+    printf("fc_effect.meteor_period = %u\n", (u16)fc_effect.meteor_period);
+    printf("fc_effect.period_cnt = %u\n", (u16)fc_effect.period_cnt);
 }
 
 /**
- * @brief 设置流星开关
+ * @brief 通过app设置流星开关
  *
- * @param tp_sw
+ * @param tp_sw // 1 -- 开启，2--关闭
  */
 void app_set_on_off_meteor(u8 tp_sw)
 {
-
-    fc_effect.star_on_off = tp_sw;
-    if (fc_effect.star_on_off == DEVICE_ON)
+    if (1 == tp_sw)
     {
-
-        ls_meteor_stat_effect();
+        fc_effect.star_on_off = DEVICE_ON;
+    }
+    else
+    {
+        fc_effect.star_on_off = DEVICE_OFF;
     }
 
+    if (DEVICE_ON == fc_effect.star_on_off)
+    {
+        ls_meteor_stat_effect();
+    }
     else
     {
         WS2812FX_stop();
         WS2812FX_setSegment_colorOptions(
-            1,                    // 第0段
-            1, fc_effect.led_num, // 起始位置，结束位置
-            &close_metemor,       // 效果
-            0,                    // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
-        WS2812FX_start();
+            1,                     // 第0段
+            1,                     // 起始位置
+            fc_effect.led_num - 1, // 结束位置
+            &close_metemor,        // 效果
+            0,                     // 颜色
+            fc_effect.star_speed,  // 速度
+            0);                    // 选项，这里像素点大小：3 REVERSE决定方向
+        // WS2812FX_start();
+        WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
+        WS2812FX_running_flag_set();
     }
+
+    // printf("fc_effect.star_on_off == %u\n", (u16)fc_effect.star_on_off);
 }
 
 /**
@@ -750,11 +779,17 @@ void app_set_mereor_mode(u8 tp_m)
  */
 void app_set_mereor_speed(u8 tp_s)
 {
-    if (fc_effect.star_on_off == DEVICE_OFF)
+    if (DEVICE_OFF == fc_effect.star_on_off)
         return;
     fc_effect.app_star_speed = tp_s;
+
+    /*
+        tp_s ： 0 ~ 100
+        最后得到的 fc_effect.star_speed 会在 30 ~ 330
+    */
     fc_effect.star_speed = MAX_STAR_SEPPD * (100 - fc_effect.app_star_speed + 10) / 100;
-    printf(" fc_effect.star_speed=%d", fc_effect.star_speed);
+    printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+    printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
     ls_meteor_stat_effect();
 }
 
@@ -1359,5 +1394,5 @@ void full_color_init(void)
     // sys_s_hi_timer_add(NULL, count_down_run, 10); // 注册按键扫描定时器
     // sys_s_hi_timer_add(NULL, ir_timer_handler, 10);   // 注册按键扫描定时器
     // sys_s_hi_timer_add(NULL, time_clock_handler, 10); // 注册按键扫描定时器
-    sys_s_hi_timer_add(NULL, meteor_period_sub, 10); // 注册按键扫描定时器
+    // sys_s_hi_timer_add(NULL, meteor_period_sub, 10); // 注册按键扫描定时器
 }

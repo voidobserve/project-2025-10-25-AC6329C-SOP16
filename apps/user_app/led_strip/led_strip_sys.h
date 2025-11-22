@@ -114,7 +114,7 @@ typedef enum
 enum
 {
     MSG_SEQUENCER_NONE = 0x00,
-    MSG_SEQUENCER_ONE_WIRE_SEND_INFO, // 使能单线发送
+    MSG_SEQUENCER_ONE_WIRE_SEND_INFO, // 使能单线发送（控制电机）
     // MSG_METEOR_LIGHTS_ON,             // 流星灯开启
 
     MSG_RF_433_LEARN_FAIL,  // 学习/对码 失败（原因：超时）
@@ -150,4 +150,8 @@ void soft_turn_off_lights(void);   // 软关灯处理
  
 void colorful_lights_set_static_mode(color_t colors_structure); // 七彩灯设置为静态模式，颜色值由传参设定
 
+void app_set_on_off_meteor(u8 tp_sw); // 通过app设置流星开关
+void app_set_mereor_speed(u8 tp_s); // 通过app设置流星速度
+void app_set_meteor_pro(u8 tp_p); // 通过app设置流星灯周期
+void app_set_sensitive(u8 tp_s); // 通过app设置灵敏度
 #endif

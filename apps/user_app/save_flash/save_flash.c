@@ -3,6 +3,7 @@
 #include "syscfg_id.h"
 #include "save_flash.h"
 #include "../../../apps/user_app/rf433_key/rf433_key.h"
+#include "../../../apps/user_app/rf433_key/rf433_learn.h"
 
 #define FLASH_CRC_DATA 0xC5
 

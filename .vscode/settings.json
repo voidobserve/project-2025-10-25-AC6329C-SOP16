@@ -13,6 +13,7 @@
         "rf433_key.h": "c",
         "ws2812fx_effect.h": "c",
         "ws2812fx.h": "c",
-        "WS2812FX.H": "cpp"
+        "WS2812FX.H": "cpp",
+        "rf433_learn.h": "c"
     }
 }

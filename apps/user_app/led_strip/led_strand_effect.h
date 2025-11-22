@@ -20,6 +20,7 @@ typedef enum
     IS_light_scene,  // 炫彩情景
     IS_smear_adjust, // 涂抹功能
 
+    IS_IN_MODE_PHONE_MIC, // 手机麦克风模式
     COLORFUL_LIGHTS_STATIC,
 
 } Now_state_e;
@@ -159,9 +160,9 @@ typedef struct
 
     unsigned char meteor_period; // 周期值，单位秒
     unsigned char mode_cycle;    // 1:模式完成一个循环。0：正在跑，和meteor_period搭配用
-    u16 period_cnt;              // ms,运行时的计数器
+    u16 period_cnt;              // ms,运行时的计数器 范围： 2000 ~ 20000
 
-    u8 colorful_lights_sensitivity; // 声控模式下，七彩灯的灵敏度 范围： 0 ~ 100
+    u8 colorful_lights_sensitivity;      // 声控模式下，七彩灯的灵敏度 范围： 0 ~ 100
     Now_state_e state_before_into_music; // 七彩灯 进入声控模式之前，处于哪种模式
     Now_state_e Now_state;               // 当前运行模式
     // smear_adjust_t smear_adjust; // 涂抹功能
@@ -174,7 +175,7 @@ typedef struct
     unsigned char motor_on_off;
     unsigned char star_on_off; // 流星开关
     unsigned char star_index;
-    unsigned short star_speed;    // 流星灯动画的速度值
+    unsigned short star_speed;    // 流星灯动画的速度值 目前范围：30 - 330
     u8 meteor_lights_sensitivity; // 声控模式下，流星灯的灵敏度
     unsigned char app_star_speed; // 反馈给app的，流星灯动画的速度值
 

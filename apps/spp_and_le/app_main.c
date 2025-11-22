@@ -79,7 +79,7 @@ const struct task_info task_info_table[] = {
 #endif
 
     {"led_task", 2, 0, 512, 512}, // 灯光
-    {"msg_task", 3, 0, 128, 128}, // 用户消息处理线程
+    {"msg_task", 3, 0, 256, 256}, // 用户消息处理线程
     {0, 0},
 };
 
@@ -379,7 +379,7 @@ void main_while(void)
 
         effect_stepmotor();  // 声控，电机的音乐效果
         stepmotor();         // 无霍尔时，电机停止指令计时
-        meteor_period_sub(); // 流星周期控制
+        // meteor_period_sub(); // 流星周期控制
 
         rf_433_key_event_handle();
 
@@ -441,10 +441,12 @@ void user_msg_handle_task(void)
             }
         }
         break;
+#if RF_433_LEARN_ENABLE
 
         case MSG_RF_433_LEARN_SUCCEED:
         {
             // rf433学习/对码完成，闪烁几次当前的七彩灯
+            rf_433_learn_status_update(RF_433_LEARN_STATUS_PROCESSING); // 状态更新，表示正在处理七彩灯对码成功的动画
 
             WS2812FX_setSegment_colorOptions(
                 0,                                         // 第0段
@@ -452,11 +454,31 @@ void user_msg_handle_task(void)
                 0,                                         // 结束位置
                 &colorful_lights_flash_when_learn_success, // 效果
                 0,                                         // 颜色，WS2812FX_setColors设置
-                fc_effect.dream_scene.speed * 5,           // 速度
-                0);                                        // 选项，这里像素点大小：3
+                fc_effect.dream_scene.speed,               // 速度
+                0);                                        // 选项
+                                                           // 设置颜色部分的程序要放在 WS2812FX_setSegment_colorOptions() 函数调用后
+            if (fc_effect.Now_state == IS_STATIC)
+            {
+                // 如果对码成功之前七彩灯处于静态模式
+#if 1
+                u32 colors_buff[MAX_NUM_COLORS] = {0}; // WS2812FX_setColors() 函数传参只能是这个大小的数组
+                colors_buff[0] = ((u32)fc_effect.rgb.w << 24) |
+                                 ((u32)fc_effect.rgb.r << 16) |
+                                 ((u32)fc_effect.rgb.g << 8) |
+                                 (u32)fc_effect.rgb.b;
+                WS2812FX_set_coloQty(0, 1); // 设置颜色数量，设置七彩灯的颜色数量为1
+                WS2812FX_setColors(0, colors_buff);
+#endif
+                // printf("__LINE__ %u\n", __LINE__);
+                // printf("colors = %lu \n", colors);
+            }
+            else
+            {
+                // 如果对码成功之前，七彩灯不处于静态模式
+                WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
+                ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
+            }
 
-            WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n);
-            ls_set_colors(fc_effect.dream_scene.c_n, &fc_effect.dream_scene.rgb);
             WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
             WS2812FX_running_flag_set();
         }
@@ -467,7 +489,8 @@ void user_msg_handle_task(void)
             // rf433 学习/对码成功的七彩灯动画完成，回到原来的动画
 
             if (DEVICE_ON == fc_effect.on_off_flag)
-            {                    // 如果设备开启
+            {
+                // 如果设备开启
                 set_fc_effect(); // 设置七彩灯的动画
             }
             else
@@ -484,8 +507,12 @@ void user_msg_handle_task(void)
                 WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
                 WS2812FX_running_flag_set();
             }
+
+            rf_433_learn_status_update(RF_433_LEARN_STATUS_DONE); // 表示对码完成
         }
         break;
+
+#endif // #if RF_433_LEARN_ENABLE
 
         case MSG_USER_SAVE_INFO:
         {
