@@ -328,7 +328,7 @@ static const u16 timer_div[] = {
 
 ___interrupt
     AT_VOLATILE_RAM_CODE void
-    user_timer_isr(void) // 50us
+    user_timer_isr(void) // 125us
 {
 
     TIMER_CON |= BIT(14);

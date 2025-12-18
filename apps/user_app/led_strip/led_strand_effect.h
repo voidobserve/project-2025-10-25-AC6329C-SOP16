@@ -191,6 +191,7 @@ typedef struct
 
 extern volatile fc_effect_t fc_effect; // 幻彩灯串效果数据
 
+void set_fc_effect(void);
 void base_Dynamic_Effect(u8 tp_num);
 
 void ls_set_color(uint8_t n, uint32_t c);  // 设置fc_effect.dream_scene.rgb的颜色池

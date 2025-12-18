@@ -3352,7 +3352,7 @@ uint16_t fc_music_twinkle(void)
  * @return * u16
  */
 u16 colorful_lights_sound_gradual_max_brightness(void)
-{
+{ 
     // 生成指定颜色：
     uint32_t color = WS2812FX_color_wheel(_seg_rt->counter_mode_step);
     Adafruit_NeoPixel_fill_with_max_brightness(color, _seg->start, _seg_len); // 填充最大亮度值对应的颜色
@@ -3891,6 +3891,7 @@ u16 colorful_lights_auto(void)
 
     if (COLORFUL_LIGHTS_NONE == _seg_rt->aux_param3 ||
         COLORFUL_LIGHTS_BREATHING_END == _seg_rt->aux_param3)
+#if 0
     {
         // 刚开始动画
         u32 colors_buff[MAX_NUM_COLORS] = {0};
@@ -3912,6 +3913,7 @@ u16 colorful_lights_auto(void)
         _seg_rt->counter_mode_step = 0;
     }
     else if (COLORFUL_LIGHTS_FLASH_END == _seg_rt->aux_param3)
+#endif
     { // 频闪模式结束
         u32 colors_buff[MAX_NUM_COLORS] = {0};
         u8 colors_nums = 0;

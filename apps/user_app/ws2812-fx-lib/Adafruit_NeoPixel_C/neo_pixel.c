@@ -6,6 +6,7 @@
 #include "adafruit_typedef.h"
 #include "../../../../apps/user_app/led_strip/led_strip_sys.h"
 #include "../../../../apps/user_app/led_strip/led_strand_effect.h"
+#include "led_strip_drive.h"
 
 /*
 Adafruit_NeoPixel库为实现WS2812类似系列的灯珠实现非常酷炫的效果提供了各种接口函数，

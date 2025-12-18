@@ -3,7 +3,7 @@
 
 #include "includes.h"
 
-#define RF_433_LEARN_ENABLE 1
+#define RF_433_LEARN_ENABLE 0
 
 #if RF_433_LEARN_ENABLE
 
