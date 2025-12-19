@@ -11,6 +11,7 @@
 				<Option type="1" />
 				<Option compiler="q32s_lto_compiler" />
 				<Compiler>
+					<Add option="-flto" />
 					<Add option="-Os" />
 					<Add option="-Wcast-align" />
 					<Add option="-Wundef" />
@@ -18,7 +19,6 @@
 					<Add option="-g" />
 					<Add option="-integrated-as" />
 					<Add option="-O0" />
-					<Add option="-flto" />
 					<Add option="-fallow-pointer-null" />
 					<Add option="-Wincompatible-pointer-types" />
 					<Add option="-fprefer-gnu-section" />
@@ -139,8 +139,10 @@
 					<Add directory="../../../user_app/one_wire" />
 					<Add directory="../../../user_app/protocol" />
 					<Add directory="../../../user_app/led_strip" />
+					<Add directory="../../../user_app/rf433_key" />
 				</Compiler>
 				<Linker>
+					<Add option="-flto" />
 					<Add option="--plugin-opt=-inline-threshold=5" />
 					<Add option="--plugin-opt=save-temps" />
 					<Add option="--plugin-opt=-inline-normal-into-special-section=true" />

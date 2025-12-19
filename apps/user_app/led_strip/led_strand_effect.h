@@ -197,4 +197,9 @@ void base_Dynamic_Effect(u8 tp_num);
 void ls_set_color(uint8_t n, uint32_t c);  // 设置fc_effect.dream_scene.rgb的颜色池
 void ls_set_colors(uint8_t n, color_t *c); // 设置段的颜色
 
+void colorful_light_open(void);
+void colorful_light_close(void);
+void motor_open(void);
+void motor_close(void);
+
 #endif

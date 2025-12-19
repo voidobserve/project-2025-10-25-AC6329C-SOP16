@@ -25,7 +25,7 @@ void rf_433_key_config(void)
 }
 
 static u8 rf_433_key_get_value(void);
-rf_433_key_struct_t rf_433_key_structure = {
+volatile rf_433_key_struct_t rf_433_key_structure = {
     .rf_433_key_para.scan_time = RF_433_KEY_SCAN_CIRCLE_TIMES, // 扫描间隔时间
     .rf_433_key_para.last_key = NO_KEY,
     .rf_433_key_para.filter_value = 0,
@@ -137,14 +137,17 @@ static u8 rf_433_key_get_keyevent(const u8 key_val, const u8 key_event)
     case KEY_EVENT_CLICK:
         /* 短按，在数组 rf_433_key_event_table 的[x][1]位置*/
         rf_433_key_event_table_index = 1;
+        // printf("key event click\n");
         break;
     case KEY_EVENT_LONG:
         /* 长按，在数组 rf_433_key_event_table 的[x][2]位置 */
         rf_433_key_event_table_index = 2;
+        // printf("key event long\n");
         break;
     case KEY_EVENT_HOLD:
         /* 长按持续（不松手），在数组 rf_433_key_event_table 的[x][3]位置 */
         rf_433_key_event_table_index = 3;
+        // printf("key event hold\n");
         break;
     case KEY_EVENT_UP:
         /* 长按后松手，在数组 rf_433_key_event_table 的[x][4]位置 */
@@ -166,6 +169,8 @@ static u8 rf_433_key_get_keyevent(const u8 key_val, const u8 key_event)
             break;
         }
     }
+
+    // printf("rf key event %u\n", (u16)rf_433_key_event);
 
     return rf_433_key_event;
 }
@@ -368,21 +373,10 @@ void rf_433_key_event_handle(void)
     rf_433_key_structure.rf_433_key_latest_key_val = NO_KEY;
     rf_433_key_structure.rf_433_key_driver_event = RF_433_KEY_EVENT_NONE;
 
-    if (DEVICE_OFF == get_on_off_state())
-    { // 如果设备没有启动
-        // 只对开关按键做处理
-        if (RF_433_KEY_EVENT_R1C4_CLICK == rf_433_key_event ||
-            RF_433_KEY_EVENT_R1C4_LONG == rf_433_key_event)
-        {
-            soft_turn_on_the_light(); // 打开设备
-            // save_user_data_area3();
-            os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
-        }
-
+    if (RF_433_KEY_EVENT_NONE == rf_433_key_event)
+    {
         return;
     }
-
-    // 执行到这里，说明设备已经启动
 
     switch (rf_433_key_event)
     {
@@ -390,6 +384,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R1C1_LONG:
     case RF_433_KEY_EVENT_R1C1_HOLD:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         if (IS_STATIC == fc_effect.Now_state)
         {
             const u8 step = 10;
@@ -466,6 +466,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R1C2_LONG: // 亮度减
     case RF_433_KEY_EVENT_R1C2_HOLD:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         if (IS_STATIC == fc_effect.Now_state)
         {
             // 注意：不能让灯光亮度减到0%，灯光会熄灭
@@ -540,28 +546,45 @@ void rf_433_key_event_handle(void)
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R1C3_CLICK:
-    case RF_433_KEY_EVENT_R1C3_LONG: // OFF
+    case RF_433_KEY_EVENT_R1C3_LONG:
     {
-        soft_turn_off_lights();
+        // soft_turn_on_the_light(); // 打开设备
+
+        // 只开 七彩灯 和 电机
+        colorful_light_open();
+        fb_led_on_off_state(); // 与app反馈七彩灯的开关状态
+
+        motor_open();
+        fb_motor_mode();  // 向app反馈电机的模式
+        fb_motor_speed(); // 向app反馈电机转速
     }
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R1C4_CLICK:
-    case RF_433_KEY_EVENT_R1C4_LONG: // ON
+    case RF_433_KEY_EVENT_R1C4_LONG:
     {
-        if (DEVICE_ON == fc_effect.on_off_flag)
-        {
-            // 如果已经开机，不响应该按键事件
-            return;
-        }
+        // 关灯
+        // soft_turn_off_lights();
 
-        soft_turn_on_the_light(); // 打开设备
+        // 只关 七彩灯 和 电机
+        colorful_light_close();
+        fb_led_on_off_state(); // 与app同步开关状态
+
+        motor_close();
+        fb_motor_mode();  // 向app反馈电机的模式
+        fb_motor_speed(); // 向app反馈电机转速
     }
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R2C1_CLICK:
     case RF_433_KEY_EVENT_R2C1_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // RED
         color_t color_structure = {0};
         color_structure.r = 0xFF;
@@ -575,6 +598,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R2C2_CLICK:
     case RF_433_KEY_EVENT_R2C2_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // GREEN
         color_t color_structure = {0};
         color_structure.r = 0x00;
@@ -588,6 +617,11 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R2C3_CLICK:
     case RF_433_KEY_EVENT_R2C3_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
 
         // BLUE
         color_t color_structure = {0};
@@ -602,6 +636,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R2C4_CLICK:
     case RF_433_KEY_EVENT_R2C4_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 纯白色
         color_t color_structure = {0};
         color_structure.r = 0x00;
@@ -615,6 +655,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R3C1_CLICK:
     case RF_433_KEY_EVENT_R3C1_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 橙色
         u32 color = ORANGE;
         color_t color_structure = {0};
@@ -629,6 +675,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R3C2_CLICK:
     case RF_433_KEY_EVENT_R3C2_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 黄色
         u32 color = YELLOW;
         color_t color_structure = {0};
@@ -643,6 +695,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R3C3_CLICK:
     case RF_433_KEY_EVENT_R3C3_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // CYAN 青色
         u32 color = CYAN;
         color_t color_structure = {0};
@@ -657,6 +715,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R3C4_CLICK:
     case RF_433_KEY_EVENT_R3C4_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 紫色
         u32 color = PURPLE;
         color_t color_structure = {0};
@@ -671,6 +735,11 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R4C1_CLICK:
     case RF_433_KEY_EVENT_R4C1_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
 
         // 七彩跳变
         ls_set_color(0, BLUE);
@@ -691,6 +760,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R4C2_CLICK:
     case RF_433_KEY_EVENT_R4C2_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 七彩渐变
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
@@ -710,6 +785,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R4C3_CLICK:
     case RF_433_KEY_EVENT_R4C3_LONG: //
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 七彩呼吸
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
@@ -751,7 +832,13 @@ void rf_433_key_event_handle(void)
         fb_motor_mode(); // 向app反馈电机的状态
 #endif
 
-        // 自动模式 七彩跳变->七彩渐变->七彩呼吸->七彩跳变
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
+        // 自动模式 七彩跳变->七彩渐变->七彩呼吸->七彩跳变-> ......
         fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_AUTO;
         fc_effect.Now_state = IS_light_scene;
         WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
@@ -762,6 +849,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C1_CLICK:
     case RF_433_KEY_EVENT_R5C1_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 声控 渐变
         fc_effect.Now_state = IS_light_music;
         fc_effect.music.m = 0; // 设置 声控模式索引
@@ -772,6 +865,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C2_CLICK:
     case RF_433_KEY_EVENT_R5C2_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 声控 呼吸
         fc_effect.Now_state = IS_light_music;
         fc_effect.music.m = 1; // 设置 声控模式索引
@@ -782,6 +881,12 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R5C3_CLICK:
     case RF_433_KEY_EVENT_R5C3_LONG:
     {
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
+
         // 声控 静态定色
         fc_effect.Now_state = IS_light_music;
         fc_effect.music.m = 2;
@@ -814,6 +919,12 @@ void rf_433_key_event_handle(void)
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
         fb_motor_mode(); // 向app反馈电机模式
 #endif
+
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 七彩灯没有打开，直接返回
+            return;
+        }
 
         // 声控 跳变
         fc_effect.Now_state = IS_light_music;
@@ -892,10 +1003,11 @@ void rf_433_key_event_handle(void)
         }
     }
     break;
-
+        // ==============================================================================
     case RF_433_KEY_EVENT_R6C2_CLICK:
     case RF_433_KEY_EVENT_R6C2_LONG:
     {
+#if 0
         // 七色跳变 JUMP
         if (IS_light_scene == fc_effect.Now_state &&
             MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type &&
@@ -927,12 +1039,29 @@ void rf_433_key_event_handle(void)
         fc_effect.dream_scene.c_n = 7;                                 // 有效颜色数量
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
+#endif
+
+        if (fc_effect.star_on_off == DEVICE_OFF)
+        {
+            // 如果流星灯没有启动，不做处理
+            return;
+        }
+
+        // 流星灯模式切换
+        // 流星灯索引值范围： 1 ~ 18
+        fc_effect.star_index++;
+        if (fc_effect.star_index > 18)
+        {
+            fc_effect.star_index = 1;
+        }
+        ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
     }
     break;
-
+        // ==============================================================================
     case RF_433_KEY_EVENT_R6C3_CLICK:
     case RF_433_KEY_EVENT_R6C3_LONG:
     {
+#if 0
         // 七彩渐变 FADE
         if (IS_light_scene == fc_effect.Now_state &&
             MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type &&
@@ -964,12 +1093,38 @@ void rf_433_key_event_handle(void)
         fc_effect.dream_scene.c_n = 7; // 有效颜色数量
         fc_effect.Now_state = IS_light_scene;
         set_fc_effect();
+#endif
+
+        if (fc_effect.star_on_off == DEVICE_OFF)
+        {
+            // 如果流星灯没有启动，不做处理
+            return;
+        }
+
+        // 流星灯 速度 加
+        const u8 step = 10;
+        if (fc_effect.app_star_speed < 100 - step)
+        {
+            fc_effect.app_star_speed += step;
+        }
+        else
+        {
+            fc_effect.app_star_speed = 100;
+        }
+
+        // 最后得到的 fc_effect.star_speed 会在 30 ~330
+        fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+        ls_meteor_stat_effect();
+        fd_meteor_speed(); // 向app反馈流星灯速度
     }
     break;
-
+        // ==============================================================================
     case RF_433_KEY_EVENT_R6C4_CLICK:
     case RF_433_KEY_EVENT_R6C4_LONG:
     {
+#if 0
         /*
             电机参数 +
 
@@ -1014,144 +1169,115 @@ void rf_433_key_event_handle(void)
             fc_effect.music.s = fc_effect.base_ins.sensitivity;
             fb_sensitive(); // 向app反馈灵敏度
         }
-    }
-    break;
+#endif
 
-    case RF_433_KEY_EVENT_R7C1_CLICK:
-    case RF_433_KEY_EVENT_R7C1_LONG:
-    {
-        // AUTO
-
-        if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type)
+        if (fc_effect.star_on_off == DEVICE_OFF)
         {
-            // 如果之前是七彩灯的AUTO模式，则不做处理
+            // 如果流星灯没有启动，不做处理
             return;
         }
 
-        if ((fc_effect.dream_scene.change_type != MODE_COLORFUL_LIGHTS_AUTO) ||
-            (fc_effect.Now_state != IS_light_scene))
+        // 流星灯 速度减
+        const u8 step = 10;
+        if (fc_effect.app_star_speed > 0 + step)
         {
-            /*
-                如果之前不是七彩灯的自动模式，
-                清空灯光动画运行时使用的数据，让动画重新开始跑
-            */
-            WS2812FX_resetSegmentRuntime(0); //
+            fc_effect.app_star_speed -= step;
+        }
+        else
+        {
+            fc_effect.app_star_speed = 0;
         }
 
-        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_AUTO;
-        fc_effect.Now_state = IS_light_scene;
-        set_fc_effect();
+        // 最后得到的 fc_effect.star_speed 会在 30 ~330
+        fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+        ls_meteor_stat_effect();
+        fd_meteor_speed(); // 向app反馈流星灯速度
     }
     break;
+        // ==============================================================================
+    case RF_433_KEY_EVENT_R7C1_CLICK:
+    case RF_433_KEY_EVENT_R7C1_LONG:
+    {
 
+        if (fc_effect.on_off_flag == DEVICE_OFF)
+        {
+            // 如果七彩灯没有打开，不打开电机，直接返回
+            return;
+        }
+
+        // 电机开
+        motor_open();
+        fb_motor_mode(); // 向app反馈电机的状态
+    }
+    break;
+        // ==============================================================================
     case RF_433_KEY_EVENT_R7C2_CLICK:
     case RF_433_KEY_EVENT_R7C2_LONG:
     {
         // 声控模式
-        ls_set_music_mode();
+        // ls_set_music_mode();
+
+        // 电机关
+        motor_close();
+        fb_motor_mode(); // 向app反馈电机的状态
     }
     break;
-
+        // ==============================================================================
     case RF_433_KEY_EVENT_R7C3_CLICK:
     case RF_433_KEY_EVENT_R7C3_LONG:
     {
-        // 呼吸模式，1，先按单色键，再按呼吸键，则为单色呼吸，2，先按变色键，再按呼吸，则为变色呼吸
-
-        u8 color_nums = 0; // 存放颜色数量
-
-        if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type &&
-            7 == fc_effect.dream_scene.c_n)
-        { // 如果本来就是呼吸模式，不响应该事件
-          // printf("__LINE__ %d\n", __LINE__);
-            return;
-        }
-        else if (IS_STATIC == fc_effect.Now_state)
-        {
-            /*
-                如果是从静态模式进入呼吸模式
-                变成单色呼吸
-            */
-            color_nums = 1; // 颜色数量 -- 只有1个颜色
-            fc_effect.dream_scene.rgb[0].r = fc_effect.rgb.r;
-            fc_effect.dream_scene.rgb[0].g = fc_effect.rgb.g;
-            fc_effect.dream_scene.rgb[0].b = fc_effect.rgb.b;
-            fc_effect.dream_scene.rgb[0].w = fc_effect.rgb.w;
-            // printf("__LINE__ %d\n", __LINE__);
-        }
-        else
-        {
-            /*
-                如果不是从静态模式进入呼吸模式，
-                变成变色呼吸（每轮呼吸完换一种颜色）
-            */
-            ls_set_color(color_nums++, BLUE);
-            ls_set_color(color_nums++, GREEN);
-            ls_set_color(color_nums++, RED);
-            ls_set_color(color_nums++, WHITE);
-            ls_set_color(color_nums++, YELLOW);
-            ls_set_color(color_nums++, CYAN);
-            ls_set_color(color_nums++, PURPLE);
-        }
-
-        if ((fc_effect.dream_scene.change_type != MODE_COLORFUL_LIGHTS_BREATH) ||
-            (fc_effect.Now_state != IS_light_scene))
-        {
-            /*
-                如果之前不是七彩灯的呼吸模式，
-                清空灯光动画运行时使用的数据，让动画重新开始跑
-            */
-            WS2812FX_resetSegmentRuntime(0); //
-            // printf("__LINE__ %d\n", __LINE__);
-        }
-
-        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-        fc_effect.dream_scene.c_n = color_nums; // 颜色数量
-        fc_effect.Now_state = IS_light_scene;
-        // printf("color_nums = %u\n", (u16)color_nums);
-        set_fc_effect();
-    }
-    break;
-
-    case RF_433_KEY_EVENT_R7C4_CLICK:
-    case RF_433_KEY_EVENT_R7C4_LONG:
-    {
-        /*
-            电机参数 -
-
-            如果在普通电机模式，控制电机转速
-            如果在声控电机模式，控制电机灵敏度
-        */
-        // 电机转速 减
-
+        // 电机速度加
         if (DEVICE_OFF == fc_effect.motor_on_off)
         {
             // 电机没有启动，不调节电机转速
             return;
         }
 
-        // 判断电机是否处于普通模式
+        // 判断电机是否处于普通模式（非声控模式）
         if (5 != fc_effect.base_ins.mode)
         {
-            u8 index = 0;
-            for (; index < ARRAY_SIZE(motor_period); index++) // 找到当前电机速度索引对应的下标
+            if (fc_effect.motor_speed_index > 0)
             {
-                if (motor_period[index] == fc_effect.base_ins.period)
-                {
-                    break;
-                }
+                fc_effect.motor_speed_index--;
             }
 
-            // 在 motor_period[] 中，索引值越小，电机速度越快
-            if (index < ARRAY_SIZE(motor_period) - 1)
+            fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            fb_motor_speed(); // 向app反馈电机的转速
+        }
+        else
+        {
+            // 如果电机处于声控模式，调节灵敏度
+            // motor_sound_sensitivity_sub();
+            motor_sound_sensitivity_add();
+            fc_effect.music.s = fc_effect.base_ins.sensitivity; // 存放要反馈给app的灵敏度
+            fb_sensitive();                                     // 向app反馈灵敏度
+        }
+    }
+    break;
+        // ==============================================================================
+    case RF_433_KEY_EVENT_R7C4_CLICK:
+    case RF_433_KEY_EVENT_R7C4_LONG:
+    { 
+        // 电机速度减
+        if (DEVICE_OFF == fc_effect.motor_on_off)
+        {
+            // 电机没有启动，不调节电机转速
+            return;
+        }
+
+        // 判断电机是否处于普通模式（非声控模式）
+        if (5 != fc_effect.base_ins.mode)
+        {
+            if (fc_effect.motor_speed_index < ARRAY_SIZE(motor_period) - 1)
             {
-                index++;
-                fc_effect.base_ins.period = motor_period[index];
+                fc_effect.motor_speed_index++; // 索引值越大，对应的电机转速就越慢
             }
 
-            one_wire_set_period(motor_period[index]);
-            fc_effect.motor_speed_index = index;
+            fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
             printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
             os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
             fb_motor_speed(); // 向app反馈电机的转速
@@ -1160,12 +1286,12 @@ void rf_433_key_event_handle(void)
         {
             // 如果电机处于声控模式，调节灵敏度
             motor_sound_sensitivity_sub();
-            fc_effect.music.s = fc_effect.base_ins.sensitivity;
-            fb_sensitive(); // 向app反馈灵敏度
+            fc_effect.music.s = fc_effect.base_ins.sensitivity; // 存放要反馈给app的灵敏度
+            fb_sensitive();                                     // 向app反馈灵敏度
         }
     }
     break;
-
+        // ==============================================================================
     default:
     {           // 如果不是rf433遥控器的按键事件
         return; // 函数返回，不执行接下来的步骤
@@ -1174,7 +1300,6 @@ void rf_433_key_event_handle(void)
 
     } // switch (rf_433_key_event)
 
-    // save_user_data_area3(); // 执行完对应的操作后，保存数据到flash
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 

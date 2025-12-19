@@ -17,7 +17,7 @@
 
 #define RF_433_KEY_SCAN_CIRCLE_TIMES (10)
 #define RF_433_KEY_SCAN_FILTER_TIMES (0)                     // 按键消抖次数
-#define RF_433_KEY_SCAN_LONG_PRESS_TIME_THRESHOLD ((u16)750) // 长按时间阈值，单位：ms
+#define RF_433_KEY_SCAN_LONG_PRESS_TIME_THRESHOLD ((u16)1000) // 长按时间阈值，单位：ms
 #define RF_433_KEY_SCAN_HOLD_PRESS_TIME_THRESHOLD ((u16)150) // 长按持续（不松手）的时间阈值，单位：ms，每隔 xx ms认为有一次长按持续事件
 #define RF_433_KEY_SCAN_MUILTY_CLICK_TIME_THRESHOLD (0)      // 等待多击的时间间隔，单位：ms
 /*
@@ -242,7 +242,7 @@ typedef struct
     u8 rf_433_key_latest_key_val; // 存放最新扫描到的按键键值
 } rf_433_key_struct_t;
 
-extern rf_433_key_struct_t rf_433_key_structure;
+extern volatile rf_433_key_struct_t rf_433_key_structure;
 
 extern volatile u32 recv_rf_433_data;                 // 存放收到的rf433数据
 extern volatile u8 flag_is_received_rf_433_data; // 标志位，是否收到一次数据

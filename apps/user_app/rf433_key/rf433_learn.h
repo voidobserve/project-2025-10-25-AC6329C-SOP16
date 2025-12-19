@@ -20,7 +20,7 @@ typedef u8 RF_433_LEARN_STATUS_T;
     上电之后，rf433按键学习/对码时间。
     单位：ms
 */
-#define RF_433_KEY_LEARN_TIMES_ARTER_PWR_ON ((u16)3000)
+#define RF_433_KEY_LEARN_TIMES_ARTER_PWR_ON ((u16)5000)
 #define RF_433_KEY_LEARN_FUNC_PERIOD (10) // 调用 rf_433_key_learn() 该函数的周期，单位：ms
 
 extern volatile u32 recv_rf_433_addr; // 存放接收到的433信号的遥控器地址

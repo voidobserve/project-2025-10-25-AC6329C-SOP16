@@ -301,7 +301,6 @@ void fd_meteor_speed(void)
     tp_buffer[0] = 0x2F;
     tp_buffer[1] = 0x01;
     tp_buffer[2] = fc_effect.app_star_speed;
-
     zd_fb_2_app(tp_buffer, 3);
 }
 
@@ -745,7 +744,7 @@ void parse_zd_data(unsigned char *LedCommand)
 
                         fc_effect.rgb.r = LedCommand[2];
                         fc_effect.rgb.g = LedCommand[3];
-                        fc_effect.rgb.b = LedCommand[4]; 
+                        fc_effect.rgb.b = LedCommand[4];
 
                         // printf("r = %d, g = %d, b = %d", r, g, b);
 

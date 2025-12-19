@@ -47,8 +47,13 @@ void fc_data_init(void)
         MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
         一般只用 200 ~ 2000 这个范围，
         这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+
+        MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 5000
+        一般只用 200 ~ 5000 这个范围，
+        这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
     */
-    fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+    // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+    fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
     fc_effect.ls_speed = 3;
     fc_effect.sequence = NEO_RBGW;
     fc_effect.auto_f = IS_PAUSE;
@@ -69,20 +74,22 @@ void fc_data_init(void)
     fc_effect.star_on_off = DEVICE_ON;
     fc_effect.star_index = 1;
     fc_effect.app_star_speed = 80;
+    // fc_effect.app_star_speed = 20;
     fc_effect.star_speed = (u32)330 * fc_effect.app_star_speed / 100;
-    fc_effect.meteor_period = 10;                          // 默认 10 秒  周期值
+    // fc_effect.star_speed = (u32)100 * fc_effect.app_star_speed / 100;
+    fc_effect.meteor_period = 2;                           // 默认 2 秒  周期值
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // 周期值计数值，单位 ms
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
-    fc_effect.motor_speed_index = 0;                       // 电机模式或电机速度索引
     fc_effect.meteor_lights_sensitivity = 80;              // 流星灯声控模式下，对应的灵敏度
 
     // 电机
-    fc_effect.base_ins.mode = 4;   // 360转
-    fc_effect.base_ins.period = 8; // 速度8s
-    fc_effect.base_ins.dir = 0;    // 0: 正转  1：
+    fc_effect.motor_speed_index = 0; // 电机模式或电机速度索引
+    fc_effect.base_ins.mode = 4;     // 360转
+    fc_effect.base_ins.period = 8;   // 速度8s
+    fc_effect.base_ins.dir = 0;      // 0: 正转  1：
     fc_effect.base_ins.music_mode = 0;
     fc_effect.motor_on_off = DEVICE_ON;
-    fc_effect.base_ins.sensitivity = 80;
+    fc_effect.base_ins.sensitivity = 80; // 电机声控模式下，对应的灵敏度
 }
 
 void OpenMortor(void);
@@ -94,40 +101,6 @@ void OpenMortor(void);
  *********************************************************/
 void soft_turn_on_the_light(void) // 软开灯处理
 {
-#if 0
-    fc_effect.on_off_flag = DEVICE_ON; // 七彩灯为开启状态
- 
-    motor_Init();     // 初始化电机相关的变量
-    WS2812FX_start(); // 清空动画使用到的缓存，给运行标志位置位
-
-    // 开机前，可能关机前电机就开着，或者关机前电机就已经关了，开机后保持状态不变（开机后，恢复电机在关机前的状态）
-    if (fc_effect.motor_speed_index >= ARRAY_SIZE(motor_period))
-    {
-        // 如果开机前，电机的周期索引超过了电机的周期数组大小，说明电机在开机前就是关着的
-        one_wire_set_mode(6); // 关闭电机
-        fc_effect.motor_on_off = DEVICE_OFF;
-    }
-    else
-    {
-        // 如果开机前，电机的周期索引还在电机的周期数组大小内，说明电机在开机前是开着的
-        one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
-        if (6 == fc_effect.base_ins.mode) // 开机前，可能之前调用了关机的命令，这个变量会等于关机对应的模式
-        {
-            one_wire_set_mode(4); // 360正转
-        }
-        fc_effect.motor_on_off = DEVICE_ON;
-    }
-
-    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-
-    set_fc_effect();         // 七彩灯动画效果设置
-    ls_meteor_stat_effect(); // 流星灯动画效果设置 这个函数里面会写入一次flash
-    fb_led_on_off_state();   // 与app同步开关状态 
-    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
-
-    printf("soft_turn_on_the_light\n");
-#endif
-
     fc_effect.on_off_flag = DEVICE_ON;
 
     motor_Init();
@@ -141,7 +114,6 @@ void soft_turn_on_the_light(void) // 软开灯处理
             fc_effect.base_ins.mode = 4;
         }
     }
-
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
     // printf("fc_effect.motor_speed_index %u\n", (u16)fc_effect.motor_speed_index); // 打印电机的速度索引
 
@@ -150,6 +122,9 @@ void soft_turn_on_the_light(void) // 软开灯处理
 
     fb_led_on_off_state(); // 与app同步开关状态
     fd_meteor_on_off();    // 向app反馈流星灯开关的状态
+    fb_motor_mode();       // 向app反馈电机的模式
+    fb_motor_speed();      // 向app反馈电机转速
+
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 
     printf("soft_turn_on_the_light\n");
@@ -158,24 +133,9 @@ void soft_turn_on_the_light(void) // 软开灯处理
 void CloseMotor(void);
 void soft_turn_off_lights(void) // 软关灯处理
 {
-#if 0
-    fc_effect.on_off_flag = DEVICE_OFF;
-
-    CloseMotor(); // 关闭电机
-
-    WS2812FX_stop();
-    WS2812FX_strip_off(); // 清空缓存
-
-    fb_led_on_off_state(); // 与app同步设备的开关状态
-    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
-
-    printf("soft_turn_off_lights\n");
-#endif
-
     fc_effect.on_off_flag = DEVICE_OFF;
 
     // 改成只发送关闭电机的控制命令，不给 fc_effect.motor_on_off 赋值为 DEVICE_OFF
-    one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
     one_wire_set_mode(6); // 关闭电机
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
@@ -207,8 +167,64 @@ void soft_turn_off_lights(void) // 软关灯处理
 
     fb_led_on_off_state(); // 与app同步开关状态
     fd_meteor_on_off();    // 向app反馈流星灯开关的状态
+    fb_motor_mode();       // 向app反馈电机的模式
+    fb_motor_speed();      // 向app反馈电机转速
+
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
     printf("soft_turn_off_lights\n");
+}
+
+/**
+ * @brief 打开 七彩灯
+ *      注意：调用前要先确保七彩灯的模式对应
+ * 
+ * @return * void
+ */
+void colorful_light_open(void)
+{
+    fc_effect.on_off_flag = DEVICE_ON;
+    set_fc_effect(); // 设置七彩灯的动画
+}
+
+/**
+ * @brief 关闭 七彩灯
+ *
+ * @return * void
+ */
+void colorful_light_close(void)
+{
+    fc_effect.on_off_flag = DEVICE_OFF;
+    // 关闭七彩灯：（让七彩灯一直熄灭）
+    WS2812FX_setSegment_colorOptions(
+        0,                             // 第0段
+        0,                             // 起始位置
+        0,                             // 结束位置
+        &colorful_lights_effect_close, // 效果
+        0,                             // 颜色
+        0,                             // 速度
+        0);                            // 选项，这里像素点大小：3 REVERSE决定方向
+    WS2812FX_resetSegmentRuntime(0);   // 清除指定段的显示缓存
+    WS2812FX_running_flag_set();
+}
+
+// 打开 电机
+void motor_open(void)
+{
+    fc_effect.motor_on_off = DEVICE_ON;
+    if (6 == fc_effect.base_ins.mode)
+    {
+        // 如果电机的模式是6（关闭），则改为4
+        fc_effect.base_ins.mode = 4;
+    }
+    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+}
+
+// 关闭 电机
+void motor_close(void)
+{
+    fc_effect.motor_on_off = DEVICE_OFF;
+    one_wire_set_mode(6); // 关闭电机
+    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 }
 
 /*********************************************************
@@ -310,8 +326,13 @@ void app_set_speed(u8 tp_speed)
         MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
         一般只用 200 ~ 2000 这个范围，
         这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+
+        MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 5000
+        一般只用 200 ~ 5000 这个范围，
+        这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
     */
-    fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+    // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+    fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
 
     printf("app_speed = %u\n", (u16)fc_effect.app_speed);
     printf("fc_effect.dream_scene.speed = %u\n", fc_effect.dream_scene.speed);

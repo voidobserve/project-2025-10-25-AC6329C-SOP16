@@ -377,8 +377,8 @@ void main_while(void)
         rf_433_key_learn();
 #endif // #if RF_433_LEARN_ENABLE
 
-        effect_stepmotor();  // 声控，电机的音乐效果
-        stepmotor();         // 无霍尔时，电机停止指令计时
+        effect_stepmotor(); // 声控，电机的音乐效果
+        stepmotor();        // 无霍尔时，电机停止指令计时
         // meteor_period_sub(); // 流星周期控制
 
         rf_433_key_event_handle();
@@ -521,8 +521,6 @@ void user_msg_handle_task(void)
         break;
         }
 #endif
-
-        // os_time_dly(1); // 前面已经有阻塞等待，可以不加这一句
     } // while (1)
 }
 

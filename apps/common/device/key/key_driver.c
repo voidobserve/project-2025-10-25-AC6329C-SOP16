@@ -31,8 +31,8 @@
 #if TCFG_RF24GKEY_ENABLE
 #include "../../../../apps/user_app/rf24g_key/rf24g_key.h"
 #endif
-
-#include "../../../../apps/user_app/rf433_key/rf433_key.h"
+ 
+#include "rf433_key.h" 
 
 #define KEY_EVENT_CLICK_ONLY_SUPPORT 0 // 是否支持某些按键只响应单击事件
 
@@ -339,6 +339,8 @@ static void key_driver_scan(void *_scan_para)
                     else
                     {
                         key_event = KEY_EVENT_CLICK; // 单击
+                        
+                        // printf("key event click\n");
                     }
                     key_value = scan_para->notify_value;
                     goto _notify;
@@ -365,10 +367,12 @@ static void key_driver_scan(void *_scan_para)
 #endif
             {
                 key_event = KEY_EVENT_LONG;
+                // printf("key event long\n");
             }
             else if (scan_para->press_cnt == scan_para->hold_time)
             {
                 key_event = KEY_EVENT_HOLD;
+                // printf("key event hold\n");
                 scan_para->press_cnt = scan_para->long_time;
             }
             else
@@ -502,7 +506,7 @@ int key_driver_init(void)
 
 #if RF_433_KEY_ENABLE // 在 rf_433_key.h 中配置
 
-    extern rf_433_key_struct_t rf_433_key_structure;
+    // extern rf_433_key_struct_t rf_433_key_structure;
     sys_hi_timer_add((void *)&rf_433_key_structure.rf_433_key_para, key_driver_scan, rf_433_key_structure.rf_433_key_para.scan_time); // 注册按键扫描定时器
 
 #endif // #if RF_433_KEY_ENABLE
