@@ -103,7 +103,7 @@ void soft_turn_on_the_light(void) // 软开灯处理
 {
     fc_effect.on_off_flag = DEVICE_ON;
 
-    motor_Init();
+    // motor_Init();
 
     if (DEVICE_ON == fc_effect.motor_on_off)
     {
@@ -177,7 +177,7 @@ void soft_turn_off_lights(void) // 软关灯处理
 /**
  * @brief 打开 七彩灯
  *      注意：调用前要先确保七彩灯的模式对应
- * 
+ *
  * @return * void
  */
 void colorful_light_open(void)
@@ -227,6 +227,39 @@ void motor_close(void)
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 }
 
+/**
+ * @brief 设置动态模式的速度值
+ *
+ * @param percent  0 ~ 100 %
+ */
+void colorful_lights_set_speed(u8 percent)
+{
+    // 将速度值限制在 200 ~ 5000 ， 0 ~ 100 % 映射到 5000 ~ 200
+    // 速度值越小，速度越快
+    fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+}
+
+/**
+ * @brief 设置流星灯的速度值
+ *
+ * @param percent 0 ~ 100 %
+ */
+void meteor_lights_set_speed(u8 percent)
+{
+    // 最后得到的 fc_effect.star_speed 会在 30 ~ 330
+    fc_effect.star_speed = 330 - ((u32)percent * (330 - 30)) / 100;
+}
+
+void colorful_lights_set_brightness(u8 percent)
+{
+    /*
+        七彩灯的亮度值范围： 0 ~ 255 ，
+        但是只用到 25（255的10%） ~ 255，
+        这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+    */
+    fc_effect.b = (u16)percent * (255 - 25) / 100 + 25;
+}
+
 /*********************************************************
  *
  *      亮度 速度 灵敏度 流星 API
@@ -246,17 +279,6 @@ const u16 led_speed_array[MAX_SPEED_RANK] = {
  */
 void app_set_bright(u8 tp_b)
 {
-#if 0
-    if (fc_effect.Now_state == IS_STATIC)
-    {
-        if (tp_b < MIN_BRIGHT_VALUE)
-            tp_b = MIN_BRIGHT_VALUE;
-        fc_effect.b = (u16)tp_b * 255 / 100;
-        fc_effect.app_b = tp_b; // 反馈给app的亮度
-        WS2812FX_setBrightness(fc_effect.b);
-    }
-#endif
-
     if (tp_b > 100)
     {
         tp_b = 100;
@@ -268,7 +290,8 @@ void app_set_bright(u8 tp_b)
         但是只用到 25（255的10%） ~ 255，
         这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
     */
-    fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+    // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+    colorful_lights_set_brightness(tp_b);
     WS2812FX_setBrightness(fc_effect.b);
 
     printf("app_brightness = %u\n", (u16)fc_effect.app_b);
@@ -290,26 +313,12 @@ u16 get_max_sp(void)
 }
 
 /**
- * @brief APP设置速度
- *          USER_TO_DO 这里的速度跟新增的动画速度值不一致，可能需要修改
- *
+ * @brief APP设置速度 
+ * 
  * @param tp_speed  0-100  0是最慢  100是最快
  */
 void app_set_speed(u8 tp_speed)
-{
-#if 0
-    if (fc_effect.Now_state == IS_light_scene)
-    {
-        fc_effect.dream_scene.speed = MIN_SLOW_SPEED - (MIN_SLOW_SPEED * tp_speed / 100);
-        fc_effect.app_speed = tp_speed;
-        if (fc_effect.dream_scene.speed <= get_max_sp())
-        {
-            fc_effect.dream_scene.speed = get_max_sp();
-        }
-        set_fc_effect();
-    }
-#endif
-
+{  
     if (fc_effect.Now_state != IS_light_scene)
     {
         // 如果七彩灯不处于对应的动态模式，则返回
@@ -332,10 +341,11 @@ void app_set_speed(u8 tp_speed)
         这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
     */
     // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
-    fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+    // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+    colorful_lights_set_speed(tp_speed);
 
     printf("app_speed = %u\n", (u16)fc_effect.app_speed);
-    printf("fc_effect.dream_scene.speed = %u\n", fc_effect.dream_scene.speed);
+    printf("fc_effect.dream_scene.speed = %u\n", (u16)fc_effect.dream_scene.speed);
 }
 
 /**
@@ -718,14 +728,7 @@ u8 get_effect_p(void)
  * @param tp_p
  */
 void app_set_meteor_pro(u8 tp_p)
-{
-
-    // if (tp_p >= 2 && tp_p <= 20)
-    // {
-    //     fc_effect.meteor_period = tp_p;
-    //     fc_effect.period_cnt = 0;
-    // }
-
+{  
     if (tp_p >= 2 && tp_p <= 20)
     {
         fc_effect.meteor_period = tp_p;
@@ -811,7 +814,6 @@ void app_set_mereor_speed(u8 tp_s)
     fc_effect.star_speed = MAX_STAR_SEPPD * (100 - fc_effect.app_star_speed + 10) / 100;
     printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
     printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
-    ls_meteor_stat_effect();
 }
 
 u8 get_custom_index(void)
@@ -1125,6 +1127,23 @@ void colorful_lights_set_static_mode(color_t colors_structure)
 }
 
 /**
+ * @brief 七彩灯设置为静态模式，颜色值由传参设定
+ *
+ * @param color 颜色 （需要注意RGBW顺序）
+ */
+void colorful_lights_set_static_color(u32 color)
+{
+    fc_effect.Now_state = IS_STATIC;
+
+    fc_effect.rgb.r = color >> 16;
+    fc_effect.rgb.g = color >> 8;
+    fc_effect.rgb.b = color;
+    fc_effect.rgb.w = color >> 24;
+
+    set_fc_effect(); // 效果调度
+}
+
+/**
  * @brief APP设置暖白光的颜色
  *
  */
@@ -1408,7 +1427,50 @@ void full_color_init(void)
 {
     WS2812FX_init(fc_effect.led_num, fc_effect.sequence); // 初始化ws2811
     WS2812FX_setBrightness(fc_effect.b);
-    set_on_off_led(fc_effect.on_off_flag);
+
+    // set_on_off_led(fc_effect.on_off_flag);
+
+    if (fc_effect.on_off_flag == DEVICE_ON)
+    {
+        colorful_light_open();
+    }
+    else
+    {
+        colorful_light_close();
+    }
+    fb_led_on_off_state(); // 与app反馈七彩灯的开关状态
+
+    if (fc_effect.motor_on_off == DEVICE_ON)
+    {
+        motor_open();
+    }
+    else
+    {
+        motor_close();
+    }
+    fb_motor_mode();  // 向app反馈电机的模式
+    fb_motor_speed(); // 向app反馈电机转速
+
+    if (fc_effect.star_on_off == DEVICE_ON)
+    {
+        ls_meteor_stat_effect();
+    }
+    else
+    {
+        WS2812FX_stop();
+        WS2812FX_setSegment_colorOptions(
+            1,                     // 第0段
+            1,                     // 起始位置
+            fc_effect.led_num - 1, // 结束位置
+            &close_metemor,        // 效果
+            0,                     // 颜色
+            fc_effect.star_speed,  // 速度
+            0);                    // 选项，这里像素点大小：3 REVERSE决定方向
+        // WS2812FX_start();
+        WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
+        WS2812FX_running_flag_set();
+    }
+    fd_meteor_on_off();
 
     // extern void count_down_run(void);
     // extern void time_clock_handler(void);

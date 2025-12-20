@@ -132,6 +132,11 @@ void set_static_mode(u8 r, u8 g, u8 b);
 // void ls_add_bright(void); // 遥控器控制 -- 亮度加
 // void ls_sub_bright(void); // 遥控器控制 -- 亮度减
 
+void colorful_lights_set_brightness(u8 percent);
+void colorful_lights_set_speed(u8 percent);
+void meteor_lights_set_speed(u8 percent);
+
+
 void ls_add_sensitive(void); // 遥控器控制 -- 灵敏度加
 void ls_sub_sensitive(void); // 遥控器控制 -- 灵敏度减
 
@@ -149,6 +154,7 @@ void soft_turn_on_the_light(void); // 软开灯处理
 void soft_turn_off_lights(void);   // 软关灯处理
  
 void colorful_lights_set_static_mode(color_t colors_structure); // 七彩灯设置为静态模式，颜色值由传参设定
+void colorful_lights_set_static_color(u32 color);
 
 void app_set_on_off_meteor(u8 tp_sw); // 通过app设置流星开关
 void app_set_mereor_speed(u8 tp_s); // 通过app设置流星速度

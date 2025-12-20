@@ -27,7 +27,7 @@ u8 ws2811fx_set_cycle; // 1：效果跑完一轮
  * @return uint16_t
  */
 uint16_t WS2812FX_mode_comet_1(void)
-{ 
+{
 #if 1
     // if ((get_effect_p() == 1) && (fc_effect.mode_cycle == 1))
     // {
@@ -909,7 +909,7 @@ uint16_t fc_double_meteor(void)
     u8 offset = _seg_len / 2 + 1;
     WS2812FX_fade_out();
 
-    u16 index = 0;
+    int32_t index = 0;
 
     if (IS_REVERSE) // 反向
     {
@@ -921,12 +921,16 @@ uint16_t fc_double_meteor(void)
         }
         if (_seg_rt->counter_mode_step >= _seg_len / 2 && _seg_rt->counter_mode_step < _seg_len)
         {
-            WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step, WHITE); // 第二组
+            index = (int32_t)_seg->stop - _seg_rt->counter_mode_step;
+            if (index >= _seg->start && index <= _seg->stop)
+            {
+                WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step, WHITE); // 第二组
+            }
         }
 
         if (_seg_rt->counter_mode_step > _seg_len / 2 && _seg_rt->counter_mode_step < (_seg_len + 9)) // 第一组第二次
         {
-            index = _seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 + 1);
+            index = (int32_t)_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 + 1);
             if (index >= _seg->start && index <= _seg->stop) // 防止越界
             {
                 WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 + 1), WHITE);
@@ -935,7 +939,11 @@ uint16_t fc_double_meteor(void)
 
         if (_seg_rt->counter_mode_step > 3 && _seg_rt->counter_mode_step < (_seg_len + 4))
         {
-            WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 - 1), BLACK); //
+            index = (int32_t)_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 - 1);
+            if (index >= _seg->start && index <= _seg->stop)
+            {
+                WS2812FX_setPixelColor(_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 - 1), BLACK); //
+            }
         }
     }
     else // 正向
@@ -1021,7 +1029,7 @@ uint16_t fc_double_meteor_with_max_brightness(void)
 
         if (_seg_rt->counter_mode_step > _seg_len / 2 && _seg_rt->counter_mode_step < (_seg_len + 9)) // 第一组第二次
         {
-            index = _seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 + 1);
+            index = (int32_t)_seg->stop - _seg_rt->counter_mode_step + (_seg_len / 2 + 1);
             if (index >= _seg->start && index <= _seg->stop) // 防止越界
             {
                 WS2812FX_setPixelColor_with_max_brightness(index, WHITE);
@@ -3802,7 +3810,8 @@ u16 colorful_lights_gradual(void)
     }
     // return (_seg->speed / 5);
     // return (fc_effect.dream_scene.speed / 5);
-    return (fc_effect.dream_scene.speed / 10);
+    // return (fc_effect.dream_scene.speed / 10);
+    return (fc_effect.dream_scene.speed / 100); // fc_effect.dream_scene.speed范围在 200 ~ 5000 时，用这个计算速度
 }
 
 /**

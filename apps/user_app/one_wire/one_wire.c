@@ -426,11 +426,9 @@ void set_stepmotor_fast(void)
  * @brief 声控步进电机
  *
  */
-
-u8 stepmotor_sound_cnt = 0;
-
 void effect_stepmotor(void)
 {
+    static u8 stepmotor_sound_cnt = 0;
 
     if (fc_effect.base_ins.mode == 0x05)
     {
@@ -495,8 +493,8 @@ void stepmotor(void)
     }
 }
 
-void motor_Init(void)
-{
-    counting_flag = 0; // 无霍尔时，电机
-    set_time = 1;
-}
+// void motor_Init(void)
+// {
+//     counting_flag = 0; // 无霍尔时，电机
+//     set_time = 1;
+// }

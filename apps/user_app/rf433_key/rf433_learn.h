@@ -7,6 +7,8 @@
 
 #if RF_433_LEARN_ENABLE
 
+#define RF_433_LEARN_KEY_VAL ((u8)0x03) // 433对码按键键值
+
 // 定义 rf 433 学习/对码 的状态
 enum
 {

@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="RGBW+流星灯" />
+		<Option title="世纪光电-RGBW+流星灯" />
 		<Option compiler="q32s_lto_compiler" />
 		<Build>
 			<Target title="Release">

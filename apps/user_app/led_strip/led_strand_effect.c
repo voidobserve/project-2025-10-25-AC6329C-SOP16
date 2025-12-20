@@ -463,15 +463,18 @@ void base_Dynamic_Effect(u8 tp_num)
     switch (tp_num)
     {
     case 0x07: // 3色跳变
+    {
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
         ls_set_color(2, RED);
         fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP;
         fc_effect.dream_scene.c_n = 3;
         fc_effect.Now_state = IS_light_scene;
-        break;
-
+    }
+    break;
+        // ==============================================================================
     case 0x08: // 7色跳变
+    {
         ls_set_color(0, BLUE);
         ls_set_color(1, GREEN);
         ls_set_color(2, RED);
@@ -482,8 +485,9 @@ void base_Dynamic_Effect(u8 tp_num)
         fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP;
         fc_effect.dream_scene.c_n = 7;
         fc_effect.Now_state = IS_light_scene;
-        break;
-
+    }
+    break;
+        // ==============================================================================
     case 0x09: // 3色渐变
     {
         ls_set_color(0, BLUE);
@@ -493,9 +497,8 @@ void base_Dynamic_Effect(u8 tp_num)
         fc_effect.dream_scene.c_n = 3;
         fc_effect.Now_state = IS_light_scene;
     }
-
     break;
-
+        // ==============================================================================
     case 0x0A:
     { //  七色渐变
         ls_set_color(0, BLUE);
@@ -510,340 +513,238 @@ void base_Dynamic_Effect(u8 tp_num)
         fc_effect.Now_state = IS_light_scene;
     }
     break;
-
+        // ==============================================================================
     case 0x0B:
-        // {
-        //     ls_set_color(0, RED);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 红色呼吸
-            ls_set_color(0, RED);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 红色呼吸
+        ls_set_color(0, RED);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x0c:
-        // {
-        //     ls_set_color(0, BLUE);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 蓝色呼吸
-            ls_set_color(0, BLUE);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
+    { // 绿色呼吸
+        ls_set_color(0, GREEN);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
 
+    break;
+        // ==============================================================================
     case 0x0D:
-        // {
-        //     ls_set_color(0, GREEN);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 绿色呼吸
-            ls_set_color(0, GREEN);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
+    { // 蓝色呼吸
+        ls_set_color(0, BLUE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
 
+    break;
+        // ==============================================================================
     case 0x0E:
-        // {
-        //     ls_set_color(0, CYAN);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 青色呼吸
-            ls_set_color(0, CYAN);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 青色呼吸
+        ls_set_color(0, CYAN);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x0F:
-        // {
-        //     ls_set_color(0, YELLOW);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 黄色呼吸
-            ls_set_color(0, YELLOW);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 黄色呼吸
+        ls_set_color(0, YELLOW);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x10:
-        // {
-        //     ls_set_color(0, PURPLE);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 紫色呼吸
-            ls_set_color(0, PURPLE);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 紫色呼吸
+        ls_set_color(0, PURPLE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x11:
-        // { // 混白色渐变
-        //     ls_set_color(0, WHITE);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_SINGLE_C_BREATH;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 混白色呼吸（白色呼吸）
-            ls_set_color(0, WHITE);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 纯白色呼吸
+        ls_set_color(0, PURE_WHITE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x12:
-        // {// 纯白色渐变
-        //     ls_set_color(0, WHITE);
-        //     ls_set_color(1, BLACK);
-        //     fc_effect.dream_scene.change_type = MODE_BREATH_W;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 纯白色呼吸
-            fc_effect.dream_scene.rgb[0].w = 0xFF;
-            fc_effect.dream_scene.rgb[0].r = 0x00;
-            fc_effect.dream_scene.rgb[0].g = 0x00;
-            fc_effect.dream_scene.rgb[0].b = 0x00;
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 红绿渐变
+        ls_set_color(0, RED);
+        ls_set_color(1, GREEN);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+        fc_effect.dream_scene.c_n = 2;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x13:
-        // { // 红绿渐变，APP对应的是红绿呼吸
-        //     ls_set_color(0, RED);
-        //     ls_set_color(1, GREEN);
-        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
 
-        { // 红绿渐变
-            ls_set_color(0, RED);
-            ls_set_color(1, GREEN);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
-            fc_effect.dream_scene.c_n = 2;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 红蓝渐变
+        ls_set_color(0, BLUE);
+        ls_set_color(1, RED);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+        fc_effect.dream_scene.c_n = 2;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x14:
-        // {
-        //     ls_set_color(0, BLUE);
-        //     ls_set_color(1, RED);
-        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 红蓝渐变
-            ls_set_color(0, BLUE);
-            ls_set_color(1, RED);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
-            fc_effect.dream_scene.c_n = 2;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 绿蓝渐变
+        ls_set_color(0, GREEN);
+        ls_set_color(1, BLUE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+        fc_effect.dream_scene.c_n = 2;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x15:
-        // {
-        //     ls_set_color(0, GREEN);
-        //     ls_set_color(1, BLUE);
-        //     fc_effect.dream_scene.change_type = MODE_MUTIL_C_GRADUAL;
-        //     fc_effect.dream_scene.c_n = 2;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
+    { // 七色频闪
+        ls_set_color(0, BLUE);
+        ls_set_color(1, GREEN);
+        ls_set_color(2, RED);
+        ls_set_color(3, WHITE);
+        ls_set_color(4, YELLOW);
+        ls_set_color(5, CYAN);
+        ls_set_color(6, PURPLE);
 
-        { // 绿蓝渐变
-            ls_set_color(0, GREEN);
-            ls_set_color(1, BLUE);
-            fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
-            fc_effect.dream_scene.c_n = 2;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 7;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x16:
-        // { // 七色频闪
-        //     ls_set_color(0, BLUE);
-        //     ls_set_color(1, GREEN);
-        //     ls_set_color(2, RED);
-        //     ls_set_color(3, WHITE);
-        //     ls_set_color(4, YELLOW);
-        //     ls_set_color(5, CYAN);
-        //     ls_set_color(6, PURPLE);
-
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 7;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 七色频闪
-            ls_set_color(0, BLUE);
-            ls_set_color(1, GREEN);
-            ls_set_color(2, RED);
-            ls_set_color(3, WHITE);
-            ls_set_color(4, YELLOW);
-            ls_set_color(5, CYAN);
-            ls_set_color(6, PURPLE);
-
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 7;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 红色频闪
+        ls_set_color(0, RED);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x17:
-        // {
-        //     ls_set_color(0, RED);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 红色频闪
-            ls_set_color(0, RED);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 绿色频闪
+        ls_set_color(0, GREEN);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x18:
-        // { // 蓝色频闪
-        //     ls_set_color(0, BLUE);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 蓝色频闪
-            ls_set_color(0, BLUE);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 蓝色频闪
+        ls_set_color(0, BLUE);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x19:
-        // {
-        //     ls_set_color(0, GREEN);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 绿色频闪
-            ls_set_color(0, GREEN);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
+    { // 青色频闪
+        ls_set_color(0, CYAN);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x1a:
-        // {
-        //     ls_set_color(0, CYAN);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 青色频闪
-            ls_set_color(0, CYAN);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 黄色频闪
+        ls_set_color(0, YELLOW);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x1b:
-        // {
-        //     ls_set_color(0, YELLOW);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 黄色频闪
-            ls_set_color(0, YELLOW);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 紫色频闪
+        ls_set_color(0, PURPLE);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x1c:
-        // {
-        //     ls_set_color(0, PURPLE);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 紫色频闪
-            ls_set_color(0, PURPLE);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
-
+    { // 纯白色频闪
+        ls_set_color(0, PURE_WHITE);
+        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     case 0x1d:
-        // {
-        //     ls_set_color(0, WHITE);
-        //     fc_effect.dream_scene.change_type = MODE_STROBE;
-        //     fc_effect.dream_scene.c_n = 1;
-        //     fc_effect.Now_state = IS_light_scene;
-        // }
-
-        { // 混白色频闪
-            ls_set_color(0, WHITE);
-            fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH;
-            fc_effect.dream_scene.c_n = 1;
-            fc_effect.Now_state = IS_light_scene;
-        }
-        break;
+    {
+        // 七彩呼吸
+        ls_set_color(0, BLUE);
+        ls_set_color(1, GREEN);
+        ls_set_color(2, RED);
+        ls_set_color(3, WHITE);
+        ls_set_color(4, YELLOW);
+        ls_set_color(5, CYAN);
+        ls_set_color(6, PURPLE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 7;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+    // ==============================================================================
+    case 0x1E:
+    {
+        // 蓝白呼吸（蓝色白色同时呼吸）
+        ls_set_color(0, BLUE | PURE_WHITE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 1;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
+    case 0x1F:
+    {
+        // 蓝白渐变（纯白色渐变到蓝色，再渐变到纯白色，循环）
+        ls_set_color(0, BLUE);
+        ls_set_color(1, PURE_WHITE); 
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+        fc_effect.dream_scene.c_n = 2;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
+    case 0x20:
+    { 
+        // 蓝色呼吸、纯白色呼吸、蓝白呼吸（蓝色和纯白色同时呼吸）
+        ls_set_color(0, BLUE);
+        ls_set_color(1, PURE_WHITE); 
+        ls_set_color(2, BLUE | PURE_WHITE);
+        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+        fc_effect.dream_scene.c_n = 3;
+        fc_effect.Now_state = IS_light_scene;
+    }
+    break;
+        // ==============================================================================
     }
 
     WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存（调用相应的动画前，需要重新开始跑）
@@ -1035,9 +936,14 @@ static void ls_custom_effect(void)
  */
 void ls_meteor_stat_effect(void)
 {
-    if (DEVICE_OFF == fc_effect.on_off_flag || DEVICE_OFF == fc_effect.star_on_off)
+    // if (DEVICE_OFF == fc_effect.on_off_flag || DEVICE_OFF == fc_effect.star_on_off)
+    // {
+    //     // 设备当前是关闭的，不调节
+    //     // 流星灯当前是关闭的，不调节
+    //     return;
+    // }
+    if (fc_effect.star_on_off == DEVICE_OFF)
     {
-        // 设备当前是关闭的，不调节
         // 流星灯当前是关闭的，不调节
         return;
     }
@@ -1051,11 +957,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_1,   // 效果
-            // &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            fade_type[0]);        // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_1,   // 效果
+            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            fade_type[0]);                              // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 2) // 单流星
     {
@@ -1064,11 +970,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_1,   // 效果
-            // &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                   // 颜色
-            fc_effect.star_speed,    // 速度
-            fade_type[0] | REVERSE); // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_1,   // 效果
+            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            fade_type[0] | REVERSE);                    // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 3) // 双流星
     {
@@ -1077,11 +983,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &fc_double_meteor,        // 效果
-            // &fc_double_meteor_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            fade_type[0] | 0);    // 选项，这里像素点大小：3 REVERSE决定方向
+            // &fc_double_meteor,        // 效果
+            &fc_double_meteor_with_max_brightness, // 效果
+            WHITE,                                 // 颜色
+            fc_effect.star_speed,                  // 速度
+            fade_type[0] | 0);                     // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 4) // 双流星
     {
@@ -1090,11 +996,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &fc_double_meteor,        // 效果
-            // &fc_double_meteor_with_max_brightness, // 效果
-            WHITE,                   // 颜色
-            fc_effect.star_speed,    // 速度
-            fade_type[0] | REVERSE); // 选项，这里像素点大小：3 REVERSE决定方向
+            // &fc_double_meteor,        // 效果
+            &fc_double_meteor_with_max_brightness, // 效果
+            WHITE,                                 // 颜色
+            fc_effect.star_speed,                  // 速度
+            fade_type[0] | REVERSE);               // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 5) // 频闪效果
     {
@@ -1103,11 +1009,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_3,   // 效果
-            // &WS2812FX_mode_comet_3_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_3,   // 效果
+            &WS2812FX_mode_comet_3_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            0);                                         // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 6) // 频闪效果
     {
@@ -1115,11 +1021,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_3,   // 效果
-            // &WS2812FX_mode_comet_3_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            REVERSE);             // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_3,   // 效果
+            &WS2812FX_mode_comet_3_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            REVERSE);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 7)
     {
@@ -1127,11 +1033,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &meteor_effect_G,         // 效果
-            // &meteor_effect_G_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &meteor_effect_G,         // 效果
+            &meteor_effect_G_with_max_brightness, // 效果
+            WHITE,                                // 颜色
+            fc_effect.star_speed,                 // 速度
+            0);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 8)
     {
@@ -1139,11 +1045,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &meteor_effect_H,         // 效果
-            // &meteor_effect_H_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &meteor_effect_H,         // 效果
+            &meteor_effect_H_with_max_brightness, // 效果
+            WHITE,                                // 颜色
+            fc_effect.star_speed,                 // 速度
+            0);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 9) // 堆积
     {
@@ -1151,11 +1057,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_4,   // 效果
-            // &WS2812FX_mode_comet_4_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_4,   // 效果
+            &WS2812FX_mode_comet_4_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            0);                                         // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 10) // 堆积
     {
@@ -1163,11 +1069,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_4,   // 效果
-            // &WS2812FX_mode_comet_4_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            REVERSE);             // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_4,   // 效果
+            &WS2812FX_mode_comet_4_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            REVERSE);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 11) // 逐点流水
     {
@@ -1175,11 +1081,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_5,   // 效果
-            // &WS2812FX_mode_comet_5_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_5,   // 效果
+            &WS2812FX_mode_comet_5_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            0);                                         // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 12) // 逐点流水
     {
@@ -1187,11 +1093,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_5,   // 效果
-            // &WS2812FX_mode_comet_5_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            REVERSE);             // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_5,   // 效果
+            &WS2812FX_mode_comet_5_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            REVERSE);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 13) // 中心靠拢
     {
@@ -1199,11 +1105,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_2,   // 效果
-            // &WS2812FX_mode_comet_2_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            fade_type[0] | 0);    // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_2,   // 效果
+            &WS2812FX_mode_comet_2_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            fade_type[0] | 0);                          // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 14) // 中心发撒
     {
@@ -1211,11 +1117,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_2,   // 效果
-            // &WS2812FX_mode_comet_2_with_max_brightness, // 效果
-            WHITE,                   // 颜色
-            fc_effect.star_speed,    // 速度
-            fade_type[0] | REVERSE); // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_2,   // 效果
+            &WS2812FX_mode_comet_2_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            fade_type[0] | REVERSE);                    // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 15) // 追逐流水
     {
@@ -1224,11 +1130,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_6,   // 效果
-            // &WS2812FX_mode_comet_6_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_6,   // 效果
+            &WS2812FX_mode_comet_6_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            0);                                         // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 16) // 追逐流水
     {
@@ -1237,11 +1143,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &WS2812FX_mode_comet_6,   // 效果
-            // &WS2812FX_mode_comet_6_with_max_brightness, // 效果
-            WHITE,                // 颜色
-            fc_effect.star_speed, // 速度
-            REVERSE);             // 选项，这里像素点大小：3 REVERSE决定方向
+            // &WS2812FX_mode_comet_6,   // 效果
+            &WS2812FX_mode_comet_6_with_max_brightness, // 效果
+            WHITE,                                      // 颜色
+            fc_effect.star_speed,                       // 速度
+            REVERSE);                                   // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 17) // 音乐律动1
     {
@@ -1251,11 +1157,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &meteor,                  // 效果
-            // &meteor_with_max_brightness, // 效果
-            WHITE,                // 颜色，WS2812FX_setColors设置
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &meteor,                  // 效果
+            &meteor_with_max_brightness, // 效果
+            WHITE,                       // 颜色，WS2812FX_setColors设置
+            fc_effect.star_speed,        // 速度
+            0);                          // 选项，这里像素点大小：3 REVERSE决定方向
     }
     else if (fc_effect.star_index == 18) // 音乐律动2
     {
@@ -1265,11 +1171,11 @@ void ls_meteor_stat_effect(void)
         WS2812FX_setSegment_colorOptions(
             1,                        // 第0段
             1, fc_effect.led_num - 1, // 起始位置，结束位置
-            &music_meteor3,           // 效果
-            // &music_meteor3_with_max_brightness, // 效果
-            WHITE,                // 颜色，WS2812FX_setColors设置
-            fc_effect.star_speed, // 速度
-            0);                   // 选项，这里像素点大小：3 REVERSE决定方向
+            // &music_meteor3,           // 效果
+            &music_meteor3_with_max_brightness, // 效果
+            WHITE,                              // 颜色，WS2812FX_setColors设置
+            fc_effect.star_speed,               // 速度
+            0);                                 // 选项，这里像素点大小：3 REVERSE决定方向
     }
     // 目前app调节的流星灯中，没有 index == 19 ~ index == 22 的功能：
     // else if (fc_effect.star_index == 19 || fc_effect.star_index == 20 || fc_effect.star_index == 21) //

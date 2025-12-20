@@ -81,7 +81,8 @@ void rf_433_key_learn(void)
     }
 
     // 学习/对码期间，检测到有按键长按未松手，进行学习/对码，完成之后退出
-    if (KEY_EVENT_HOLD == rf_433_key_structure.rf_433_key_driver_event)
+    if (KEY_EVENT_HOLD == rf_433_key_structure.rf_433_key_driver_event &&
+        rf_433_key_structure.rf_433_key_latest_key_val == RF_433_LEARN_KEY_VAL)
     {
         // 客户给到的遥控器，后面8位是键值，前面16位是地址
         // rf_433_addr_update(recv_rf_433_data >> 8);

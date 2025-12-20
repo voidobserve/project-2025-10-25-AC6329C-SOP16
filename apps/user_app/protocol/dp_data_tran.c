@@ -14,6 +14,8 @@
 
 #include "../../../apps/user_app/led_strip/led_strand_effect.h"
 
+#define USER_DEBUG_ENABLE 0
+
 dp_data_header_t dp_data_header; // 涂鸦DP数据头
 dp_switch_led_t dp_switch_led;   // DPID_SWITCH_LED开关
 dp_work_mode_t dp_work_mode;     // DPID_WORK_MODE工作模式
@@ -286,8 +288,7 @@ void fb_led_music_mode(void)
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x06;
     tp_buffer[1] = 0x06;
-    tp_buffer[2] = fc_effect.music.m; //
-
+    tp_buffer[2] = fc_effect.music.m; // 
     zd_fb_2_app(tp_buffer, 3);
 }
 
@@ -426,7 +427,7 @@ void parse_zd_data(unsigned char *LedCommand)
 {
     uint8_t Send_buffer[20]; // 发送缓存
     memcpy(Send_buffer, Ble_Addr, 6);
-    static uint8_t phone_music_soure = 1;
+    // static uint8_t phone_music_soure = 1;
     if (LedCommand[0] == 0x01 && LedCommand[1] == 0x03) // 与APP同步数据
     {
         // 灯光
@@ -564,367 +565,452 @@ void parse_zd_data(unsigned char *LedCommand)
     }
     else
     {
-
         //---------------------------------接收到开关灯命令-----------------------------------
         if (LedCommand[0] == 0x01 && LedCommand[1] == 0x01)
         {
-            extern void set_on_off_led(u8 on_off);
-            set_on_off_led(LedCommand[2]);
-            Send_buffer[6] = 0x01;
-            Send_buffer[7] = 0x01;
-            Send_buffer[8] = LedCommand[2];
-            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
-        }
-        //---------------------------------接收到设备时间数据，无需返回应答-----------------------------------
-        if (LedCommand[0] == 0x06 && LedCommand[1] == 0x02)
-        {
+            // extern void set_on_off_led(u8 on_off);
+            // set_on_off_led(LedCommand[2]);
 
-            time_clock.hour = LedCommand[2]; // 更新时间数据
-            time_clock.minute = LedCommand[3];
-            time_clock.second = LedCommand[4];
-            time_clock.week = LedCommand[5];
-        }
-        //-----------------------------------接收到闹钟数据-----------------------------------------
-        // if (LedCommand[0] == 0x05)
-        // {
-        //     Send_buffer[6] = 0x05;
-        //     Send_buffer[7] = LedCommand[1]; // 闹钟序号
-        //     Send_buffer[8] = LedCommand[2];
-        //     Send_buffer[9] = LedCommand[3];
-        //     Send_buffer[10] = LedCommand[4];
-        //     Send_buffer[11] = LedCommand[5];
-        //     ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 12, ATT_OP_AUTO_READ_CCC);
-
-        //     if (LedCommand[1] == 0x00)
-        //     {
-        //         alarm_clock[0].hour = LedCommand[2];
-        //         alarm_clock[0].minute = LedCommand[3];
-        //         alarm_clock[0].on_off = LedCommand[4];
-        //         alarm_clock[0].mode = LedCommand[5];
-        //         parse_alarm_data(0);
-        //     }
-        //     if (LedCommand[1] == 0x01)
-        //     {
-        //         alarm_clock[1].hour = LedCommand[2];
-        //         alarm_clock[1].minute = LedCommand[3];
-        //         alarm_clock[1].on_off = LedCommand[4];
-        //         alarm_clock[1].mode = LedCommand[5];
-        //         parse_alarm_data(1);
-        //     }
-        //     if (LedCommand[1] == 0x02)
-        //     {
-        //         alarm_clock[2].hour = LedCommand[2];
-        //         alarm_clock[2].minute = LedCommand[3];
-        //         alarm_clock[2].on_off = LedCommand[4];
-        //         alarm_clock[2].mode = LedCommand[5];
-        //         parse_alarm_data(2);
-        //     }
-        // }
-        //--------------------------下面所有的操作都需要在开灯状态下操作-----------------------------------
-
-        if (get_on_off_state())
-        {
-            //---------------------------------更新RGB-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x01 && LedCommand[2] == 0x1e)
+            /*
+                这里只控制七彩灯开关
+                开启七彩灯，顺便打开电机
+                关闭七彩灯，顺便关电机
+            */
+            if (LedCommand[2] == 0x01)
             {
-                phone_music_soure = 1;
-                set_static_mode(LedCommand[3], LedCommand[4], LedCommand[5]);
-                fb_rgb_value();
+                // 开灯
+                colorful_light_open();
+                motor_open();
             }
-            //---------------------------------静态（模式）任务处理-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 && LedCommand[2] >= 0 && LedCommand[2] < 0x07)
+            else
             {
-                phone_music_soure = 1;
-                fc_effect.app_rgb_mode = LedCommand[2];
-                switch (LedCommand[2])
+                // 关闭七彩灯，顺便关电机
+                colorful_light_close();
+                motor_close();
+            }
+
+            fb_led_on_off_state(); // 与app反馈七彩灯的开关状态
+            fb_motor_mode();       // 向app反馈电机的模式
+            fb_motor_speed();      // 向app反馈电机转速
+
+            // Send_buffer[6] = 0x01;
+            // Send_buffer[7] = 0x01;
+            // Send_buffer[8] = LedCommand[2];
+            // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
+        }
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x02)
+        {
+            // ----------------------------------------------------------------
+            // 流星灯开关
+            app_set_on_off_meteor(LedCommand[2]);
+            fd_meteor_on_off();
+        }
+
+        //---------------------------------更新RGB-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x01 &&
+            LedCommand[2] == 0x1e)
+        {
+            // 根据app发送过来的rgb数据，设置七彩灯为静态模式，显示对应的颜色
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            // phone_music_soure = 1;
+            set_static_mode(LedCommand[3], LedCommand[4], LedCommand[5]);
+            fb_rgb_value();
+        }
+        //---------------------------------静态（模式）任务处理-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 &&
+            LedCommand[2] >= 0 && LedCommand[2] < 0x07)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            fc_effect.app_rgb_mode = LedCommand[2];
+            switch (LedCommand[2])
+            {
+            case 0:
+            {
+                colorful_lights_set_static_color(RED);
+            }
+            break;
+                // ================================
+            case 1:
+            {
+                colorful_lights_set_static_color(GREEN);
+            }
+            break;
+                // ================================
+            case 2:
+            {
+                colorful_lights_set_static_color(BLUE);
+            }
+            break;
+                // ================================
+            case 3:
+            {
+                colorful_lights_set_static_color(CYAN);
+            }
+            break;
+                // ================================
+            case 4:
+            {
+                colorful_lights_set_static_color(YELLOW);
+            }
+            break;
+                // ================================
+            case 5:
+            {
+                colorful_lights_set_static_color(PURPLE);
+            }
+            break;
+                // ================================
+            case 6:
+            {
+                colorful_lights_set_static_color(PURE_WHITE);
+            }
+            break;
+            }
+        }
+        //---------------------------------动态处理-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 &&
+            LedCommand[2] >= 0x07 && LedCommand[2] <= 0x20)
+        {
+            // 设置七彩灯为动态模式，模式由app发送过来
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+            fc_effect.app_rgb_mode = LedCommand[2];
+            base_Dynamic_Effect(LedCommand[2]);
+        }
+        //---------------------------------调节亮度0-100-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x03)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+            extern void app_set_bright(u8 tp_b);
+            app_set_bright(LedCommand[2]);
+            WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+            set_fc_effect();                 // 设置完后，让七彩灯重新开始跑
+            fb_bright();
+        }
+        //---------------------------------调节速度0-100-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x04)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+#if USER_DEBUG_ENABLE
+                printf("device off\n");
+                printf("app set speed exit\n");
+#endif
+                return;
+            }
+
+            // 范围 0-100
+            extern void app_set_speed(u8 tp_speed);
+            app_set_speed(LedCommand[2]);    //
+            WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+            set_fc_effect();                 //
+            fb_speed();
+            // phone_music_soure = 1;
+        }
+        //---------------------------------更改RGB接口-----------------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x05)
+        {
+            // extern void app_set_RGBsequence(u8 s);
+            // app_set_RGBsequence(LedCommand[2]);
+            // fb_RGBsequence();
+            // phone_music_soure = 1;
+        }
+        //---------------------------------W（灰度调节）控制----------------------------
+        if (LedCommand[0] == 0x04 && LedCommand[1] == 0x06)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            extern void app_set_w(u8 tp_w);
+            app_set_w(LedCommand[2]);
+            // phone_music_soure = 1;
+        }
+        //---------------------------------手机音乐律动 手机麦克风-----------------------------------
+        if (LedCommand[0] == 0x06 && LedCommand[1] == 0x04)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            if (fc_effect.music.m_type == PHONE_MIC) // 手机麦模式
+            {
+#if 0
+                if (phone_music_soure == 1)
                 {
-                case 0:
-                    // set_static_mode((RED >> 16) & 0xff, (RED >> 8) & 0xff, (RED >> 0) & 0xff);
-                    set_static_mode(0xFF, 0x00, 0x00);
-                    break; // R
+                    phone_music_soure = 0;
+                    // set_static_mode(LedCommand[2], LedCommand[3], LedCommand[4]);
 
-                case 1:
-                    set_static_mode((BLUE >> 16) & 0xff, (BLUE >> 8) & 0xff, (BLUE >> 0) & 0xff);
-                    break; // B
+                    // 改成使用最大亮度：
+                    fc_effect.Now_state = IS_IN_MODE_PHONE_MIC;
 
-                case 2:
-                    set_static_mode((GREEN >> 16) & 0xff, (GREEN >> 8) & 0xff, (GREEN >> 0) & 0xff);
-                    break; // G
+                    fc_effect.rgb.r = LedCommand[2];
+                    fc_effect.rgb.g = LedCommand[3];
+                    fc_effect.rgb.b = LedCommand[4];
 
-                case 3:
-                    set_static_mode((CYAN >> 16) & 0xff, (CYAN >> 8) & 0xff, (CYAN >> 0) & 0xff);
-                    break; // CYAN
+                    // printf("r = %d, g = %d, b = %d", r, g, b);
 
-                case 4:
-                    set_static_mode((YELLOW >> 16) & 0xff, (YELLOW >> 8) & 0xff, (YELLOW >> 0) & 0xff);
-                    break; // YELLOW
+                    if (fc_effect.rgb.r == 0xFF &&
+                        fc_effect.rgb.g == 0xFF &&
+                        fc_effect.rgb.b == 0xFF)
+                    {
 
-                case 5:
-                    set_static_mode((PURPLE >> 16) & 0xff, (PURPLE >> 8) & 0xff, (PURPLE >> 0) & 0xff);
-                    break; // PURPLE
-
-                case 6:
-                {
-                    // set_static_mode((WHITE >> 16) & 0xff, (WHITE >> 8) & 0xff, (WHITE >> 0) & 0xff);
-                    fc_effect.Now_state = IS_STATIC;
-                    fc_effect.rgb.r = 0xFF;
-                    fc_effect.rgb.g = 0xFF;
-                    fc_effect.rgb.b = 0xFF;
-                    fc_effect.rgb.w = 0xFF;
+                        fc_effect.rgb.r = 0;
+                        fc_effect.rgb.g = 0;
+                        fc_effect.rgb.b = 0;
+                        fc_effect.rgb.w = 255;
+                    }
+                    else
+                    {
+                        fc_effect.rgb.w = 0;
+                    }
                     set_fc_effect(); // 效果调度
                 }
-                break; // WHITE
-                }
-            }
-            //---------------------------------动态处理-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x02 && LedCommand[2] >= 0x07 && LedCommand[2] <= 0x1e)
-            {
-                phone_music_soure = 1;
-                fc_effect.app_rgb_mode = LedCommand[2];
-
-                base_Dynamic_Effect(LedCommand[2]);
-            }
-            //---------------------------------调节亮度0-100-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x03)
-            {
-                phone_music_soure = 1;
-                extern void app_set_bright(u8 tp_b);
-                app_set_bright(LedCommand[2]);
-                fb_bright();
-            }
-            //---------------------------------调节速度0-100-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x04)
-            {
-                // 范围0-100
-                extern void app_set_speed(u8 tp_speed);
-                app_set_speed(LedCommand[2]);
-                fb_speed();
-                phone_music_soure = 1;
-            }
-            //---------------------------------更改RGB接口-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x05)
-            {
-                extern void app_set_RGBsequence(u8 s);
-                app_set_RGBsequence(LedCommand[2]);
-                fb_RGBsequence();
-                phone_music_soure = 1;
-            }
-            //---------------------------------W（灰度调节）控制----------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x06)
-            {
-                extern void app_set_w(u8 tp_w);
-                app_set_w(LedCommand[2]);
-                phone_music_soure = 1;
-            }
-            //---------------------------------灯带长度-----------------------------------
-            if (LedCommand[0] == 0x04 && LedCommand[1] == 0x08)
-            {
-            }
-            //---------------------------------手机音乐律动 手机麦克风-----------------------------------
-            if (LedCommand[0] == 0x06 && LedCommand[1] == 0x04)
-            {
-
-                // if(fc_effect.music.m_type == PHONE_MIC)  //手机麦模式
-                // {
-                //     app_set_bright(LedCommand[5]);
-                //     set_static_mode(LedCommand[2], LedCommand[3], LedCommand[4]);
-                // }
-
-                if (fc_effect.music.m_type == PHONE_MIC) // 手机麦模式
+                else
                 {
-                    // app_set_bright(LedCommand[5]);
 
-                    if (phone_music_soure == 1)
+                    fc_effect.rgb.r = LedCommand[2];
+                    fc_effect.rgb.g = LedCommand[3];
+                    fc_effect.rgb.b = LedCommand[4];
+
+                    if (fc_effect.rgb.r == 0xFF &&
+                        fc_effect.rgb.g == 0xFF &&
+                        fc_effect.rgb.b == 0xFF)
                     {
-                        phone_music_soure = 0;
-                        // set_static_mode(LedCommand[2], LedCommand[3], LedCommand[4]);
 
-                        // 改成使用最大亮度：
-                        fc_effect.Now_state = IS_IN_MODE_PHONE_MIC;
-
-                        fc_effect.rgb.r = LedCommand[2];
-                        fc_effect.rgb.g = LedCommand[3];
-                        fc_effect.rgb.b = LedCommand[4];
-
-                        // printf("r = %d, g = %d, b = %d", r, g, b);
-
-                        if (fc_effect.rgb.r == 0xFF &&
-                            fc_effect.rgb.g == 0xFF &&
-                            fc_effect.rgb.b == 0xFF)
-                        {
-
-                            fc_effect.rgb.r = 0;
-                            fc_effect.rgb.g = 0;
-                            fc_effect.rgb.b = 0;
-                            fc_effect.rgb.w = 255;
-                        }
-                        else
-                        {
-                            fc_effect.rgb.w = 0;
-                        }
-                        set_fc_effect(); // 效果调度
+                        fc_effect.rgb.r = 0;
+                        fc_effect.rgb.g = 0;
+                        fc_effect.rgb.b = 0;
+                        fc_effect.rgb.w = 255;
                     }
                     else
                     {
 
-                        fc_effect.rgb.r = LedCommand[2];
-                        fc_effect.rgb.g = LedCommand[3];
-                        fc_effect.rgb.b = LedCommand[4];
-
-                        if (fc_effect.rgb.r == 0xFF &&
-                            fc_effect.rgb.g == 0xFF &&
-                            fc_effect.rgb.b == 0xFF)
-                        {
-
-                            fc_effect.rgb.r = 0;
-                            fc_effect.rgb.g = 0;
-                            fc_effect.rgb.b = 0;
-                            fc_effect.rgb.w = 255;
-                        }
-                        else
-                        {
-
-                            fc_effect.rgb.w = 0;
-                        }
-
-                        ls_set_colors(1, &fc_effect.rgb);
+                        fc_effect.rgb.w = 0;
                     }
+
+                    ls_set_colors(1, &fc_effect.rgb);
                 }
-            }
-            //---------------------------------外麦声控模式-----------------------------------
-            if (LedCommand[0] == 0x06 && LedCommand[1] == 0x06)
-            {
-                extern void app_set_music_mode(u8 tp_m);
-                if (fc_effect.music.m_type != EXTERIOR_MIC)
+#endif
+                // 改成使用最大亮度：
+                fc_effect.Now_state = IS_IN_MODE_PHONE_MIC;
+                fc_effect.rgb.r = LedCommand[2];
+                fc_effect.rgb.g = LedCommand[3];
+                fc_effect.rgb.b = LedCommand[4];
+#if USER_DEBUG_ENABLE
+// printf("r = %d, g = %d, b = %d", r, g, b);
+#endif
+                if (fc_effect.rgb.r == 0xFF &&
+                    fc_effect.rgb.g == 0xFF &&
+                    fc_effect.rgb.b == 0xFF)
                 {
-                    // 如果不在外部麦克风模式，设置为外部麦克风模式（可能app界面跳转太快，单片机没有收到切换模式的信息）
-                    fc_effect.music.m_type = EXTERIOR_MIC;
-                }
 
-                app_set_music_mode(LedCommand[2]);
-                Send_buffer[6] = 0x06;
-                Send_buffer[7] = 0x06;
-                Send_buffer[8] = LedCommand[2];
-                ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
-                phone_music_soure = 1;
-            }
-
-            //---------------------------------设备手机麦或者外麦-----------------------------------
-            if (LedCommand[0] == 0x06 && LedCommand[1] == 0x07)
-            {
-                extern void set_music_type(u8 ty);
-                set_music_type(LedCommand[2]);
-
-                fc_effect.Now_state = IS_light_music;
-
-                // printf("fc_effect.music.m = %u\n", fc_effect.music.m);
-                if (fc_effect.music.m >= 4)
-                {
-                    // 如果音乐模式的索引越界，则将索引置为
-                    fc_effect.music.m = 3;
-                }
-                set_fc_effect();
-
-                Send_buffer[6] = 0x06;
-                Send_buffer[7] = 0x07;
-                Send_buffer[8] = LedCommand[2];
-                ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
-            }
-
-            //---------------------------------设置麦克风灵，电机，流星敏度-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x05)
-            {
-                app_set_sensitive(LedCommand[2]);
-                fb_sensitive();
-            }
-
-            //--------------------------  流星相关 ----------------------------------------------
-
-            // --------------------------------流星模式-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x00 && fc_effect.star_on_off == DEVICE_ON)
-            {
-                extern void app_set_mereor_mode(u8 tp_m); // app设置流星灯模式
-                app_set_mereor_mode(LedCommand[2]);
-            }
-            //-------------------------------- 流星速度-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x01 && fc_effect.star_on_off == DEVICE_ON)
-            {
-                app_set_mereor_speed(LedCommand[2]);
-                fd_meteor_speed();
-            }
-            //-------------------------------- 流星开关-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x02)
-            {
-                app_set_on_off_meteor(LedCommand[2]);
-                fd_meteor_on_off();
-            }
-
-            // --------------------------------流星灯时间间隔-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x03 && fc_effect.star_on_off == DEVICE_ON)
-            {
-
-                app_set_meteor_pro(LedCommand[2]);
-                fd_meteor_cycle();
-            }
-
-            // ---------------------------------设置电机模式-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x06)
-            {
-
-                extern void one_wire_set_mode(u8 m);
-                // extern void enable_one_wire(void);
-
-                one_wire_set_mode(LedCommand[2]); // 配置模式
-                // os_time_dly(1);
-                // enable_one_wire();  //使用发送数据
-
-                extern u8 counting_flag;
-                extern u8 set_time;
-                extern u8 stop_cnt;
-                if (LedCommand[2] == 0 && counting_flag == 0)
-                {
-                    fc_effect.motor_on_off = DEVICE_OFF;
-                    fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机
-
-                    counting_flag = 1; // 开始计时
-                    set_time = 1;      // 允许修改时间
+                    fc_effect.rgb.r = 0;
+                    fc_effect.rgb.g = 0;
+                    fc_effect.rgb.b = 0;
+                    fc_effect.rgb.w = 255;
                 }
                 else
                 {
-                    fc_effect.motor_on_off = DEVICE_ON;
+                    fc_effect.rgb.w = 0;
                 }
-
-                os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-                fb_motor_mode();
+                set_fc_effect(); // 效果调度
             }
-
-            // --------------------------------设置电机转速-----------------------------------
-            if (LedCommand[0] == 0x2F && LedCommand[1] == 0x07)
+        }
+        //---------------------------------外麦声控模式-----------------------------------
+        if (LedCommand[0] == 0x06 && LedCommand[1] == 0x06)
+        {
+            if (DEVICE_OFF == get_on_off_state())
             {
-                extern void one_wire_set_period(u8 p);
-                one_wire_set_period(LedCommand[2]);
+                return;
+            }
 
-                // 如果app传过来的数值不在motor_period数组中，下面的代码会出问题
-                // 更新 fc_effect.star_speed_index 索引值，后续重新上电要根据这个索引值来找到对应的电机转速
-                for (u8 i = 0; i < ARRAY_SIZE(motor_period); i++)
+            extern void app_set_music_mode(u8 tp_m);
+            if (fc_effect.music.m_type != EXTERIOR_MIC)
+            {
+                // 如果不在外部麦克风模式，设置为外部麦克风模式（可能app界面跳转太快，单片机没有收到切换模式的信息）
+                fc_effect.music.m_type = EXTERIOR_MIC;
+            }
+
+            app_set_music_mode(LedCommand[2]);
+            Send_buffer[6] = 0x06;
+            Send_buffer[7] = 0x06;
+            Send_buffer[8] = LedCommand[2];
+            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
+            // phone_music_soure = 1;
+        }
+
+        //---------------------------------设备手机麦或者外麦-----------------------------------
+        if (LedCommand[0] == 0x06 && LedCommand[1] == 0x07)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            extern void set_music_type(u8 ty);
+            set_music_type(LedCommand[2]);
+
+            fc_effect.Now_state = IS_light_music;
+
+            // printf("fc_effect.music.m = %u\n", fc_effect.music.m);
+            if (fc_effect.music.m >= 4)
+            {
+                // 如果音乐模式的索引越界，则将索引置为
+                fc_effect.music.m = 3;
+            }
+            set_fc_effect();
+
+            Send_buffer[6] = 0x06;
+            Send_buffer[7] = 0x07;
+            Send_buffer[8] = LedCommand[2];
+            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, 9, ATT_OP_AUTO_READ_CCC);
+        }
+
+        //---------------------------------设置麦克风灵，电机，流星 灵敏度-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x05)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                return;
+            }
+
+            app_set_sensitive(LedCommand[2]);
+            fb_sensitive();
+        }
+
+        //--------------------------  流星相关 ----------------------------------------------
+
+        // --------------------------------流星模式-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x00 && fc_effect.star_on_off == DEVICE_ON)
+        {
+            if (DEVICE_OFF == fc_effect.star_on_off)
+            {
+                return;
+            }
+
+            extern void app_set_mereor_mode(u8 tp_m); // app设置流星灯模式
+            app_set_mereor_mode(LedCommand[2]);
+        }
+        //-------------------------------- 流星速度-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x01 && fc_effect.star_on_off == DEVICE_ON)
+        {
+            if (DEVICE_OFF == fc_effect.star_on_off)
+            {
+                fd_meteor_speed();
+                return;
+            }
+
+            app_set_mereor_speed(LedCommand[2]);
+            ls_meteor_stat_effect(); // 设置完成后，重新跑流星灯动画
+            fd_meteor_speed();
+        }
+
+        // --------------------------------流星灯时间间隔-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x03 && fc_effect.star_on_off == DEVICE_ON)
+        {
+            if (DEVICE_OFF == fc_effect.star_on_off)
+            {
+                fd_meteor_cycle();
+                return;
+            }
+
+            app_set_meteor_pro(LedCommand[2]);
+            ls_meteor_stat_effect(); // 设置完成后，重新跑流星灯动画
+            fd_meteor_cycle();
+        }
+
+        // ---------------------------------设置电机模式-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x06)
+        {
+            if (DEVICE_OFF == get_on_off_state())
+            {
+                // 如果七彩灯没有开，不设置电机模式（七彩灯跟电机绑定）
+                return;
+            }
+
+            extern void one_wire_set_mode(u8 m);
+            // extern void enable_one_wire(void);
+
+            one_wire_set_mode(LedCommand[2]); // 配置模式
+
+#if 0
+            extern u8 counting_flag;
+            extern u8 set_time;
+            extern u8 stop_cnt;
+
+            if (LedCommand[2] == 0 && counting_flag == 0)
+            {
+                fc_effect.motor_on_off = DEVICE_OFF;
+                // counting_flag = 1; // 开始计时
+                // set_time = 1;      // 允许修改时间
+            }
+            else
+            {
+                fc_effect.motor_on_off = DEVICE_ON;
+            }
+#endif
+
+            // 旧版的程序是延时关闭，如果频繁切换电机模式，就会有问题，现在是如果设置了关闭电机，就直接关闭，不用延时关闭
+            if (LedCommand[2] == 0)
+            {
+                fc_effect.motor_on_off = DEVICE_OFF;
+            }
+            else
+            {
+                fc_effect.motor_on_off = DEVICE_ON;
+            }
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            fb_motor_mode();
+        }
+
+        // --------------------------------设置电机转速-----------------------------------
+        if (LedCommand[0] == 0x2F && LedCommand[1] == 0x07)
+        {
+            // if (DEVICE_OFF == get_on_off_state())
+            // {
+            //     fb_motor_speed();
+            //     return;
+            // }
+
+            extern void one_wire_set_period(u8 p);
+            one_wire_set_period(LedCommand[2]);
+
+            // 如果app传过来的数值不在motor_period数组中，下面的代码会出问题
+            // 更新 fc_effect.star_speed_index 索引值，后续重新上电要根据这个索引值来找到对应的电机转速
+            for (u8 i = 0; i < ARRAY_SIZE(motor_period); i++)
+            {
+                if (motor_period[i] == fc_effect.base_ins.period)
                 {
-                    if (motor_period[i] == fc_effect.base_ins.period)
-                    {
-                        fc_effect.motor_speed_index = i;
-                        break;
-                    }
-
-                    if (i == ARRAY_SIZE(motor_period) - 1)
-                    {
-                        // 如果到最后一个元素，都没有找到对应的索引值
-                        // 让索引值超出数组的索引范围，表示关闭电机
-                        fc_effect.motor_speed_index = ARRAY_SIZE(motor_period);
-                    }
+                    fc_effect.motor_speed_index = i;
+                    break;
                 }
 
-                os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-                fb_motor_speed();
+                if (i == ARRAY_SIZE(motor_period) - 1)
+                {
+                    // 如果到最后一个元素，都没有找到对应的索引值
+
+                    fc_effect.motor_speed_index = 0;
+                }
             }
+
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            fb_motor_speed();
         }
     }
 }

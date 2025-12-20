@@ -4,7 +4,7 @@
 #include "../../../apps/user_app/one_wire/one_wire.h"
 
 #include "../../../apps/user_app/led_strip/led_strip_sys.h"
-#include "../../../apps/user_app/led_strip/led_strand_effect.h"
+#include "led_strand_effect.h"
 
 #include "../../../apps/user_app/save_flash/save_flash.h"
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
@@ -407,7 +407,8 @@ void rf_433_key_event_handle(void)
                 但是只用到 25（255的10%） ~ 255，
                 这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
             */
-            fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            colorful_lights_set_brightness(fc_effect.app_b);
             WS2812FX_setBrightness(fc_effect.b);
             printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
             printf("fc_effect.b %u\n", (u16)fc_effect.b);
@@ -442,7 +443,8 @@ void rf_433_key_event_handle(void)
                 这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
             */
             // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
-            fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+            // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+            colorful_lights_set_speed(fc_effect.app_speed);
             printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
             printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
             fb_speed();
@@ -490,7 +492,8 @@ void rf_433_key_event_handle(void)
                 但是只用到 25（255的10%） ~ 255，
                 这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
             */
-            fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+            colorful_lights_set_brightness(fc_effect.app_b);
             WS2812FX_setBrightness(fc_effect.b);
             printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
             printf("fc_effect.b %u\n", (u16)fc_effect.b);
@@ -525,7 +528,8 @@ void rf_433_key_event_handle(void)
                 这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
             */
             // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
-            fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+            // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+            colorful_lights_set_speed(fc_effect.app_speed);
             printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
             printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
             fb_speed();
@@ -586,12 +590,13 @@ void rf_433_key_event_handle(void)
         }
 
         // RED
-        color_t color_structure = {0};
-        color_structure.r = 0xFF;
-        color_structure.g = 0x00;
-        color_structure.b = 0x00;
-        color_structure.w = 0x00;
-        colorful_lights_set_static_mode(color_structure);
+        // color_t color_structure = {0};
+        // color_structure.r = 0xFF;
+        // color_structure.g = 0x00;
+        // color_structure.b = 0x00;
+        // color_structure.w = 0x00;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(RED);
     }
     break;
         // ==============================================================================
@@ -605,12 +610,13 @@ void rf_433_key_event_handle(void)
         }
 
         // GREEN
-        color_t color_structure = {0};
-        color_structure.r = 0x00;
-        color_structure.g = 0xFF;
-        color_structure.b = 0x00;
-        color_structure.w = 0x00;
-        colorful_lights_set_static_mode(color_structure);
+        // color_t color_structure = {0};
+        // color_structure.r = 0x00;
+        // color_structure.g = 0xFF;
+        // color_structure.b = 0x00;
+        // color_structure.w = 0x00;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(GREEN);
     }
     break;
         // ==============================================================================
@@ -624,12 +630,13 @@ void rf_433_key_event_handle(void)
         }
 
         // BLUE
-        color_t color_structure = {0};
-        color_structure.r = 0x00;
-        color_structure.g = 0x00;
-        color_structure.b = 0xFF;
-        color_structure.w = 0x00;
-        colorful_lights_set_static_mode(color_structure);
+        // color_t color_structure = {0};
+        // color_structure.r = 0x00;
+        // color_structure.g = 0x00;
+        // color_structure.b = 0xFF;
+        // color_structure.w = 0x00;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(BLUE);
     }
     break;
         // ==============================================================================
@@ -648,7 +655,7 @@ void rf_433_key_event_handle(void)
         color_structure.g = 0x00;
         color_structure.b = 0x00;
         color_structure.w = 0xFF;
-        colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_mode(color_structure); 
     }
     break;
         // ==============================================================================
@@ -662,13 +669,14 @@ void rf_433_key_event_handle(void)
         }
 
         // 橙色
-        u32 color = ORANGE;
-        color_t color_structure = {0};
-        color_structure.r = color >> 16;
-        color_structure.g = color >> 8;
-        color_structure.b = color;
-        color_structure.w = color >> 24;
-        colorful_lights_set_static_mode(color_structure);
+        // u32 color = ORANGE;
+        // color_t color_structure = {0};
+        // color_structure.r = color >> 16;
+        // color_structure.g = color >> 8;
+        // color_structure.b = color;
+        // color_structure.w = color >> 24;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(ORANGE);
     }
     break;
         // ==============================================================================
@@ -682,13 +690,14 @@ void rf_433_key_event_handle(void)
         }
 
         // 黄色
-        u32 color = YELLOW;
-        color_t color_structure = {0};
-        color_structure.r = color >> 16;
-        color_structure.g = color >> 8;
-        color_structure.b = color;
-        color_structure.w = color >> 24;
-        colorful_lights_set_static_mode(color_structure);
+        // u32 color = YELLOW;
+        // color_t color_structure = {0};
+        // color_structure.r = color >> 16;
+        // color_structure.g = color >> 8;
+        // color_structure.b = color;
+        // color_structure.w = color >> 24;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(YELLOW);
     }
     break;
         // ==============================================================================
@@ -701,14 +710,15 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        // CYAN 青色
-        u32 color = CYAN;
-        color_t color_structure = {0};
-        color_structure.r = color >> 16;
-        color_structure.g = color >> 8;
-        color_structure.b = color;
-        color_structure.w = color >> 24;
-        colorful_lights_set_static_mode(color_structure);
+        // // CYAN 青色
+        // u32 color = CYAN;
+        // color_t color_structure = {0};
+        // color_structure.r = color >> 16;
+        // color_structure.g = color >> 8;
+        // color_structure.b = color;
+        // color_structure.w = color >> 24;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(CYAN);
     }
     break;
         // ==============================================================================
@@ -722,13 +732,14 @@ void rf_433_key_event_handle(void)
         }
 
         // 紫色
-        u32 color = PURPLE;
-        color_t color_structure = {0};
-        color_structure.r = color >> 16;
-        color_structure.g = color >> 8;
-        color_structure.b = color;
-        color_structure.w = color >> 24;
-        colorful_lights_set_static_mode(color_structure);
+        // u32 color = PURPLE;
+        // color_t color_structure = {0};
+        // color_structure.r = color >> 16;
+        // color_structure.g = color >> 8;
+        // color_structure.b = color;
+        // color_structure.w = color >> 24;
+        // colorful_lights_set_static_mode(color_structure);
+        colorful_lights_set_static_color(PURPLE);
     }
     break;
         // ==============================================================================
@@ -896,30 +907,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R5C4_CLICK:
     case RF_433_KEY_EVENT_R5C4_LONG:
-    {
-#if 0
-        // 电机模式切换
-        // 1.匀速转，2，正转+反转，3，带暂停的转动，4，速度可变模式，5，音频节奏转动
-        // USER_TO_DO 目前先套用现有的模式，后续可能要电机驱动芯片来修改
-        // 测试发现电机一直是同一个方向，没有切换模式
-
-        if (DEVICE_OFF == fc_effect.motor_on_off)
-        {
-            // 电机没有启动，不调节电机模式
-            return;
-        }
-
-        /*
-            将 fc_effect.base_ins.mode 限制在 1~5，
-            不让 fc_effect.base_ins.mode == 0，（0--对应停止转动）
-        */
-        fc_effect.base_ins.mode = fc_effect.base_ins.mode % 5 + 1;
-
-        printf("motor mode %u \n", (u16)fc_effect.base_ins.mode);
-        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-        fb_motor_mode(); // 向app反馈电机模式
-#endif
-
+    { 
         if (fc_effect.on_off_flag == DEVICE_OFF)
         {
             // 七彩灯没有打开，直接返回
@@ -935,51 +923,17 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C1_CLICK:
     case RF_433_KEY_EVENT_R6C1_LONG:
-    {
-#if 0
-        // 七彩频闪 FLASH
-        if (IS_light_scene == fc_effect.Now_state &&
-            MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type &&
-            7 == fc_effect.dream_scene.c_n)
-        {
-            // 如果现在就是七彩灯的频闪模式，不做处理
-            return;
-        }
-
-        ls_set_color(0, BLUE);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, RED);
-        ls_set_color(3, WHITE);
-        ls_set_color(4, YELLOW);
-        ls_set_color(5, CYAN);
-        ls_set_color(6, PURPLE);
-
-        if ((fc_effect.dream_scene.change_type != MODO_COLORFUL_LIGHTS_FLASH) ||
-            (fc_effect.Now_state != IS_light_scene))
-        {
-            /*
-                如果之前不是七彩灯的跳变模式，
-                清空灯光动画运行时使用的数据，让动画重新开始跑
-            */
-            WS2812FX_resetSegmentRuntime(0); //
-        }
-
-        fc_effect.dream_scene.change_type = MODO_COLORFUL_LIGHTS_FLASH; //
-        fc_effect.dream_scene.c_n = 7;                                  // 有效颜色数量
-        fc_effect.Now_state = IS_light_scene;
-        set_fc_effect();
-#endif
-
+    {  
         // 流星灯开关
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             fc_effect.star_on_off = DEVICE_ON;
-            printf("meteor on\n");
+            printf("meteor lights on\n");
         }
         else
         {
             fc_effect.star_on_off = DEVICE_OFF;
-            printf("meteor off\n");
+            printf("meteor lights off\n");
         }
 
         if (DEVICE_ON == fc_effect.star_on_off)
@@ -1001,46 +955,14 @@ void rf_433_key_event_handle(void)
             WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
             WS2812FX_running_flag_set();
         }
+
+        fd_meteor_on_off(); // 向app反馈流星灯的开关机状态
     }
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C2_CLICK:
     case RF_433_KEY_EVENT_R6C2_LONG:
-    {
-#if 0
-        // 七色跳变 JUMP
-        if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type &&
-            7 == fc_effect.dream_scene.c_n)
-        {
-            // 如果本来就是七彩灯的跳变模式，不做处理
-            return;
-        }
-
-        ls_set_color(0, RED);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, BLUE);
-        ls_set_color(3, YELLOW);
-        ls_set_color(4, CYAN);
-        ls_set_color(5, PURPLE);
-        ls_set_color(6, WHITE);
-
-        if ((fc_effect.dream_scene.change_type != MODE_COLORFUL_LIGHTS_JUMP) ||
-            (fc_effect.Now_state != IS_light_scene))
-        {
-            /*
-                如果之前不是七彩灯的跳变模式，
-                清空灯光动画运行时使用的数据，让动画重新开始跑
-            */
-            WS2812FX_resetSegmentRuntime(0); //
-        }
-
-        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP; //
-        fc_effect.dream_scene.c_n = 7;                                 // 有效颜色数量
-        fc_effect.Now_state = IS_light_scene;
-        set_fc_effect();
-#endif
-
+    {  
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
@@ -1060,41 +982,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C3_CLICK:
     case RF_433_KEY_EVENT_R6C3_LONG:
-    {
-#if 0
-        // 七彩渐变 FADE
-        if (IS_light_scene == fc_effect.Now_state &&
-            MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type &&
-            7 == fc_effect.dream_scene.c_n)
-        {
-            // 如果当前是七彩灯渐变模式，不做处理
-            return;
-        }
-
-        ls_set_color(0, BLUE);
-        ls_set_color(1, GREEN);
-        ls_set_color(2, RED);
-        ls_set_color(3, WHITE);
-        ls_set_color(4, YELLOW);
-        ls_set_color(5, CYAN);
-        ls_set_color(6, PURPLE);
-
-        if ((fc_effect.dream_scene.change_type != MODE_COLORFUL_LIGHTS_GRADUAL) ||
-            (fc_effect.Now_state != IS_light_scene))
-        {
-            /*
-                如果之前不是七彩灯的渐变模式，
-                清空灯光动画运行时使用的数据，让动画重新开始跑
-            */
-            WS2812FX_resetSegmentRuntime(0); //
-        }
-
-        fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
-        fc_effect.dream_scene.c_n = 7; // 有效颜色数量
-        fc_effect.Now_state = IS_light_scene;
-        set_fc_effect();
-#endif
-
+    { 
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
@@ -1113,7 +1001,8 @@ void rf_433_key_event_handle(void)
         }
 
         // 最后得到的 fc_effect.star_speed 会在 30 ~330
-        fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        // fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        meteor_lights_set_speed(fc_effect.app_star_speed);
         printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
         printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
         ls_meteor_stat_effect();
@@ -1123,54 +1012,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C4_CLICK:
     case RF_433_KEY_EVENT_R6C4_LONG:
-    {
-#if 0
-        /*
-            电机参数 +
-
-            如果在一般的电机模式，控制电机转速
-            如果在声控的电机的模式，控制电机灵敏度
-        */
-        if (DEVICE_OFF == fc_effect.motor_on_off)
-        {
-            // 电机没有启动，不调节电机转速
-            return;
-        }
-
-        // 判断电机是否处于普通模式
-        if (5 != fc_effect.base_ins.mode)
-        {
-            u8 index = 0;
-            for (; index < ARRAY_SIZE(motor_period); index++) // 找到当前电机速度索引对应的下标
-            {
-                if (motor_period[index] == fc_effect.base_ins.period)
-                {
-                    break;
-                }
-            }
-
-            // 在 motor_period[] 中，索引值越小，电机速度越快
-            if (index > 0)
-            {
-                index--;
-                fc_effect.base_ins.period = motor_period[index];
-            }
-
-            one_wire_set_period(motor_period[index]);
-            fc_effect.motor_speed_index = index;
-            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
-            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-            fb_motor_speed(); // 向app反馈电机的转速
-        }
-        else
-        {
-            // 如果电机处于声控模式，调节灵敏度
-            motor_sound_sensitivity_add();
-            fc_effect.music.s = fc_effect.base_ins.sensitivity;
-            fb_sensitive(); // 向app反馈灵敏度
-        }
-#endif
-
+    { 
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
@@ -1189,7 +1031,8 @@ void rf_433_key_event_handle(void)
         }
 
         // 最后得到的 fc_effect.star_speed 会在 30 ~330
-        fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        // fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
+        meteor_lights_set_speed(fc_effect.app_star_speed);
         printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
         printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
         ls_meteor_stat_effect();
@@ -1199,8 +1042,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R7C1_CLICK:
     case RF_433_KEY_EVENT_R7C1_LONG:
-    {
-
+    { 
         if (fc_effect.on_off_flag == DEVICE_OFF)
         {
             // 如果七彩灯没有打开，不打开电机，直接返回

@@ -55353,7 +55353,7 @@
 	"led_strip_drive.h"
 	"one_wire.h"
 
-1765528054 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.h
+1766195952 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.h
 	"cpu.h"
 
 1763686964 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx.h
@@ -55379,7 +55379,7 @@
 1763704932 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.h
 	"system/includes.h"
 
-1766111736 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
+1766209846 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strand_effect.c
 	"system/includes.h"
 	"led_strand_effect.h"
 	"WS2812FX.H"
@@ -55404,7 +55404,7 @@
 	"led_strand_effect.h"
 	"../../../include_lib/driver/cpu/bd19/asm/mcpwm.h"
 
-1766137900 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
+1766220532 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_sys.c
 	"led_strip_sys.h"
 	"Adafruit_NeoPixel.H"
 	"led_strand_effect.h"
@@ -55412,7 +55412,7 @@
 	"../../../apps/user_app/one_wire/one_wire.h"
 	"../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 
-1763687620 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.h
+1766195058 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.h
 
 1763696287 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\led_strip_voice.c
 	"led_strip_voice.h"
@@ -55431,12 +55431,12 @@
 1719208267 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\paint_tool.h
 	"led_strip_sys.h"
 
-1763706601 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
+1766214782 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
 	"system/includes.h"
 	"one_wire.h"
 	"led_strand_effect.h"
 
-1766122496 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
+1766221541 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
 	"cpu.h"
 	"led_strip_sys.h"
 	"paint_tool.h"
@@ -55497,7 +55497,7 @@
 	<string.h>
 	"ws2812fx_tool.h"
 
-1766124049 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
+1766214687 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
 	"system/includes.h"
 	"app_config.h"
 	"app_action.h"
@@ -56944,7 +56944,7 @@
 	"../../../../apps/user_app/rf433_key/rf433_key.h"
 	"uart_update.h"
 
-1766124527 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
+1766218746 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\ws2812-fx-lib\ws2812fx_c\ws2812fx_effect.c
 	"WS2812FX.h"
 	"ws2812fx_tool.h"
 	"Adafruit_NeoPixel.h"
@@ -56969,19 +56969,19 @@
 1766114684 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.h
 	"includes.h"
 
-1766138018 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
+1766221542 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_key.c
 	"rf433_key.h"
 	"rf433_learn.h"
 	"../../../apps/user_app/one_wire/one_wire.h"
 	"../../../apps/user_app/led_strip/led_strip_sys.h"
-	"../../../apps/user_app/led_strip/led_strand_effect.h"
+	"led_strand_effect.h"
 	"../../../apps/user_app/save_flash/save_flash.h"
 	"../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 
-1766112323 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_learn.h
+1766218876 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_learn.h
 	"includes.h"
 
-1763789818 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_learn.c
+1766218860 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\rf433_key\rf433_learn.c
 	"rf433_learn.h"
 	"rf433_key.h"
 	"../../../apps/user_app/led_strip/led_strip_sys.h"

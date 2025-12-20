@@ -378,7 +378,7 @@ void main_while(void)
 #endif // #if RF_433_LEARN_ENABLE
 
         effect_stepmotor(); // 声控，电机的音乐效果
-        stepmotor();        // 无霍尔时，电机停止指令计时
+        // stepmotor();        // 无霍尔时，电机停止指令计时
         // meteor_period_sub(); // 流星周期控制
 
         rf_433_key_event_handle();
