@@ -2223,7 +2223,6 @@ obj/Release/apps/user_app/led_strip/led_strip_sys.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,one_wire_set_period,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_sub_motor_speed,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,CloseMotor,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,OpenMortor,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,get_on_off_state,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,set_on_off_led,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,app_set_w,pl
@@ -2419,6 +2418,8 @@ obj/Release/apps/user_app/rf433_key/rf433_key.o
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,fd_meteor_on_off,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,meteor_lights_set_speed,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,fd_meteor_speed,l
+-r=obj/Release/apps/user_app/rf433_key/rf433_key.o,meteor_lights_sound_sensitivity_add,l
+-r=obj/Release/apps/user_app/rf433_key/rf433_key.o,meteor_lights_sound_sensitivity_sub,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,os_taskq_post,
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,motor_sound_sensitivity_add,l
 -r=obj/Release/apps/user_app/rf433_key/rf433_key.o,motor_sound_sensitivity_sub,l

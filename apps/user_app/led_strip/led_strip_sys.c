@@ -92,7 +92,7 @@ void fc_data_init(void)
     fc_effect.base_ins.sensitivity = 80; // 电机声控模式下，对应的灵敏度
 }
 
-void OpenMortor(void);
+// void OpenMortor(void);
 // static u8 tk = 0;
 /*********************************************************
  *
@@ -1009,11 +1009,11 @@ void CloseMotor(void)
 }
 
 // u8 mo_cnt = 3;
-void OpenMortor(void)
-{
-    fc_effect.motor_on_off = DEVICE_ON;
-    // mo_cnt = 3;
-}
+// void OpenMortor(void)
+// {
+//     fc_effect.motor_on_off = DEVICE_ON;
+//     // mo_cnt = 3;
+// }
 
 // void power_motor_Init(void)
 // {

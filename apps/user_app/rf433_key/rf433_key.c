@@ -655,7 +655,7 @@ void rf_433_key_event_handle(void)
         color_structure.g = 0x00;
         color_structure.b = 0x00;
         color_structure.w = 0xFF;
-        colorful_lights_set_static_mode(color_structure); 
+        colorful_lights_set_static_mode(color_structure);
     }
     break;
         // ==============================================================================
@@ -907,7 +907,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R5C4_CLICK:
     case RF_433_KEY_EVENT_R5C4_LONG:
-    { 
+    {
         if (fc_effect.on_off_flag == DEVICE_OFF)
         {
             // 七彩灯没有打开，直接返回
@@ -923,7 +923,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C1_CLICK:
     case RF_433_KEY_EVENT_R6C1_LONG:
-    {  
+    {
         // 流星灯开关
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
@@ -962,7 +962,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C2_CLICK:
     case RF_433_KEY_EVENT_R6C2_LONG:
-    {  
+    {
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
@@ -982,67 +982,89 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C3_CLICK:
     case RF_433_KEY_EVENT_R6C3_LONG:
-    { 
+    {
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
             return;
         }
 
-        // 流星灯 速度 加
-        const u8 step = 10;
-        if (fc_effect.app_star_speed < 100 - step)
+        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
         {
-            fc_effect.app_star_speed += step;
+            // 如果不在声控模式，调节流星灯速度
+            // 流星灯 速度 加
+            const u8 step = 10;
+            if (fc_effect.app_star_speed < 100 - step)
+            {
+                fc_effect.app_star_speed += step;
+            }
+            else
+            {
+                fc_effect.app_star_speed = 100;
+            }
+
+            meteor_lights_set_speed(fc_effect.app_star_speed);
+            printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+            printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+            fd_meteor_speed(); // 向app反馈流星灯速度
         }
-        else
+        else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
         {
-            fc_effect.app_star_speed = 100;
+            // 如果在声控模式，调节流星灯声控模式的灵敏度
+            meteor_lights_sound_sensitivity_add();
+            printf("fc_effect.meteor_lights_sensitivity = %u\n", (u16)fc_effect.meteor_lights_sensitivity);
+            fc_effect.music.s = fc_effect.meteor_lights_sensitivity; // 存放流星灯的灵敏度，准备发送给app
+            fb_sensitive();
         }
 
-        // 最后得到的 fc_effect.star_speed 会在 30 ~330
-        // fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
-        meteor_lights_set_speed(fc_effect.app_star_speed);
-        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
-        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
-        ls_meteor_stat_effect();
-        fd_meteor_speed(); // 向app反馈流星灯速度
+        ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
     }
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R6C4_CLICK:
     case RF_433_KEY_EVENT_R6C4_LONG:
-    { 
+    {
         if (fc_effect.star_on_off == DEVICE_OFF)
         {
             // 如果流星灯没有启动，不做处理
             return;
         }
 
-        // 流星灯 速度减
-        const u8 step = 10;
-        if (fc_effect.app_star_speed > 0 + step)
+        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
         {
-            fc_effect.app_star_speed -= step;
+            // 如果不在声控模式，调节流星灯速度
+            // 流星灯 速度减
+            const u8 step = 10;
+            if (fc_effect.app_star_speed > 0 + step)
+            {
+                fc_effect.app_star_speed -= step;
+            }
+            else
+            {
+                fc_effect.app_star_speed = 0;
+            }
+
+            meteor_lights_set_speed(fc_effect.app_star_speed);
+            printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+            printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+            fd_meteor_speed(); // 向app反馈流星灯速度
         }
-        else
+        else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
         {
-            fc_effect.app_star_speed = 0;
+            // 如果在声控模式，调节流星灯声控模式的灵敏度
+            meteor_lights_sound_sensitivity_sub();
+            printf("fc_effect.meteor_lights_sensitivity = %u\n", (u16)fc_effect.meteor_lights_sensitivity);
+            fc_effect.music.s = fc_effect.meteor_lights_sensitivity; // 存放流星灯的灵敏度，准备发送给app
+            fb_sensitive();
         }
 
-        // 最后得到的 fc_effect.star_speed 会在 30 ~330
-        // fc_effect.star_speed = 330 - ((u32)fc_effect.app_star_speed * (330 - 30)) / 100;
-        meteor_lights_set_speed(fc_effect.app_star_speed);
-        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
-        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
-        ls_meteor_stat_effect();
-        fd_meteor_speed(); // 向app反馈流星灯速度
+        ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
     }
     break;
         // ==============================================================================
     case RF_433_KEY_EVENT_R7C1_CLICK:
     case RF_433_KEY_EVENT_R7C1_LONG:
-    { 
+    {
         if (fc_effect.on_off_flag == DEVICE_OFF)
         {
             // 如果七彩灯没有打开，不打开电机，直接返回
@@ -1103,7 +1125,7 @@ void rf_433_key_event_handle(void)
         // ==============================================================================
     case RF_433_KEY_EVENT_R7C4_CLICK:
     case RF_433_KEY_EVENT_R7C4_LONG:
-    { 
+    {
         // 电机速度减
         if (DEVICE_OFF == fc_effect.motor_on_off)
         {

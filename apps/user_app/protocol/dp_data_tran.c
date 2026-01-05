@@ -288,7 +288,7 @@ void fb_led_music_mode(void)
     uint8_t tp_buffer[6];
     tp_buffer[0] = 0x06;
     tp_buffer[1] = 0x06;
-    tp_buffer[2] = fc_effect.music.m; // 
+    tp_buffer[2] = fc_effect.music.m; //
     zd_fb_2_app(tp_buffer, 3);
 }
 
@@ -1010,7 +1010,7 @@ void parse_zd_data(unsigned char *LedCommand)
             }
 
             os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-            fb_motor_speed();
+            fb_motor_speed(); // 如果电机处于声控模式，这里返回会返回固定的速度值，让app的滑动条固定
         }
     }
 }

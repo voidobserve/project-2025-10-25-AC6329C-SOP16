@@ -32,7 +32,6 @@ void pack_base(void)
     send_base_ins = 0;
     send_base_ins |= fc_effect.base_ins.mode; // bit0 ~ bit2 电机模式
 
-
     // 验证速度值范围是否正确
     {
         for (p = 0; p < 6; p++)
