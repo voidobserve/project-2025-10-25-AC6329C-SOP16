@@ -114,6 +114,12 @@ uint16_t WS2812FX_mode_comet_6_with_max_brightness(void); // 追逐流水
 uint16_t meteor_with_max_brightness(void);        // 流星发射，声音触发，不支持连续发射，等上个流星发射完成再发射第二个
 uint16_t music_meteor3_with_max_brightness(void); // 流星发射，声音触发，可以连续发射
 
+// 两段流星追逐
+u16 meteor_lights_chase_with_max_brightness(void);
+u16 meteor_lights_stack_flow_with_max_brightness(void);
+u16 meteor_lights_stack_flow_plus_reverse_with_max_brightness(void);
+u16 meteor_lights_single_flow_and_stack_with_max_brightness(void);
+
 // ======================================================================
 // 七彩灯动画：
 

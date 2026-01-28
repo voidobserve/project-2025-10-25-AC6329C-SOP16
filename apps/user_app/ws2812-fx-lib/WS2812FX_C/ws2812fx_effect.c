@@ -84,11 +84,6 @@ uint16_t WS2812FX_mode_comet_1(void)
  */
 uint16_t WS2812FX_mode_comet_1_with_max_brightness(void)
 {
-    // if ((get_effect_p() == 1) && (fc_effect.mode_cycle == 1))
-    // {
-    //     return (_seg->speed);
-    // }
-
     // 补丁：
     if (0 == _seg_rt->counter_mode_call)
     {
@@ -97,7 +92,6 @@ uint16_t WS2812FX_mode_comet_1_with_max_brightness(void)
     }
 
     WS2812FX_fade_out_with_max_brightness();
-    // Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 测试时使用，由于硬件有改动，需要调整流星灯的顺序
     u8 offset;
     offset = 13;
     if (IS_REVERSE)
@@ -126,8 +120,6 @@ uint16_t WS2812FX_mode_comet_1_with_max_brightness(void)
         // fc_effect.mode_cycle = 1;
         return fc_effect.period_cnt;
     }
-
-    // printf("__FUNC__ %s \n__LINE__ %d\n", __func__, __LINE__);
 
     return (_seg->speed);
 }
@@ -1136,7 +1128,7 @@ uint16_t WS2812FX_mode_comet_6(void)
 }
 
 /**
- * @brief 追逐流水
+ * @brief 两个点追逐流水
  *          动画固定使用最大亮度值
  * @return uint16_t
  */
@@ -1183,6 +1175,262 @@ uint16_t WS2812FX_mode_comet_6_with_max_brightness(void)
     }
 
     return (_seg->speed); // 返回速度 （函数执行的定时时间）
+}
+
+// 两段流星追逐
+// @attention 只能用在12颗流星灯设备上
+u16 meteor_lights_chase_with_max_brightness(void)
+{
+    // 动画步骤
+    u16 meteor_animation_step = 0;
+    // 返回值（每一动画步骤的时间间隔）
+    u16 return_value = 0;
+
+    Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 全段填黑色，灭灯
+
+    // meteor_animation_step = _seg_len + fc_effect.meteor_tail_len; //
+    meteor_animation_step = _seg_len + 6 + 8; // 动画长度：+第一段流星灯尾焰长度（6）+第二段流星灯+尾焰长度（6）
+    /*
+        外部传入的speed在30~330，这里将样机的3s动画时间分成330份，再根据传入的speed细分动画时间
+    */
+    return_value = (u32)3000 * _seg->speed / 330 / meteor_animation_step;
+
+    u8 brightness_levels_buff[12] = {0};
+    // 根据尾焰长度，自动划分亮度等级：
+    for (u8 i = 0; i < ARRAY_SIZE(brightness_levels_buff); i++)
+    {
+        // brightness_levels_buff[i] = 255 - ((u32)i * 255 / fc_effect.meteor_tail_len);
+        brightness_levels_buff[i] = 255 - ((u32)i * 255 / 6);
+    }
+
+    if (IS_REVERSE) // 反向流星
+    {
+        // 要用带符号的数据类型，可能会计算出负数 (begin_index 和 cur_index 都需要是带符号的)
+        int32_t begin_index = _seg->stop - _seg_rt->counter_mode_step; // 当前流星灯的头部
+        int32_t cur_index = begin_index;                               // 当前要绘制的流星灯索引
+        // for (u8 i = 0; i < fc_effect.meteor_tail_len; i++)             // 根据流星灯尾焰长度进行绘制
+        for (u8 i = 0; i < 6; i++) // 根据流星灯尾焰长度进行绘制
+        {
+            if (cur_index <= (int32_t)_seg->stop)
+            {
+                cur_index++;
+
+                // 防止越界：
+                if (cur_index >= (int32_t)_seg->start && cur_index <= (int32_t)_seg->stop)
+                {
+                    u8 brightness = brightness_levels_buff[i];
+                    u32 color = WS2812FX_color_blend(BLACK, WHITE, brightness);
+                    WS2812FX_setPixelColor_with_max_brightness(cur_index, color);
+                }
+            }
+        }
+
+        if (_seg_rt->counter_mode_step > 7) // 如果动画步骤以及到了第 8 步，说明第一段流星头部+尾焰（6个灯）都已经绘制完毕
+        {
+            // 绘制第二段流星
+            begin_index = _seg->stop - _seg_rt->counter_mode_step + 7;
+            cur_index = begin_index;
+
+            for (u8 i = 0; i < 6; i++) // 根据流星灯尾焰长度进行绘制
+            {
+                if (cur_index <= (int32_t)_seg->stop)
+                {
+                    cur_index++;
+
+                    // 防止越界：
+                    if (cur_index >= (int32_t)_seg->start && cur_index <= (int32_t)_seg->stop)
+                    {
+                        u8 brightness = brightness_levels_buff[i];
+                        u32 color = WS2812FX_color_blend(BLACK, WHITE, brightness);
+                        WS2812FX_setPixelColor_with_max_brightness(cur_index, color);
+                    }
+                }
+            }
+        }
+    }
+    else // 正向流星
+    {
+        u16 begin_index = _seg->start + _seg_rt->counter_mode_step; // 当前流星灯的头部
+        u16 cur_index = begin_index;                                // 当前要绘制的流星灯索引
+        // for (u8 i = 0; i < fc_effect.meteor_tail_len; i++)          // 根据流星灯尾焰长度进行绘制
+        for (u8 i = 0; i < 6; i++) // 根据流星灯尾焰长度进行绘制
+        {
+            if (cur_index > _seg->start)
+            {
+                cur_index--;
+
+                // 防止越界：
+                if (cur_index >= (int32_t)_seg->start && cur_index <= (int32_t)_seg->stop)
+                {
+                    u8 brightness = brightness_levels_buff[i];
+                    u32 color = WS2812FX_color_blend(BLACK, WHITE, brightness);
+                    WS2812FX_setPixelColor_with_max_brightness(cur_index, color);
+                }
+            }
+        }
+
+        if (_seg_rt->counter_mode_step > 7) // 如果动画步骤以及到了第 8 步，说明第一段流星头部+尾焰（6个灯）都已经绘制完毕
+        {
+            // 绘制第二段流星
+            begin_index = _seg->start + _seg_rt->counter_mode_step - 7;
+            cur_index = begin_index;
+
+            for (u8 i = 0; i < 6; i++)
+            {
+                if (cur_index > _seg->start)
+                {
+                    cur_index--;
+
+                    // 防止越界：
+                    if (cur_index >= (int32_t)_seg->start && cur_index <= (int32_t)_seg->stop)
+                    {
+                        u8 brightness = brightness_levels_buff[i];
+                        u32 color = WS2812FX_color_blend(BLACK, WHITE, brightness);
+                        WS2812FX_setPixelColor_with_max_brightness(cur_index, color);
+                    }
+                }
+            }
+        }
+    }
+
+    _seg_rt->counter_mode_step = (_seg_rt->counter_mode_step + 1) % (meteor_animation_step);
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        SET_CYCLE;
+        return fc_effect.period_cnt; // 返回周期值，控制一轮动画之间的时间间隔
+    }
+
+    return return_value;
+}
+
+// 流星灯堆积流水
+u16 meteor_lights_stack_flow_with_max_brightness(void)
+{
+    // 补丁：
+    if (0 == _seg_rt->counter_mode_call)
+    {
+        // 刚进入，清除之前的数据残留
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+    }
+
+    if (IS_REVERSE)
+    {
+        if (_seg_rt->counter_mode_step < _seg_len)
+        {
+            WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step, WHITE);
+        }
+    }
+    else
+    {
+        if (_seg_rt->counter_mode_step < _seg_len)
+        {
+            WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
+        }
+    }
+
+    _seg_rt->counter_mode_step++;
+    _seg_rt->counter_mode_step %= _seg_len + 1; // 动画长度，包括堆积流水到点亮最后一个灯，再结束
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        SET_CYCLE;
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 全段填黑色，灭灯
+
+        // 客户给的样机中，堆积流水没有时间间隔
+        // return fc_effect.period_cnt; // 控制一轮动画之间的时间间隔
+    }
+
+    return (_seg->speed); // 返回计数器结果
+}
+
+// 流星灯堆积流水（正向）+流星灯堆积流水（反向）
+u16 meteor_lights_stack_flow_plus_reverse_with_max_brightness(void)
+{
+    // _seg_rt->aux_param // 控制堆积流水的方向
+
+    // 补丁：
+    if (0 == _seg_rt->counter_mode_call)
+    {
+        // 刚进入，清除之前数据残留
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+        _seg_rt->aux_param = 0;
+    }
+
+    if (_seg_rt->aux_param == 0) // 正向堆积流水
+    {
+        if (_seg_rt->counter_mode_step < _seg_len)
+        {
+            WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
+        }
+    }
+    else
+    {
+        if (_seg_rt->counter_mode_step < _seg_len)
+        {
+            WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step, WHITE);
+        }
+    }
+
+    _seg_rt->counter_mode_step++;
+    _seg_rt->counter_mode_step %= _seg_len + 1; // 动画长度，包括堆积流水到点亮最后一个灯，再结束
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        SET_CYCLE;
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len); // 全段填黑色，灭灯
+        _seg_rt->aux_param = !_seg_rt->aux_param;
+
+        // 客户给的样机中，堆积流水没有时间间隔
+        // return fc_effect.period_cnt; // 控制一轮动画之间的时间间隔
+    }
+
+    return (_seg->speed); // 返回计数器结果
+}
+
+// 流星灯单点流水，最后4个灯堆积
+u16 meteor_lights_single_flow_and_stack_with_max_brightness(void)
+{
+    const u8 stack_num = 4; // 堆积流水灯数量（不能大于灯的长度，否则后续的计算会错误）
+
+    if (0 == _seg_rt->counter_mode_call)
+    {
+        // 刚进入，清除之前数据残留
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+    }
+
+    if (IS_REVERSE)
+    {
+        if (_seg_rt->counter_mode_step < _seg_len - stack_num)
+        {
+            Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+            WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step, WHITE);
+        }
+    }
+    else
+    {
+        if (_seg_rt->counter_mode_step < _seg_len - stack_num)
+        {
+            Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+            WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
+        }
+        else
+        {
+            if (_seg_rt->counter_mode_step >= _seg_len - stack_num &&
+                _seg_rt->counter_mode_step <= _seg_len)
+            {
+                WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
+            }
+        }
+    }
+
+    _seg_rt->counter_mode_step++;
+    _seg_rt->counter_mode_step %= _seg_len + 1; // 动画长度，包括点亮最后一个灯，再结束
+
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        SET_CYCLE;
+        // fc_effect.mode_cycle = 1;
+        return fc_effect.period_cnt; // 控制一轮动画之间的时间间隔
+    }
+    return (_seg->speed); // 返回计数器结果
 }
 
 u16 close_metemor(void)

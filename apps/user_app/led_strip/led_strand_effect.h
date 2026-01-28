@@ -179,8 +179,7 @@ typedef struct
     u8 meteor_lights_sensitivity; // 声控模式下，流星灯的灵敏度
     unsigned char app_star_speed; // 反馈给app的，流星灯动画的速度值
 
-    unsigned char motor_speed_index; // 电机模式或电机速度索引
-
+    unsigned char motor_speed_index; // 电机模式或电机速度索引 
     unsigned char app_rgb_mode; // 七彩灯的模式索引，一般由app设置，目前加入了遥控器切换
 
 } fc_effect_t;

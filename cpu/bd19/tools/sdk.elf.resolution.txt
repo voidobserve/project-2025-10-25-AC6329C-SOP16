@@ -2115,13 +2115,13 @@ obj/Release/apps/user_app/led_strip/led_strand_effect.o
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,set_fc_effect,pl
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,ls_meteor_stat_effect,pl
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,printf,l
--r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,WS2812FX_mode_comet_3_with_max_brightness,l
--r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_effect_G_with_max_brightness,l
--r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_effect_H_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,WS2812FX_mode_comet_4_with_max_brightness,l
+-r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_lights_chase_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,WS2812FX_mode_comet_5_with_max_brightness,l
+-r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_lights_single_flow_and_stack_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,WS2812FX_mode_comet_2_with_max_brightness,l
--r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,WS2812FX_mode_comet_6_with_max_brightness,l
+-r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_lights_stack_flow_with_max_brightness,l
+-r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_lights_stack_flow_plus_reverse_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,meteor_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,music_meteor3_with_max_brightness,l
 -r=obj/Release/apps/user_app/led_strip/led_strand_effect.o,os_taskq_post,
@@ -2616,6 +2616,11 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,fc_double_meteor_with_max_brightness,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_comet_6,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_comet_6_with_max_brightness,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor_lights_chase_with_max_brightness,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_color_blend,l
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor_lights_stack_flow_with_max_brightness,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor_lights_stack_flow_plus_reverse_with_max_brightness,pl
+-r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,meteor_lights_single_flow_and_stack_with_max_brightness,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,close_metemor,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,music_mode1,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,get_sound_triggered_by_meteor_lights,l
@@ -2660,7 +2665,6 @@ obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,set_music_s_m,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_mutil_fade,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,memcpy,l
--r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_color_blend,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,memmove,l
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_mutil_breath,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.o,WS2812FX_mode_mutil_twihkle,pl

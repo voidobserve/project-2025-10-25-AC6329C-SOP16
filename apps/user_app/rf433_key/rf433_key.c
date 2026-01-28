@@ -972,9 +972,11 @@ void rf_433_key_event_handle(void)
         // 流星灯模式切换
         // 流星灯索引值范围： 1 ~ 18
         fc_effect.star_index++;
-        if (fc_effect.star_index > 18)
+        // if (fc_effect.star_index > 18) // 
+        if (fc_effect.star_index > 13) // USER_TO_DO 测试时限制了范围
         {
-            fc_effect.star_index = 1;
+            // fc_effect.star_index = 1;
+            fc_effect.star_index = 12; // USER_TO_DO 测试时限制了范围
         }
         ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
     }
