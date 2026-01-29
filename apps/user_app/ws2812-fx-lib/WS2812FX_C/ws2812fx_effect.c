@@ -1352,7 +1352,7 @@ u16 meteor_lights_stack_flow_plus_reverse_with_max_brightness(void)
     {
         // 刚进入，清除之前数据残留
         Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
-        _seg_rt->aux_param = 0;
+        _seg_rt->aux_param = 0; // 控制堆积流水的方向
     }
 
     if (_seg_rt->aux_param == 0) // 正向堆积流水
@@ -1386,37 +1386,53 @@ u16 meteor_lights_stack_flow_plus_reverse_with_max_brightness(void)
 }
 
 // 流星灯单点流水，最后4个灯堆积
+// 只适用于七彩灯+流星灯，并且流星灯数量为12，不方便移植
 u16 meteor_lights_single_flow_and_stack_with_max_brightness(void)
 {
     const u8 stack_num = 4; // 堆积流水灯数量（不能大于灯的长度，否则后续的计算会错误）
 
-    if (0 == _seg_rt->counter_mode_call)
-    {
-        // 刚进入，清除之前数据残留
-        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
-    }
+    Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
 
     if (IS_REVERSE)
     {
         if (_seg_rt->counter_mode_step < _seg_len - stack_num)
         {
-            Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+            // 如果动画还没有跑到要堆积的位置
             WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step, WHITE);
+        }
+        else
+        {
+            // 如果动画跑到了要堆积的位置，动画相当于一边跑一边增加了尾部的流水灯
+            for (u8 i = 0; i < stack_num; i++)
+            {
+                int32_t index = _seg->stop - _seg_rt->counter_mode_step; // 记录当前要绘制的灯珠头部的索引（头部为靠近_seg->start的一侧）
+                if (index >= _seg->start &&
+                    index + i < _seg->start + stack_num)
+                {
+                    WS2812FX_setPixelColor_with_max_brightness(index + i, WHITE);
+                }
+            }
         }
     }
     else
     {
         if (_seg_rt->counter_mode_step < _seg_len - stack_num)
         {
-            Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+            // 如果动画还没有跑到要堆积的位置
             WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
         }
         else
         {
-            if (_seg_rt->counter_mode_step >= _seg_len - stack_num &&
-                _seg_rt->counter_mode_step <= _seg_len)
+            // 如果动画跑到了要堆积的位置，动画相当于一边跑一边增加了尾部的流水灯
+            for (u8 i = 0; i < stack_num; i++)
             {
-                WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, WHITE);
+                u32 index = (_seg->start + _seg_rt->counter_mode_step); // 记录当前要绘制的灯珠头部的索引（头部为靠近_seg->stop的一侧）
+                // if (index - i > _seg->start + _seg->stop - stack_num &&
+                if (index - i > _seg->stop - stack_num &&
+                    index <= _seg->stop) // 堆积的索引值范围
+                {
+                    WS2812FX_setPixelColor_with_max_brightness(index - i, WHITE);
+                }
             }
         }
     }
@@ -1429,9 +1445,79 @@ u16 meteor_lights_single_flow_and_stack_with_max_brightness(void)
         SET_CYCLE;
         // fc_effect.mode_cycle = 1;
         return fc_effect.period_cnt; // 控制一轮动画之间的时间间隔
+
+        // return 1000;
     }
     return (_seg->speed); // 返回计数器结果
 }
+
+/**
+ * @brief 12个流星灯(假设坐标是0~11)，从中间做分隔，
+ *          先在一半的范围内流星(0~5)，时间间隔结束后，再从另一半开始流星(6~11)
+ * 
+ * @return u16 
+ */
+u16 meteor_lights_half_flow_with_max_brightness(void)
+{ 
+    // 补丁：
+    if (0 == _seg_rt->counter_mode_call)
+    {
+        // 刚进入，清除之前的数据残留
+        Adafruit_NeoPixel_fill(BLACK, _seg->start, _seg_len);
+        _seg_rt->aux_param = 0; // 控制前半段流星和后半段流星
+    }
+
+    WS2812FX_fade_out_with_max_brightness();
+
+    if (IS_REVERSE)
+    {
+        if (_seg_rt->aux_param == 0)
+        {
+            if (_seg_rt->counter_mode_step < _seg_len / 2)
+            {
+                WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step, _seg->colors[0]);
+            }
+        }
+        else
+        {
+            if (_seg_rt->counter_mode_step < _seg_len / 2)
+            {
+                WS2812FX_setPixelColor_with_max_brightness(_seg->stop - _seg_rt->counter_mode_step - _seg_len / 2, _seg->colors[0]);
+            }
+        }
+    }
+    else
+    {
+        if (_seg_rt->aux_param == 0)
+        {
+            if (_seg_rt->counter_mode_step < _seg_len / 2)
+            {
+                WS2812FX_setPixelColor_with_max_brightness(_seg->start + _seg_rt->counter_mode_step, _seg->colors[0]);
+            }
+        }
+        else
+        {
+            if (_seg_rt->counter_mode_step < _seg_len / 2)
+            {
+                WS2812FX_setPixelColor_with_max_brightness(_seg_len / 2 + 1 + _seg_rt->counter_mode_step, _seg->colors[0]);
+            }
+        }
+    }
+
+    _seg_rt->counter_mode_step = (_seg_rt->counter_mode_step + 1) % (_seg_len * 2);
+    if (_seg_rt->counter_mode_step == 0)
+    {
+        SET_CYCLE;
+        _seg_rt->aux_param = !_seg_rt->aux_param;
+
+        // fc_effect.mode_cycle = 1;
+        return fc_effect.period_cnt;
+        // return 1000;
+    }
+
+    return (_seg->speed);
+}
+
 
 u16 close_metemor(void)
 {

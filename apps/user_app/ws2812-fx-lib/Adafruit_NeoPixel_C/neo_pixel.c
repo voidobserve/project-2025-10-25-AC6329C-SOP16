@@ -468,7 +468,6 @@ void Adafruit_NeoPixel_setPixelColor_rgbw_with_max_brightness(
 
     if (n < numLEDs)
     {
-
         r = (r * brightness) >> 8;
         g = (g * brightness) >> 8;
         b = (b * brightness) >> 8;

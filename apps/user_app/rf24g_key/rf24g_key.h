@@ -1,5 +1,5 @@
-#ifndef __RF24G_KEY_H
-#define __RF24G_KEY_H
+#ifndef __RF24G_KEY_H__
+#define __RF24G_KEY_H__
 
 #include "includes.h"
 
