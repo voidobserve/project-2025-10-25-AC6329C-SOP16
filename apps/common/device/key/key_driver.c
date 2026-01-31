@@ -28,11 +28,8 @@
 // #define LOG_CLI_ENABLE
 #include "debug.h"
 
-#if TCFG_RF24GKEY_ENABLE
-#include "../../../../apps/user_app/rf24g_key/rf24g_key.h"
-#endif
- 
-#include "rf433_key.h" 
+#include "rf24g_key.h"
+#include "rf433_key.h"
 
 #define KEY_EVENT_CLICK_ONLY_SUPPORT 0 // 是否支持某些按键只响应单击事件
 
@@ -339,7 +336,7 @@ static void key_driver_scan(void *_scan_para)
                     else
                     {
                         key_event = KEY_EVENT_CLICK; // 单击
-                        
+
                         // printf("key event click\n");
                     }
                     key_value = scan_para->notify_value;
@@ -393,7 +390,7 @@ _notify:
     }
 #endif
 
-#if TCFG_RF24GKEY_ENABLE
+#if RF24GKEY_ENABLE
     if (KEY_DRIVER_TYPE_RF24GKEY == scan_para->key_type)
     {
         // 如果是2.4G遥控器按键
@@ -407,7 +404,7 @@ _notify:
 
         goto _scan_end; // 提前退出
     }
-#endif // #if TCFG_RF24GKEY_ENABLE
+#endif // RF24GKEY_ENABLE
 
 #if RF_433_KEY_ENABLE
     if (KEY_DRIVER_TYPE_RF_433_KEY == scan_para->key_type)
@@ -473,8 +470,6 @@ _scan_end:
     return;
 }
 
-#include "rf24g_app.h"
-
 // wakeup callback
 void key_active_set(u8 port)
 {
@@ -491,22 +486,12 @@ int key_driver_init(void)
 {
     int err;
 
-#if TCFG_RF24GKEY_ENABLE
-    // extern void RF24G_Key_Handle(void);
-    // extern void RF24G_Key_Long_Scan(void);
-    // extern struct key_driver_para rf24g_scan_para;
-    // extern struct RF24G_PARA is_rf24g_;
-    // sys_hi_timer_add((void *)&rf24g_scan_para, key_driver_scan, rf24g_scan_para.scan_time); // 注册按键扫描定时器（这里只获取键值，不获取按键事件）
-    // sys_hi_timer_add(NULL, RF24G_Key_Handle, is_rf24g_._sacn_t);                            // 注册按键扫描定时器
-    // sys_hi_timer_add(NULL, RF24G_Key_Long_Scan, is_rf24g_._sacn_t);                         // 注册按键扫描定时器
-
+#if RF24GKEY_ENABLE
     sys_s_hi_timer_add((void *)&rf24g_scan_para, key_driver_scan, rf24g_scan_para.scan_time); // 注册按键扫描定时器
-    sys_s_hi_timer_add(NULL, rf24_key_handle, 1);                                             // 需要1ms调用一次，否则在调节色环时，颜色跳动会特别厉害
 #endif
 
 #if RF_433_KEY_ENABLE // 在 rf_433_key.h 中配置
 
-    // extern rf_433_key_struct_t rf_433_key_structure;
     sys_hi_timer_add((void *)&rf_433_key_structure.rf_433_key_para, key_driver_scan, rf_433_key_structure.rf_433_key_para.scan_time); // 注册按键扫描定时器
 
 #endif // #if RF_433_KEY_ENABLE

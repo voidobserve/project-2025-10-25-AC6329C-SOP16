@@ -1097,8 +1097,7 @@ static bool __check_device_is_match(u8 event_type, u8 info_type, u8 *data, int s
     }
     return false;
 }
-
-// #include "rf24g_app.h"
+ 
 
 /*************************************************************************************************/
 /*!
@@ -1152,7 +1151,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         // printf_buf(adv_data_pt,length);
         // printf("===============^");
 
-#if TCFG_RF24GKEY_ENABLE
+#if RF24GKEY_ENABLE
         rf24g_scan(adv_data_pt);
         // {
         //     // rf24g_ins_t *p = (rf24g_ins_t *) adv_data_pt;
@@ -1161,7 +1160,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         //     //     printf_buf(pBuf,sizeof(rf24g_ins_t));
         //     // }
         // }
-#endif // TCFG_RF24GKEY_ENABLE
+#endif // RF24GKEY_ENABLE
 
         switch (ad_type)
         {

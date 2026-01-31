@@ -590,12 +590,6 @@ void rf_433_key_event_handle(void)
         }
 
         // RED
-        // color_t color_structure = {0};
-        // color_structure.r = 0xFF;
-        // color_structure.g = 0x00;
-        // color_structure.b = 0x00;
-        // color_structure.w = 0x00;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(RED);
     }
     break;
@@ -610,12 +604,6 @@ void rf_433_key_event_handle(void)
         }
 
         // GREEN
-        // color_t color_structure = {0};
-        // color_structure.r = 0x00;
-        // color_structure.g = 0xFF;
-        // color_structure.b = 0x00;
-        // color_structure.w = 0x00;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(GREEN);
     }
     break;
@@ -630,12 +618,6 @@ void rf_433_key_event_handle(void)
         }
 
         // BLUE
-        // color_t color_structure = {0};
-        // color_structure.r = 0x00;
-        // color_structure.g = 0x00;
-        // color_structure.b = 0xFF;
-        // color_structure.w = 0x00;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(BLUE);
     }
     break;
@@ -669,13 +651,6 @@ void rf_433_key_event_handle(void)
         }
 
         // 橙色
-        // u32 color = ORANGE;
-        // color_t color_structure = {0};
-        // color_structure.r = color >> 16;
-        // color_structure.g = color >> 8;
-        // color_structure.b = color;
-        // color_structure.w = color >> 24;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(ORANGE);
     }
     break;
@@ -690,13 +665,6 @@ void rf_433_key_event_handle(void)
         }
 
         // 黄色
-        // u32 color = YELLOW;
-        // color_t color_structure = {0};
-        // color_structure.r = color >> 16;
-        // color_structure.g = color >> 8;
-        // color_structure.b = color;
-        // color_structure.w = color >> 24;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(YELLOW);
     }
     break;
@@ -710,14 +678,7 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        // // CYAN 青色
-        // u32 color = CYAN;
-        // color_t color_structure = {0};
-        // color_structure.r = color >> 16;
-        // color_structure.g = color >> 8;
-        // color_structure.b = color;
-        // color_structure.w = color >> 24;
-        // colorful_lights_set_static_mode(color_structure);
+        // CYAN 青色
         colorful_lights_set_static_color(CYAN);
     }
     break;
@@ -732,13 +693,6 @@ void rf_433_key_event_handle(void)
         }
 
         // 紫色
-        // u32 color = PURPLE;
-        // color_t color_structure = {0};
-        // color_structure.r = color >> 16;
-        // color_structure.g = color >> 8;
-        // color_structure.b = color;
-        // color_structure.w = color >> 24;
-        // colorful_lights_set_static_mode(color_structure);
         colorful_lights_set_static_color(PURPLE);
     }
     break;
@@ -821,28 +775,6 @@ void rf_433_key_event_handle(void)
     case RF_433_KEY_EVENT_R4C4_CLICK:
     case RF_433_KEY_EVENT_R4C4_LONG:
     {
-#if 0
-        // 电机开关
-
-        u8 motor_mode = 0x00; // 默认是关机
-        if (fc_effect.motor_on_off == DEVICE_ON)
-        {
-            motor_mode = 0x06; // 关机命令
-            // fc_effect.motor_speed_index = ARRAY_SIZE(motor_period); // 让索引值超出数组的索引范围，表示关闭电机，下一次重新上电让电机默认关闭
-            fc_effect.motor_on_off = DEVICE_OFF;
-        }
-        else
-        {
-            motor_mode = 0x04; // 控制命令 -- 360度旋转
-            fc_effect.motor_on_off = DEVICE_ON;
-        }
-
-        one_wire_set_mode(motor_mode); // 配置电机模式
-        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-
-        fb_motor_mode(); // 向app反馈电机的状态
-#endif
-
         if (fc_effect.on_off_flag == DEVICE_OFF)
         {
             // 七彩灯没有打开，直接返回
@@ -972,13 +904,11 @@ void rf_433_key_event_handle(void)
         // 流星灯模式切换
         // 流星灯索引值范围： 1 ~ 18
         fc_effect.star_index++;
-        if (fc_effect.star_index > 18) // 
-        // if (fc_effect.star_index > 13) // USER_TO_DO 测试时限制了范围
+        if (fc_effect.star_index > 18)
         {
             fc_effect.star_index = 1;
-            // fc_effect.star_index = 12; // USER_TO_DO 测试时限制了范围
         }
-        
+
         ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
     }
     break;

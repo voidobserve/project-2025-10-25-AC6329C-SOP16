@@ -158,8 +158,7 @@ static int multi_bt_connction_status_event_handler(struct bt_event *bt)
     return 0;
 }
 
-
-#include "rf24g_app.h"
+ 
 
 /**
  * @brief 多主机的按键事件

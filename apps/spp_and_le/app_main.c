@@ -37,7 +37,9 @@
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.h"
 
-OS_SEM LED_TASK_SEM;
+#include "rf24g_key.h"
+
+// OS_SEM LED_TASK_SEM;
 
 /*任务列表   */
 const struct task_info task_info_table[] = {
@@ -377,11 +379,10 @@ void main_while(void)
         rf_433_key_learn();
 #endif // #if RF_433_LEARN_ENABLE
 
-        effect_stepmotor(); // 声控，电机的音乐效果
-        // stepmotor();        // 无霍尔时，电机停止指令计时
-        // meteor_period_sub(); // 流星周期控制
-
+        effect_stepmotor(); // 声控，电机的音乐效果  
         rf_433_key_event_handle();
+        rf24_key_handle();
+
 
         // printf("main circle\n");// 主循环约10ms
 
@@ -540,9 +541,7 @@ void my_main(void)
     led_state_init();    // 流星灯
     mcu_com_init();      // 电机一线通信
     rf_433_key_config(); // rf433信号接收引脚
-
-    // os_sem_create(&LED_TASK_SEM, 0);
-
+ 
     sys_s_hi_timer_add(NULL, WS2812_circle_task, 10); // 10ms
 
     task_create(user_msg_handle_task, NULL, "msg_task");

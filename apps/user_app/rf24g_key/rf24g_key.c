@@ -1,49 +1,57 @@
 #include "rf24g_key.h"
-#include "../../../apps/user_app/led_strip/led_strand_effect.h"
-#include "../../../apps/user_app/save_flash/save_flash.h" // 包含读写flash的接口
+#include "led_strand_effect.h"
+#include "save_flash.h" // 包含读写flash的接口
+#include "ws2812fx_effect.h"
 
-#if (TCFG_RF24GKEY_ENABLE)
+#if (RF24GKEY_ENABLE)
+
+/*
+    用 AK803-SOP16 写的遥控器
+*/
+const u8 rf24g_key_type_28keys_table[][RF34G_KEY_EVENT_MAX + 1] = {
+    {RF24G_KEY_VAL_R1C1, RF24G_28_KEY_EVENT_R1C1_CLICK, RF24G_28_KEY_EVENT_R1C1_LONG, RF24G_28_KEY_EVENT_R1C1_HOLD, RF24G_28_KEY_EVENT_R1C1_LOOSE},
+    {RF24G_KEY_VAL_R1C2, RF24G_28_KEY_EVENT_R1C2_CLICK, RF24G_28_KEY_EVENT_R1C2_LONG, RF24G_28_KEY_EVENT_R1C2_HOLD, RF24G_28_KEY_EVENT_R1C2_LOOSE},
+    {RF24G_KEY_VAL_R1C3, RF24G_28_KEY_EVENT_R1C3_CLICK, RF24G_28_KEY_EVENT_R1C3_LONG, RF24G_28_KEY_EVENT_R1C3_HOLD, RF24G_28_KEY_EVENT_R1C3_LOOSE},
+    {RF24G_KEY_VAL_R1C4, RF24G_28_KEY_EVENT_R1C4_CLICK, RF24G_28_KEY_EVENT_R1C4_LONG, RF24G_28_KEY_EVENT_R1C4_HOLD, RF24G_28_KEY_EVENT_R1C4_LOOSE},
+
+    {RF24G_KEY_VAL_R2C1, RF24G_28_KEY_EVENT_R2C1_CLICK, RF24G_28_KEY_EVENT_R2C1_LONG, RF24G_28_KEY_EVENT_R2C1_HOLD, RF24G_28_KEY_EVENT_R2C1_LOOSE},
+    {RF24G_KEY_VAL_R2C2, RF24G_28_KEY_EVENT_R2C2_CLICK, RF24G_28_KEY_EVENT_R2C2_LONG, RF24G_28_KEY_EVENT_R2C2_HOLD, RF24G_28_KEY_EVENT_R2C2_LOOSE},
+    {RF24G_KEY_VAL_R2C3, RF24G_28_KEY_EVENT_R2C3_CLICK, RF24G_28_KEY_EVENT_R2C3_LONG, RF24G_28_KEY_EVENT_R2C3_HOLD, RF24G_28_KEY_EVENT_R2C3_LOOSE},
+    {RF24G_KEY_VAL_R2C4, RF24G_28_KEY_EVENT_R2C4_CLICK, RF24G_28_KEY_EVENT_R2C4_LONG, RF24G_28_KEY_EVENT_R2C4_HOLD, RF24G_28_KEY_EVENT_R2C4_LOOSE},
+
+    {RF24G_KEY_VAL_R3C1, RF24G_28_KEY_EVENT_R3C1_CLICK, RF24G_28_KEY_EVENT_R3C1_LONG, RF24G_28_KEY_EVENT_R3C1_HOLD, RF24G_28_KEY_EVENT_R3C1_LOOSE},
+    {RF24G_KEY_VAL_R3C2, RF24G_28_KEY_EVENT_R3C2_CLICK, RF24G_28_KEY_EVENT_R3C2_LONG, RF24G_28_KEY_EVENT_R3C2_HOLD, RF24G_28_KEY_EVENT_R3C2_LOOSE},
+    {RF24G_KEY_VAL_R3C3, RF24G_28_KEY_EVENT_R3C3_CLICK, RF24G_28_KEY_EVENT_R3C3_LONG, RF24G_28_KEY_EVENT_R3C3_HOLD, RF24G_28_KEY_EVENT_R3C3_LOOSE},
+    {RF24G_KEY_VAL_R3C4, RF24G_28_KEY_EVENT_R3C4_CLICK, RF24G_28_KEY_EVENT_R3C4_LONG, RF24G_28_KEY_EVENT_R3C4_HOLD, RF24G_28_KEY_EVENT_R3C4_LOOSE},
+
+    {RF24G_KEY_VAL_R4C1, RF24G_28_KEY_EVENT_R4C1_CLICK, RF24G_28_KEY_EVENT_R4C1_LONG, RF24G_28_KEY_EVENT_R4C1_HOLD, RF24G_28_KEY_EVENT_R4C1_LOOSE},
+    {RF24G_KEY_VAL_R4C2, RF24G_28_KEY_EVENT_R4C2_CLICK, RF24G_28_KEY_EVENT_R4C2_LONG, RF24G_28_KEY_EVENT_R4C2_HOLD, RF24G_28_KEY_EVENT_R4C2_LOOSE},
+    {RF24G_KEY_VAL_R4C3, RF24G_28_KEY_EVENT_R4C3_CLICK, RF24G_28_KEY_EVENT_R4C3_LONG, RF24G_28_KEY_EVENT_R4C3_HOLD, RF24G_28_KEY_EVENT_R4C3_LOOSE},
+    {RF24G_KEY_VAL_R4C4, RF24G_28_KEY_EVENT_R4C4_CLICK, RF24G_28_KEY_EVENT_R4C4_LONG, RF24G_28_KEY_EVENT_R4C4_HOLD, RF24G_28_KEY_EVENT_R4C4_LOOSE},
+
+    {RF24G_KEY_VAL_R5C1, RF24G_28_KEY_EVENT_R5C1_CLICK, RF24G_28_KEY_EVENT_R5C1_LONG, RF24G_28_KEY_EVENT_R5C1_HOLD, RF24G_28_KEY_EVENT_R5C1_LOOSE},
+    {RF24G_KEY_VAL_R5C2, RF24G_28_KEY_EVENT_R5C2_CLICK, RF24G_28_KEY_EVENT_R5C2_LONG, RF24G_28_KEY_EVENT_R5C2_HOLD, RF24G_28_KEY_EVENT_R5C2_LOOSE},
+    {RF24G_KEY_VAL_R5C3, RF24G_28_KEY_EVENT_R5C3_CLICK, RF24G_28_KEY_EVENT_R5C3_LONG, RF24G_28_KEY_EVENT_R5C3_HOLD, RF24G_28_KEY_EVENT_R5C3_LOOSE},
+    {RF24G_KEY_VAL_R5C4, RF24G_28_KEY_EVENT_R5C4_CLICK, RF24G_28_KEY_EVENT_R5C4_LONG, RF24G_28_KEY_EVENT_R5C4_HOLD, RF24G_28_KEY_EVENT_R5C4_LOOSE},
+
+    {RF24G_KEY_VAL_R6C1, RF24G_28_KEY_EVENT_R6C1_CLICK, RF24G_28_KEY_EVENT_R6C1_LONG, RF24G_28_KEY_EVENT_R6C1_HOLD, RF24G_28_KEY_EVENT_R6C1_LOOSE},
+    {RF24G_KEY_VAL_R6C2, RF24G_28_KEY_EVENT_R6C2_CLICK, RF24G_28_KEY_EVENT_R6C2_LONG, RF24G_28_KEY_EVENT_R6C2_HOLD, RF24G_28_KEY_EVENT_R6C2_LOOSE},
+    {RF24G_KEY_VAL_R6C3, RF24G_28_KEY_EVENT_R6C3_CLICK, RF24G_28_KEY_EVENT_R6C3_LONG, RF24G_28_KEY_EVENT_R6C3_HOLD, RF24G_28_KEY_EVENT_R6C3_LOOSE},
+    {RF24G_KEY_VAL_R6C4, RF24G_28_KEY_EVENT_R6C4_CLICK, RF24G_28_KEY_EVENT_R6C4_LONG, RF24G_28_KEY_EVENT_R6C4_HOLD, RF24G_28_KEY_EVENT_R6C4_LOOSE},
+
+    {RF24G_KEY_VAL_R7C1, RF24G_28_KEY_EVENT_R7C1_CLICK, RF24G_28_KEY_EVENT_R7C1_LONG, RF24G_28_KEY_EVENT_R7C1_HOLD, RF24G_28_KEY_EVENT_R7C1_LOOSE},
+    {RF24G_KEY_VAL_R7C2, RF24G_28_KEY_EVENT_R7C2_CLICK, RF24G_28_KEY_EVENT_R7C2_LONG, RF24G_28_KEY_EVENT_R7C2_HOLD, RF24G_28_KEY_EVENT_R7C2_LOOSE},
+    {RF24G_KEY_VAL_R7C3, RF24G_28_KEY_EVENT_R7C3_CLICK, RF24G_28_KEY_EVENT_R7C3_LONG, RF24G_28_KEY_EVENT_R7C3_HOLD, RF24G_28_KEY_EVENT_R7C3_LOOSE},
+    {RF24G_KEY_VAL_R7C4, RF24G_28_KEY_EVENT_R7C4_CLICK, RF24G_28_KEY_EVENT_R7C4_LONG, RF24G_28_KEY_EVENT_R7C4_HOLD, RF24G_28_KEY_EVENT_R7C4_LOOSE},
+};
+
+volatile u8 rf24g_key_driver_event = 0; // 由key_driver_scan() 更新
+volatile u8 rf24g_key_driver_value = 0; // 由key_driver_scan() 更新
 
 static volatile u8 rf24g_rx_flag = 0;       // 是否收到了新的数据
 volatile rf24g_recv_info_t rf24g_recv_info; // 存放接收到的数据包
 volatile u8 chromatic_circle_val = 0;       // 存放色环按键对应的数值，范围：0x00~0xFF
 volatile u8 rf24g_key_val = NO_KEY;         // 存放按键键值
-
-const u8 rf24g_key_event_table[][RF34G_KEY_EVENT_MAX + 1] = {
-    // 0,
-    {RF24G_KEY_ON_OFF, RF24G_KEY_EVENT_ON_OFF_CLICK, RF24G_KEY_EVENT_ON_OFF_HOLD, RF24G_KEY_EVENT_ON_OFF_LOOSE},
-
-    // 色环按键
-    {RF24G_KEY_CHROMATIC_CIRCLE, RF24G_KEY_EVENT_CHROMATIC_CIRCLE_CLICK, RF24G_KEY_EVENT_CHROMATIC_CIRCLE_HOLD, RF24G_KEY_EVENT_CHROMATIC_CIRCLE_LOOSE},
-    // 亮度加
-    {RF24G_KEY_BRIGHTNESS_ADD, RF24G_KEY_EVENT_BRIGHTNESS_ADD_CLICK, RF24G_KEY_EVENT_BRIGHTNESS_ADD_HOLD, RF24G_KEY_EVENT_BRIGHTNESS_ADD_LOOSE},
-    // 亮度减
-    {RF24G_KEY_BRIGHTNESS_SUB, RF24G_KEY_EVENT_BRIGHTNESS_SUB_CLICK, RF24G_KEY_EVENT_BRIGHTNESS_SUB_HOLD, RF24G_KEY_EVENT_BRIGHTNESS_SUB_LOOSE},
-    // 动态速度加
-    {RF24G_KEY_DYNAMIC_SPEED_ADD, RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_CLICK, RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_HOLD, RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_LOOSE},
-    // 动态速度减
-    {RF24G_KEY_DYNAMIC_SPEED_SUB, RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_CLICK, RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_HOLD, RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_LOOSE},
-    // 模式加
-    {RF24G_KEY_MODE_ADD, RF24G_KEY_EVENT_MODE_ADD_CLICK, RF24G_KEY_EVENT_MODE_ADD_HOLD, RF24G_KEY_EVENT_MODE_ADD_LOOSE},
-    // 模式减
-    {RF24G_KEY_MODE_SUB, RF24G_KEY_EVENT_MODE_SUB_CLICK, RF24G_KEY_EVENT_MODE_SUB_HOLD, RF24G_KEY_EVENT_MODE_SUB_LOOSE},
-    // 冷白亮度加，同时暖白亮度减
-    {RF24G_KEY_COLD_WHITE_BRIGHTNESS_ADD, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_ADD_CLICK, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_ADD_HOLD, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_ADD_LOOSE},
-    // 冷白亮度减，同时暖白亮度加
-    {RF24G_KEY_COLD_WHITE_BRIGHTNESS_SUB, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_SUB_CLICK, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_SUB_HOLD, RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_SUB_LOOSE},
-    // 电机速度加
-    {RF24G_KEY_MOTOR_SPEED_ADD, RF24G_KEY_EVENT_MOTOR_SPEED_ADD_CLICK, RF24G_KEY_EVENT_MOTOR_SPEED_ADD_HOLD, RF24G_KEY_EVENT_MOTOR_SPEED_ADD_LOOSE},
-    // 电机速度减
-    {RF24G_KEY_MOTOR_SPEED_SUB, RF24G_KEY_EVENT_MOTOR_SPEED_SUB_CLICK, RF24G_KEY_EVENT_MOTOR_SPEED_SUB_HOLD, RF24G_KEY_EVENT_MOTOR_SPEED_SUB_LOOSE},
-    // 流星速度加
-    {RF24G_KEY_METEOR_SPEED_ADD, RF24G_KEY_EVENT_METEOR_SPEED_ADD_CLICK, RF24G_KEY_EVENT_METEOR_SPEED_ADD_HOLD, RF24G_KEY_EVENT_METEOR_SPEED_ADD_LOOSE},
-    // 流星速度减
-    {RF24G_KEY_METEOR_SPEED_SUB, RF24G_KEY_EVENT_METEOR_SPEED_SUB_CLICK, RF24G_KEY_EVENT_METEOR_SPEED_SUB_HOLD, RF24G_KEY_EVENT_METEOR_SPEED_SUB_LOOSE},
-
-};
-
-volatile u8 rf24g_key_driver_event = 0; // 由key_driver_scan() 更新
-volatile u8 rf24g_key_driver_value = 0; // 由key_driver_scan() 更新
 
 static u8 rf24g_get_key_value(void); // 获取按键键值的函数声明
 volatile struct key_driver_para rf24g_scan_para = {
@@ -61,40 +69,21 @@ volatile struct key_driver_para rf24g_scan_para = {
 void rf24g_scan(u8 *recv_buff)
 {
     rf24g_recv_info_t *p = (rf24g_recv_info_t *)recv_buff;
-    if (p->header1 == RF24G_HEADER_1 && p->header2 == RF24G_HEADER_2)
-    // if (p->header1 == 0xDC && p->header2 == 0xDC || (p->header1 == RF24G_HEADER_1 && p->header2 == RF24G_HEADER_2)) // 测试时使用
+    if (p->header1 == REMOTE_TYPE_28KEY_HEADER_1 &&
+        p->header2 == REMOTE_TYPE_28KEY_HEADER_2)
     {
         // printf_buf(recv_buff, sizeof(rf24g_recv_info_t)); // 打印接收到的数据包
 
-        // rf24g_recv_info = *p; // 结构体变量赋值
-
-        // 测试时使用：
-        if (p->header1 == 0xDC && p->header2 == 0xDC)
-        {
-            rf24g_key_val = p->key_1;
-            rf24g_rx_flag = 1;
-            return;
-        }
-
-        // if (p->key_1 == RF24G_KEY_CHROMATIC_CIRCLE) // 如果是色环按键
-        // {
-        //     rf24g_key_val = p->key_1;
-        //     chromatic_circle_val = p->key_2;
-        // }
-        // else
-        // {
-        //     rf24g_key_val = p->key_2;
-        // }
-
-        rf24g_rx_flag = 1; // 测试的时候，屏蔽2.4G遥控器按键
+        rf24g_key_val = p->key_val;
+        rf24g_rx_flag = 1;
     }
 }
 
 static u8 rf24g_get_key_value(void)
 {
     u8 key_value = 0;
-    static u16 time_out_cnt = 0; // 加入超时，防止丢包（超时时间与按键扫描时间有关）
-    static u8 last_key_value = 0;
+    static u16 time_out_cnt = 0;  // 加入超时，防止丢包（超时时间与按键扫描时间有关）
+    static u8 last_key_value = 0; // 上一次按键键值，在超时时间内返回上一次按键键值
 
     if (rf24g_rx_flag == 1) // 收到2.4G广播
     {
@@ -102,24 +91,14 @@ static u8 rf24g_get_key_value(void)
 
         key_value = rf24g_key_val;
 
-        // printf("__LINE__ %u", __LINE__);
-
-        if (RF24G_KEY_CHROMATIC_CIRCLE != key_value) // 收到一次色环的键值就处理一次，不用等超时
-        {
-            // time_out_cnt = 30; // 2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
-            time_out_cnt = 20; // 2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
-            // time_out_cnt = 10; // 2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
-        }
-
-        if (0x52 == key_value) // 如果键值是0x52，可能是803接收数据时丢失数据包，认为这个键值还是上一次收到的键值
-        {
-            key_value = last_key_value;
-        }
+        /*
+            2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
+            值 == 20，10ms调用一次该函数，这里填充200ms的超时值
+        */
+        time_out_cnt = 20;
 
         last_key_value = key_value;
-
-        // rf24g_recv_info.key_v = NO_KEY;
-        return last_key_value;
+        return key_value;
     }
 
     if (time_out_cnt != 0)
@@ -141,639 +120,854 @@ u8 rf24g_convert_key_event(u8 key_value, u8 key_driver_event)
     {
         key_event_index = 1;
     }
-    else if (KEY_EVENT_LONG == key_driver_event || KEY_EVENT_HOLD == key_driver_event)
+    else if (KEY_EVENT_LONG == key_driver_event)
     {
         // long和hold都当作hold处理
         key_event_index = 2;
     }
+    else if (KEY_EVENT_HOLD == key_driver_event)
+    {
+        key_event_index = 3;
+    }
     else if (KEY_EVENT_UP == key_driver_event)
     {
         // 长按后松手
-        key_event_index = 3;
+        key_event_index = 4;
     }
 
     if (0 == key_event_index || NO_KEY == key_value)
     {
         // 按键事件与上面的事件都不匹配
         // 得到的键值是无效键值
-        return RF24G_KEY_EVENT_NONE;
+        return RF24G_28_KEY_EVENT_NONE;
     }
 
-    for (u8 i = 0; i < sizeof(rf24g_key_event_table) / sizeof(rf24g_key_event_table[0]); i++)
+    // 遍历表格中的每一个按键：
+    for (u8 i = 0; i < sizeof(rf24g_key_type_28keys_table) / sizeof(rf24g_key_type_28keys_table[0]); i++)
     {
-        if (key_value == rf24g_key_event_table[i][0])
+        if (key_value == rf24g_key_type_28keys_table[i][0])
         {
-            return rf24g_key_event_table[i][key_event_index];
+            return rf24g_key_type_28keys_table[i][key_event_index];
         }
     }
 
     // 如果运行到这里，都没有找到对应的按键，返回无效按键事件
-    return RF24G_KEY_EVENT_NONE;
+    return RF24G_28_KEY_EVENT_NONE;
 }
-
-volatile u8 color_index_cur;
-volatile u8 color_index_dest;
-
-#define ADJUST_WHITE_BRIGHTNESS_STEP 10 // 冷白亮度、暖白亮度的调节步长
-// static u8 cold_white_brightness = 128;  // 冷白亮度，初始值50%
-// static u8 warm_white_brightness = 128;  // 暖白亮度，初始值50%
-static u8 cold_white_brightness = 0;   // 冷白亮度，初始值
-static u8 warm_white_brightness = 255; // 暖白亮度，初始值
 
 void rf24_key_handle(void)
 {
     u8 rf24g_key_event = 0;
-
-    if (NO_KEY == rf24g_key_driver_value)
-        return;
-
+    rf24_key_handle_func_t rf24g_key_handle_func_ptr = NULL;
+  
     rf24g_key_event = rf24g_convert_key_event(rf24g_key_driver_value, rf24g_key_driver_event);
-    rf24g_key_driver_value = NO_KEY;
+    rf24g_key_driver_value = NO_KEY; // 置为无效键值（由于扫描函数只更新，不会清除，在这里要清除）
 
-    switch (rf24g_key_event)
+    if (rf24g_key_event == RF24G_28_KEY_EVENT_NONE)
     {
-        // 收到短按、长按后松手，再执行对应的功能
-
-    case RF24G_KEY_EVENT_ON_OFF_CLICK: // 短按 -- 开机
-    {
-        printf("key event on/off click\n");
-        // read_flash_device_status_init(); // 读取设备状态（目前应该不用加这一句）
-        soft_turn_on_the_light(); // 在测试时屏蔽
+        // 如果是无效的按键事件，直接返回
+        return;
     }
-    break;
-    case RF24G_KEY_EVENT_ON_OFF_HOLD: // 长按 -- 关机
+
+    rf24g_key_handle_func_ptr = rf24_28keys_handle_func_buff[rf24g_key_event];
+
+    if (NULL == rf24g_key_handle_func_ptr)
     {
-        printf("key event on/off hold\n");
-        soft_turn_off_lights(); // 在测试时屏蔽
+        // 如果按键事件没有对应的处理函数，直接退出
+        return;
     }
-    break;
-    case RF24G_KEY_EVENT_ON_OFF_LOOSE:
-        printf("key event on/off loose\n");
-        break;
 
-    // 色环按键的短按和长按，都是执行相同的功能
-    case RF24G_KEY_EVENT_CHROMATIC_CIRCLE_CLICK:
-    case RF24G_KEY_EVENT_CHROMATIC_CIRCLE_HOLD:
-    {
-        // printf("key event chromatic circle\n");
-        // printf("key event chromatic circle click\n");
-        // printf("key event chromatic circle hold\n");
+    // 直接调用对应的处理函数，这样需要每个处理函数内都要判断一下设备是否开机
+    rf24g_key_handle_func_ptr();
 
-        // 根据色环按键的数值转换成对应的RGB值：
-        u8 r;
-        u8 g;
-        u8 b;
-        extern const u8 chromatic_circle_table[][3];
-
-        if (0x51 == chromatic_circle_val)
-        {
-            // 如果收到了0x51，可能是803接收触摸ic传过来的数据丢失了，这里选择屏蔽这个数据
-            return;
-        }
-
-        r = chromatic_circle_table[chromatic_circle_val][0];
-        g = chromatic_circle_table[chromatic_circle_val][1];
-        b = chromatic_circle_table[chromatic_circle_val][2];
-        fc_effect.rgb.r = r;
-        fc_effect.rgb.g = g;
-        fc_effect.rgb.b = b;
-        fc_effect.Now_state = IS_STATIC;
-
-        // 如果调节了冷白、暖白亮度，不能只通过 set_static_mode 来调节颜色：
-        // set_static_mode(r, g, b);
-        set_fc_effect(); // 效果调度
-
-        // 这里可能要一段时间无操作后再写入flash：（实际测试，频繁调节色环时，同时频繁写入flash，不会造成卡顿）
-        save_user_data_area3();
-#if 0
-        fc_effect.Now_state = COLORFUL_LIGHTS_STATIC;
-        fc_effect.dream_scene.c_n = 1;
-
-        color_index_cur = color_index_dest;
-        color_index_dest = chromatic_circle_val;
-
-
-        // 每次传入颜色，如果都是这个模式，让颜色从当前颜色渐变至目标颜色
-
-        extern u16 colorful_lights_static(void);
-        WS2812FX_setSegment_colorOptions(                   // 设置一段颜色的效果
-            0,                                              // 第0段
-            0, 0,                                           // 起始位置，结束位置
-            &colorful_lights_static,                          // 效果
-            0,                                              // 颜色，WS2812FX_setColors设置
-            100,                                            // 速度
-            0);                                             // 选项，这里像素点大小：1
-        // WS2812FX_set_coloQty(0, fc_effect.dream_scene.c_n); // 设置颜色数量  0：第0段   fc_effect.dream_scene.c_n  颜色数量，一个颜色包含（RGB）
-        // ls_set_colors(1, &fc_effect.rgb);                   // 1:1个颜色    &fc_effect.rgb 这个颜色是什么色
-
-        WS2812FX_start();
-#endif
-    }
-    break;
-
-    case RF24G_KEY_EVENT_BRIGHTNESS_ADD_CLICK: // 亮度加
-        printf("key event brightness add click\n");
-    case RF24G_KEY_EVENT_BRIGHTNESS_ADD_HOLD:
-    {
-
-        // 目前只有静态模式才能调亮度
-        ls_add_bright();
-        save_user_data_area3();
-    }
-    break;
-
-#if 0 // 测试能不能检测长短按
-
-    case RF24G_KEY_EVENT_BRIGHTNESS_ADD_CLICK: // 亮度加
-        printf("key event brightness add click\n");
-        break;
-    case RF24G_KEY_EVENT_BRIGHTNESS_ADD_HOLD:
-    {
-        printf("key event brightness add hold\n");
-    }
-    break;
-    case RF24G_KEY_EVENT_BRIGHTNESS_ADD_LOOSE: //
-        printf("key event brightness sub click\n");
-        break;
-
-#endif // 测试能不能检测长短按
-
-    case RF24G_KEY_EVENT_BRIGHTNESS_SUB_CLICK: // 亮度减
-    case RF24G_KEY_EVENT_BRIGHTNESS_SUB_HOLD:
-    {
-        // 目前只有静态模式才能调亮度
-        ls_sub_bright();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_CLICK: // 动态速度加
-                                                  // case RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_HOLD:
-    case RF24G_KEY_EVENT_DYNAMIC_SPEED_ADD_LOOSE:
-    {
-        // 目前只有在动态模式下，才加快速度
-        ls_add_speed();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_CLICK: // 动态速度减
-                                                  // case RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_HOLD:
-    case RF24G_KEY_EVENT_DYNAMIC_SPEED_SUB_LOOSE:
-    {
-        // 目前只有在动态模式下，才减慢速度
-        ls_sub_speed();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_MODE_ADD_CLICK: // 模式加
-    case RF24G_KEY_EVENT_MODE_ADD_LOOSE:
-    {
-        // USER_TO_DO 需要加上流星灯模式的切换
-        ls_add_mode_InAPP();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_MODE_SUB_CLICK: // 模式减
-    case RF24G_KEY_EVENT_MODE_SUB_LOOSE:
-    {
-        // USER_TO_DO 需要加上流星灯模式的切换
-        ls_sub_mode_InAPP();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_ADD_CLICK: // 冷白亮度加 同时暖白亮度减
-    case RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_ADD_HOLD:
-    {
-        // 在静态模式下调节冷白和暖白亮度
-        if (fc_effect.Now_state == IS_STATIC)
-        {
-            // 增加冷白亮度
-            // if (cold_white_brightness < 255)
-            // {
-            //     cold_white_brightness++;
-            // }
-
-            // // 减少暖白亮度
-            // if (warm_white_brightness > 0)
-            // {
-            //     warm_white_brightness--;
-            // }
-
-            if (cold_white_brightness < 255 - ADJUST_WHITE_BRIGHTNESS_STEP)
-            {
-                cold_white_brightness += ADJUST_WHITE_BRIGHTNESS_STEP;
-            }
-            else
-            {
-                cold_white_brightness = 255;
-            }
-
-            // 减少暖白亮度
-            if (warm_white_brightness > 0 + ADJUST_WHITE_BRIGHTNESS_STEP)
-            {
-                warm_white_brightness -= ADJUST_WHITE_BRIGHTNESS_STEP;
-            }
-            else
-            {
-                warm_white_brightness = 0;
-            }
-
-            // 根据冷白和暖白的组合值设置最终的白光输出
-            // 这里简化处理，实际可以根据色温需求调整算法
-            // u8 final_white = (cold_white_brightness + (255 - warm_white_brightness)) / 2;
-            fc_effect.rgb.w = (cold_white_brightness + (255 - warm_white_brightness)) / 2;
-
-            // printf("cold_white_brightness: %u\n", (u16)cold_white_brightness);
-            // printf("warm_white_brightness: %u\n", (u16)warm_white_brightness);
-            // printf("fc_effect.rgb.w: %u\n", (u16)fc_effect.rgb.w);
-
-            // 更新显示
-            // set_static_mode(fc_effect.rgb.r, fc_effect.rgb.g, fc_effect.rgb.b, fc_effect.rgb.w);
-            set_fc_effect(); // 效果调度
-            fb_bright();     // 反馈亮度变化给APP
-            save_user_data_area3();
-        }
-    }
-    break;
-
-    case RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_SUB_CLICK: // 冷白亮度减 同时暖白亮度加
-    case RF24G_KEY_EVENT_COLD_WHITE_BRIGHTNESS_SUB_HOLD:
-    {
-        // 在静态模式下调节冷白和暖白亮度
-        if (fc_effect.Now_state == IS_STATIC)
-        {
-            // // 减少冷白亮度
-            // if (cold_white_brightness > 0)
-            // {
-            //     cold_white_brightness--;
-            // }
-
-            // // 增加暖白亮度
-            // if (warm_white_brightness < 255)
-            // {
-            //     warm_white_brightness++;
-            // }
-
-            // 减少冷白亮度
-            if (cold_white_brightness > 0 + ADJUST_WHITE_BRIGHTNESS_STEP)
-            {
-                cold_white_brightness -= ADJUST_WHITE_BRIGHTNESS_STEP;
-            }
-            else
-            {
-                cold_white_brightness = 0;
-            }
-
-            // 增加暖白亮度
-            if (warm_white_brightness < 255 - ADJUST_WHITE_BRIGHTNESS_STEP)
-            {
-                warm_white_brightness += ADJUST_WHITE_BRIGHTNESS_STEP;
-            }
-            else
-            {
-                warm_white_brightness = 255;
-            }
-
-            // 根据冷白和暖白的组合值设置最终的白光输出
-            // 这里简化处理，实际可以根据色温需求调整算法
-            // u8 final_white = (cold_white_brightness + (255 - warm_white_brightness)) / 2;
-            fc_effect.rgb.w = (cold_white_brightness + (255 - warm_white_brightness)) / 2;
-
-            // printf("cold_white_brightness: %u\n", (u16)cold_white_brightness);
-            // printf("warm_white_brightness: %u\n", (u16)warm_white_brightness);
-            // printf("fc_effect.rgb.w: %u\n", (u16)fc_effect.rgb.w);
-
-            // 更新显示
-            // set_static_mode(fc_effect.rgb.r, fc_effect.rgb.g, fc_effect.rgb.b, fc_effect.rgb.w);
-            set_fc_effect(); // 效果调度
-            fb_bright();     // 反馈亮度变化给APP
-            save_user_data_area3();
-        }
-    }
-    break;
-
-    case RF24G_KEY_EVENT_MOTOR_SPEED_ADD_CLICK: // 电机速度加
-    case RF24G_KEY_EVENT_MOTOR_SPEED_ADD_LOOSE:
-    {
-        ls_add_motor_speed();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_MOTOR_SPEED_SUB_CLICK: // 电机速度减
-    case RF24G_KEY_EVENT_MOTOR_SPEED_SUB_LOOSE:
-    {
-        ls_sub_motor_speed();
-        save_user_data_area3();
-    }
-    break;
-
-    case RF24G_KEY_EVENT_METEOR_SPEED_ADD_CLICK: // 流星灯速度加
-    case RF24G_KEY_EVENT_METEOR_SPEED_ADD_LOOSE:
-    {
-        // 流星灯开启时，才调节速度：
-        ls_add_star_speed();
-        if (DEVICE_ON == fc_effect.star_on_off)
-        {
-            save_user_data_area3();
-        }
-    }
-    break;
-
-    case RF24G_KEY_EVENT_METEOR_SPEED_SUB_CLICK: // 流星灯速度减
-    case RF24G_KEY_EVENT_METEOR_SPEED_SUB_LOOSE:
-    {
-        // 流星灯开启时，才调节速度：
-        ls_sub_star_speed();
-        if (DEVICE_ON == fc_effect.star_on_off)
-        {
-            save_user_data_area3();
-        }
-    }
-    break;
-
-    } // switch (rf24g_key_event)
+    os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
 }
 
-// 色环数值对应的查表数组
-const u8 chromatic_circle_table[][3] = {
-    {255, 0, 0},
-    {255, 5, 0},
-    {255, 7, 0},
-    {255, 17, 0},
-    {255, 20, 0},
-    {255, 30, 0},
-    {255, 33, 0},
-    {255, 38, 0},
-    {255, 45, 0},
-    {255, 51, 0},
-    {255, 58, 0},
-    {255, 63, 0},
-    {255, 68, 0},
-    {255, 76, 0},
-    {255, 81, 0},
-    {255, 89, 0},
-    {255, 94, 0},
-    {255, 96, 0},
-    {255, 107, 0},
-    {255, 109, 0},
-    {255, 119, 0},
-    {255, 122, 0},
-    {255, 127, 0},
-    {255, 135, 0},
-    {255, 140, 0},
-    {255, 147, 0},
-    {255, 153, 0},
-    {255, 158, 0},
-    {255, 165, 0},
-    {255, 170, 0},
-    {255, 178, 0},
-    {255, 183, 0},
-    {255, 191, 0},
-    {255, 196, 0},
-    {255, 198, 0},
-    {255, 209, 0},
-    {255, 211, 0},
-    {255, 221, 0},
-    {255, 224, 0},
-    {255, 229, 0},
-    {255, 237, 0},
-    {255, 242, 0},
-    {255, 249, 0},
-    {255, 255, 0},
-    {249, 255, 0},
-    {242, 255, 0},
-    {237, 255, 0},
-    {229, 255, 0},
-    {224, 255, 0},
-    {221, 255, 0},
-    {211, 255, 0},
-    {209, 255, 0},
-    {198, 255, 0},
-    {196, 255, 0},
-    {191, 255, 0},
-    {183, 255, 0},
-    {178, 255, 0},
-    {170, 255, 0},
-    {165, 255, 0},
-    {160, 255, 0},
-    {153, 255, 0},
-    {147, 255, 0},
-    {140, 255, 0},
-    {135, 255, 0},
-    {127, 255, 0},
-    {122, 255, 0},
-    {119, 255, 0},
-    {109, 255, 0},
-    {107, 255, 0},
-    {96, 255, 0},
-    {94, 255, 0},
-    {89, 255, 0},
-    {81, 255, 0},
-    {76, 255, 0},
-    {68, 255, 0},
-    {63, 255, 0},
-    {58, 255, 0},
-    {51, 255, 0},
-    {45, 255, 0},
-    {38, 255, 0},
-    {33, 255, 0},
-    {30, 255, 0},
-    {20, 255, 0},
-    {17, 255, 0},
-    {7, 255, 0},
-    {5, 255, 0},
-    {0, 255, 0},
-    {0, 255, 7},
-    {0, 255, 12},
-    {0, 255, 20},
-    {0, 255, 25},
-    {0, 255, 30},
-    {0, 255, 38},
-    {0, 255, 43},
-    {0, 255, 51},
-    {0, 255, 56},
-    {0, 255, 63},
-    {0, 255, 68},
-    {0, 255, 71},
-    {0, 255, 81},
-    {0, 255, 84},
-    {0, 255, 94},
-    {0, 255, 96},
-    {0, 255, 102},
-    {0, 255, 109},
-    {0, 255, 114},
-    {0, 255, 122},
-    {0, 255, 127},
-    {0, 255, 132},
-    {0, 255, 140},
-    {0, 255, 145},
-    {0, 255, 153},
-    {0, 255, 158},
-    {0, 255, 160},
-    {0, 255, 170},
-    {0, 255, 173},
-    {0, 255, 183},
-    {0, 255, 186},
-    {0, 255, 191},
-    {0, 255, 198},
-    {0, 255, 204},
-    {0, 255, 211},
-    {0, 255, 216},
-    {0, 255, 221},
-    {0, 255, 229},
-    {0, 255, 234},
-    {0, 255, 242},
-    {0, 255, 247},
-    {0, 255, 255},
-    {0, 249, 255},
-    {0, 247, 255},
-    {0, 237, 255},
-    {0, 234, 255},
-    {0, 224, 255},
-    {0, 221, 255},
-    {0, 216, 255},
-    {0, 209, 255},
-    {0, 204, 255},
-    {0, 196, 255},
-    {0, 191, 255},
-    {0, 186, 255},
-    {0, 178, 255},
-    {0, 173, 255},
-    {0, 165, 255},
-    {0, 160, 255},
-    {0, 158, 255},
-    {0, 147, 255},
-    {0, 145, 255},
-    {0, 135, 255},
-    {0, 132, 255},
-    {0, 127, 255},
-    {0, 119, 255},
-    {0, 114, 255},
-    {0, 107, 255},
-    {0, 102, 255},
-    {0, 96, 255},
-    {0, 89, 255},
-    {0, 84, 255},
-    {0, 76, 255},
-    {0, 71, 255},
-    {0, 63, 255},
-    {0, 58, 255},
-    {0, 56, 255},
-    {0, 45, 255},
-    {0, 43, 255},
-    {0, 33, 255},
-    {0, 30, 255},
-    {0, 25, 255},
-    {0, 17, 255},
-    {0, 12, 255},
-    {0, 5, 255},
-    {0, 0, 255},
-    {5, 0, 255},
-    {12, 0, 255},
-    {17, 0, 255},
-    {25, 0, 255},
-    {30, 0, 255},
-    {33, 0, 255},
-    {43, 0, 255},
-    {45, 0, 255},
-    {56, 0, 255},
-    {58, 0, 255},
-    {63, 0, 255},
-    {71, 0, 255},
-    {76, 0, 255},
-    {84, 0, 255},
-    {89, 0, 255},
-    {94, 0, 255},
-    {102, 0, 255},
-    {107, 0, 255},
-    {114, 0, 255},
-    {119, 0, 255},
-    {127, 0, 255},
-    {132, 0, 255},
-    {135, 0, 255},
-    {145, 0, 255},
-    {147, 0, 255},
-    {158, 0, 255},
-    {160, 0, 255},
-    {165, 0, 255},
-    {173, 0, 255},
-    {178, 0, 255},
-    {186, 0, 255},
-    {191, 0, 255},
-    {196, 0, 255},
-    {204, 0, 255},
-    {209, 0, 255},
-    {216, 0, 255},
-    {221, 0, 255},
-    {224, 0, 255},
-    {234, 0, 255},
-    {237, 0, 255},
-    {247, 0, 255},
-    {249, 0, 255},
-    {255, 0, 255},
-    {255, 0, 247},
-    {255, 0, 242},
-    {255, 0, 234},
-    {255, 0, 229},
-    {255, 0, 224},
-    {255, 0, 216},
-    {255, 0, 211},
-    {255, 0, 204},
-    {255, 0, 198},
-    {255, 0, 191},
-    {255, 0, 186},
-    {255, 0, 183},
-    {255, 0, 173},
-    {255, 0, 170},
-    {255, 0, 160},
-    {255, 0, 158},
-    {255, 0, 153},
-    {255, 0, 145},
-    {255, 0, 140},
-    {255, 0, 132},
-    {255, 0, 127},
-    {255, 0, 122},
-    {255, 0, 114},
-    {255, 0, 109},
-    {255, 0, 102},
-    {255, 0, 96},
-    {255, 0, 94},
-    {255, 0, 84},
-    {255, 0, 81},
-    {255, 0, 71},
-    {255, 0, 68},
-    {255, 0, 63},
-    {255, 0, 56},
-    {255, 0, 51},
-    {255, 0, 43},
-    {255, 0, 38},
-    {255, 0, 33},
-    {255, 0, 25},
-    {255, 0, 20},
-    {255, 0, 12},
-    {255, 0, 7},
+// =============================================================================
+
+void rf24g_28keys_event_r1c1_click_handle(void)
+{
+    printf("28keys event r1c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    if (IS_STATIC == fc_effect.Now_state)
+    {
+        const u8 step = 10;
+        if (fc_effect.app_b < 100 - step)
+        {
+            fc_effect.app_b += step;
+        }
+        else
+        {
+            fc_effect.app_b = 100;
+        }
+
+        /*
+            七彩灯的亮度值范围： 0 ~ 255 ，
+            但是只用到 25（255的10%） ~ 255，
+            这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+        */
+        // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+        colorful_lights_set_brightness(fc_effect.app_b);
+        WS2812FX_setBrightness(fc_effect.b);
+        printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+        printf("fc_effect.b %u\n", (u16)fc_effect.b);
+        fb_bright();
+    }
+    else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
+             (MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type))
+    {
+        // 七彩灯动态模式下，调节速度
+        // 注意：速度值是越小越快
+        const u8 step = 10;
+        if (fc_effect.app_speed < 100 - step)
+        {
+            fc_effect.app_speed += step;
+        }
+        else
+        {
+            fc_effect.app_speed = 100;
+        }
+
+        /*
+            MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+            一般只用 200 ~ 2000 这个范围，
+            这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+
+            MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 5000
+            一般只用 200 ~ 5000 这个范围，
+            这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
+        */
+        // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+        // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+        colorful_lights_set_speed(fc_effect.app_speed);
+        printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+        printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+        fb_speed();
+    }
+    else if (IS_light_music == fc_effect.Now_state)
+    {
+        // 七彩灯声控模式下，调节灵敏度
+        colorful_lights_sound_sensitivity_add();
+        fc_effect.music.s = fc_effect.colorful_lights_sensitivity;
+        fb_sensitive(); // 向app反馈灵敏度
+    }
+    else
+    {
+        // 其他模式，直接退出，不执行后续的读写flash操作
+        return;
+    }
+}
+
+void rf24g_28keys_event_r1c2_click_handle(void)
+{
+    printf("28keys event r1c2\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    if (IS_STATIC == fc_effect.Now_state)
+    {
+        // 注意：不能让灯光亮度减到0%，灯光会熄灭
+        const u8 step = 10;
+        if (fc_effect.app_b > 0 + step)
+        {
+            fc_effect.app_b -= step;
+        }
+        else
+        {
+            fc_effect.app_b = 0;
+        }
+
+        /*
+            七彩灯的亮度值范围： 0 ~ 255 ，
+            但是只用到 25（255的10%） ~ 255，
+            这里通过计算，将 fc_effect.app_b 的 0 ~ 100 映射到 25 ~ 255
+        */
+        // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
+        colorful_lights_set_brightness(fc_effect.app_b);
+        WS2812FX_setBrightness(fc_effect.b);
+        printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+        printf("fc_effect.b %u\n", (u16)fc_effect.b);
+        fb_bright();
+    }
+    else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
+             (MODO_COLORFUL_LIGHTS_FLASH == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_BREATH == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_GRADUAL == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_JUMP == fc_effect.dream_scene.change_type ||
+              MODE_COLORFUL_LIGHTS_AUTO == fc_effect.dream_scene.change_type))
+    {
+        // 七彩灯动态模式下，调节速度
+        // 注意：速度值是越小越快
+        const u8 step = 10;
+        if (fc_effect.app_speed > 0 + step)
+        {
+            fc_effect.app_speed -= step;
+        }
+        else
+        {
+            fc_effect.app_speed = 0;
+        }
+
+        /*
+            MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 2000
+            一般只用 200 ~ 2000 这个范围，
+            这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 2000
+
+            MODO_COLORFUL_LIGHTS_FLASH ~ MODE_COLORFUL_LIGHTS_AUTO 模式中，速度值范围：0 ~ 5000
+            一般只用 200 ~ 5000 这个范围，
+            这里通过计算将 fc_effect.dream_scene.speed 的值限制在 200 ~ 5000
+        */
+        // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
+        // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
+        colorful_lights_set_speed(fc_effect.app_speed);
+        printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+        printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+        fb_speed();
+    }
+    else if (IS_light_music == fc_effect.Now_state)
+    {
+        // 七彩灯声控模式下，调节灵敏度
+        colorful_lights_sound_sensitivity_sub();
+        fc_effect.music.s = fc_effect.colorful_lights_sensitivity;
+        fb_sensitive(); // 向app反馈灵敏度
+    }
+    else
+    {
+        // 其他模式，直接退出，不执行后续的读写flash操作
+        return;
+    }
+}
+
+void rf24g_28keys_event_r1c3_click_handle(void)
+{
+    printf("28keys event r1c3\n");
+
+    // 只开 七彩灯 和 电机
+    colorful_light_open();
+    fb_led_on_off_state(); // 与app反馈七彩灯的开关状态
+
+    motor_open();
+    fb_motor_mode();  // 向app反馈电机的模式
+    fb_motor_speed(); // 向app反馈电机转速
+}
+
+void rf24g_28keys_event_r1c4_click_handle(void)
+{
+    printf("28keys event r1c4\n");
+
+    // 只关 七彩灯 和 电机
+    colorful_light_close();
+    fb_led_on_off_state(); // 与app同步开关状态
+
+    motor_close();
+    fb_motor_mode();  // 向app反馈电机的模式
+    fb_motor_speed(); // 向app反馈电机转速
+}
+
+void rf24g_28keys_event_r2c1_click_handle(void)
+{
+    printf("28keys event r2c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    colorful_lights_set_static_color(RED);
+}
+
+void rf24g_28keys_event_r2c2_click_handle(void)
+{
+    printf("28keys event r2c2\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    colorful_lights_set_static_color(GREEN);
+}
+
+void rf24g_28keys_event_r2c3_click_handle(void)
+{
+    printf("28keys event r2c3\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    colorful_lights_set_static_color(BLUE);
+}
+
+void rf24g_28keys_event_r2c4_click_handle(void)
+{
+    printf("28keys event r2c4\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 纯白色
+    color_t color_structure = {0};
+    color_structure.r = 0x00;
+    color_structure.g = 0x00;
+    color_structure.b = 0x00;
+    color_structure.w = 0xFF;
+    colorful_lights_set_static_mode(color_structure);
+}
+
+void rf24g_28keys_event_r3c1_click_handle(void)
+{
+    printf("28keys event r3c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 橙色
+    colorful_lights_set_static_color(ORANGE);
+}
+
+void rf24g_28keys_event_r3c2_click_handle(void)
+{
+    printf("28keys event r3c2\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 黄色
+    colorful_lights_set_static_color(YELLOW);
+}
+
+void rf24g_28keys_event_r3c3_click_handle(void)
+{
+    printf("28keys event r3c3\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // CYAN 青色
+    colorful_lights_set_static_color(CYAN);
+}
+
+void rf24g_28keys_event_r3c4_click_handle(void)
+{
+    printf("28keys event r3c4\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 紫色
+    colorful_lights_set_static_color(PURPLE);
+}
+
+void rf24g_28keys_event_r4c1_click_handle(void)
+{
+    printf("28keys event r4c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 七彩跳变
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_JUMP;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r4c2_click_handle(void)
+{
+    printf("28keys event r4c2\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 七彩渐变
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_GRADUAL;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r4c3_click_handle(void)
+{
+    printf("28keys event r4c3\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 七彩呼吸
+    ls_set_color(0, BLUE);
+    ls_set_color(1, GREEN);
+    ls_set_color(2, RED);
+    ls_set_color(3, WHITE);
+    ls_set_color(4, YELLOW);
+    ls_set_color(5, CYAN);
+    ls_set_color(6, PURPLE);
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_BREATH;
+    fc_effect.dream_scene.c_n = 7;
+    fc_effect.Now_state = IS_light_scene;
+    WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r4c4_click_handle(void)
+{
+    printf("28keys event r4c4\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 自动模式 七彩跳变->七彩渐变->七彩呼吸->七彩跳变-> ......
+    fc_effect.dream_scene.change_type = MODE_COLORFUL_LIGHTS_AUTO;
+    fc_effect.Now_state = IS_light_scene;
+    WS2812FX_resetSegmentRuntime(0); // 清空灯光动画运行时使用的数据，让动画重新开始跑
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r5c1_click_handle(void)
+{
+    printf("28keys event r5c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 声控 渐变
+    fc_effect.Now_state = IS_light_music;
+    fc_effect.music.m = 0; // 设置 声控模式索引
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r5c2_click_handle(void)
+{
+    printf("28keys event r5c2\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 声控 呼吸
+    fc_effect.Now_state = IS_light_music;
+    fc_effect.music.m = 1; // 设置 声控模式索引
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r5c3_click_handle(void)
+{
+    printf("28keys event r5c3\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 声控 静态定色
+    fc_effect.Now_state = IS_light_music;
+    fc_effect.music.m = 2;
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r5c4_click_handle(void)
+{
+    printf("28keys event r5c4\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 七彩灯没有打开，直接返回
+        return;
+    }
+
+    // 声控 跳变
+    fc_effect.Now_state = IS_light_music;
+    fc_effect.music.m = 3;
+    set_fc_effect();
+}
+
+void rf24g_28keys_event_r6c1_click_handle(void)
+{
+    printf("28keys event r6c1\n");
+
+    // 流星灯开关
+    if (fc_effect.star_on_off == DEVICE_OFF)
+    {
+        fc_effect.star_on_off = DEVICE_ON;
+        printf("meteor lights on\n");
+    }
+    else
+    {
+        fc_effect.star_on_off = DEVICE_OFF;
+        printf("meteor lights off\n");
+    }
+
+    if (DEVICE_ON == fc_effect.star_on_off)
+    {
+        ls_meteor_stat_effect();
+    }
+    else
+    {
+        WS2812FX_stop();
+        WS2812FX_setSegment_colorOptions(
+            1,                     // 第0段
+            1,                     // 起始位置
+            fc_effect.led_num - 1, // 结束位置
+            &close_metemor,        // 效果
+            0,                     // 颜色
+            fc_effect.star_speed,  // 速度
+            0);                    // 选项，这里像素点大小：3 REVERSE决定方向
+        // WS2812FX_start();
+        WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
+        WS2812FX_running_flag_set();
+    }
+
+    fd_meteor_on_off(); // 向app反馈流星灯的开关机状态
+}
+
+void rf24g_28keys_event_r6c2_click_handle(void)
+{
+    printf("28keys event r6c2\n");
+
+    if (fc_effect.star_on_off == DEVICE_OFF)
+    {
+        // 如果流星灯没有启动，不做处理
+        return;
+    }
+
+    // 流星灯模式切换
+    // 流星灯索引值范围： 1 ~ 18
+    fc_effect.star_index++;
+    if (fc_effect.star_index > 18) //
+    {
+        fc_effect.star_index = 1;
+    }
+
+    ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
+}
+
+void rf24g_28keys_event_r6c3_click_handle(void)
+{
+    printf("28keys event r6c3\n");
+
+    if (fc_effect.star_on_off == DEVICE_OFF)
+    {
+        // 如果流星灯没有启动，不做处理
+        return;
+    }
+
+    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+    {
+        // 如果不在声控模式，调节流星灯速度
+        // 流星灯 速度 加
+        const u8 step = 10;
+        if (fc_effect.app_star_speed < 100 - step)
+        {
+            fc_effect.app_star_speed += step;
+        }
+        else
+        {
+            fc_effect.app_star_speed = 100;
+        }
+
+        meteor_lights_set_speed(fc_effect.app_star_speed);
+        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+        fd_meteor_speed(); // 向app反馈流星灯速度
+    }
+    else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+    {
+        // 如果在声控模式，调节流星灯声控模式的灵敏度
+        meteor_lights_sound_sensitivity_add();
+        printf("fc_effect.meteor_lights_sensitivity = %u\n", (u16)fc_effect.meteor_lights_sensitivity);
+        fc_effect.music.s = fc_effect.meteor_lights_sensitivity; // 存放流星灯的灵敏度，准备发送给app
+        fb_sensitive();
+    }
+
+    ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
+}
+
+void rf24g_28keys_event_r6c4_click_handle(void)
+{
+    printf("28keys event r6c4\n");
+
+    if (fc_effect.star_on_off == DEVICE_OFF)
+    {
+        // 如果流星灯没有启动，不做处理
+        return;
+    }
+
+    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+    {
+        // 如果不在声控模式，调节流星灯速度
+        // 流星灯 速度减
+        const u8 step = 10;
+        if (fc_effect.app_star_speed > 0 + step)
+        {
+            fc_effect.app_star_speed -= step;
+        }
+        else
+        {
+            fc_effect.app_star_speed = 0;
+        }
+
+        meteor_lights_set_speed(fc_effect.app_star_speed);
+        printf("fc_effect.app_star_speed = %u\n", (u16)fc_effect.app_star_speed);
+        printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
+        fd_meteor_speed(); // 向app反馈流星灯速度
+    }
+    else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+    {
+        // 如果在声控模式，调节流星灯声控模式的灵敏度
+        meteor_lights_sound_sensitivity_sub();
+        printf("fc_effect.meteor_lights_sensitivity = %u\n", (u16)fc_effect.meteor_lights_sensitivity);
+        fc_effect.music.s = fc_effect.meteor_lights_sensitivity; // 存放流星灯的灵敏度，准备发送给app
+        fb_sensitive();
+    }
+
+    ls_meteor_stat_effect(); // 根据索引值，设置流星灯模式
+}
+
+void rf24g_28keys_event_r7c1_click_handle(void)
+{
+    printf("28keys event r7c1\n");
+
+    if (fc_effect.on_off_flag == DEVICE_OFF)
+    {
+        // 如果七彩灯没有打开，不打开电机，直接返回
+        return;
+    }
+
+    // 电机开
+    motor_open();
+    fb_motor_mode(); // 向app反馈电机的状态
+}
+
+void rf24g_28keys_event_r7c2_click_handle(void)
+{
+    printf("28keys event r7c2\n");
+
+    // 电机关
+    motor_close();
+    fb_motor_mode(); // 向app反馈电机的状态
+}
+
+void rf24g_28keys_event_r7c3_click_handle(void)
+{
+    printf("28keys event r7c3\n");
+
+    // 电机速度加
+    if (DEVICE_OFF == fc_effect.motor_on_off)
+    {
+        // 电机没有启动，不调节电机转速
+        return;
+    }
+
+    // 判断电机是否处于普通模式（非声控模式）
+    if (5 != fc_effect.base_ins.mode)
+    {
+        if (fc_effect.motor_speed_index > 0)
+        {
+            fc_effect.motor_speed_index--;
+        }
+
+        fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+        printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+        fb_motor_speed(); // 向app反馈电机的转速
+    }
+    else
+    {
+        // 如果电机处于声控模式，调节灵敏度
+        // motor_sound_sensitivity_sub();
+        motor_sound_sensitivity_add();
+        fc_effect.music.s = fc_effect.base_ins.sensitivity; // 存放要反馈给app的灵敏度
+        fb_sensitive();                                     // 向app反馈灵敏度
+    }
+}
+
+void rf24g_28keys_event_r7c4_click_handle(void)
+{
+    printf("28keys event r7c4\n");
+
+    // 电机速度减
+    if (DEVICE_OFF == fc_effect.motor_on_off)
+    {
+        // 电机没有启动，不调节电机转速
+        return;
+    }
+
+    // 判断电机是否处于普通模式（非声控模式）
+    if (5 != fc_effect.base_ins.mode)
+    {
+        if (fc_effect.motor_speed_index < ARRAY_SIZE(motor_period) - 1)
+        {
+            fc_effect.motor_speed_index++; // 索引值越大，对应的电机转速就越慢
+        }
+
+        fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+        printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+        os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+        fb_motor_speed(); // 向app反馈电机的转速
+    }
+    else
+    {
+        // 如果电机处于声控模式，调节灵敏度
+        motor_sound_sensitivity_sub();
+        fc_effect.music.s = fc_effect.base_ins.sensitivity; // 存放要反馈给app的灵敏度
+        fb_sensitive();                                     // 向app反馈灵敏度
+    }
+}
+
+const rf24_key_handle_func_t rf24_28keys_handle_func_buff[RF24G_28_KEY_EVENT_MAX] = {
+    [RF24G_28_KEY_EVENT_R1C1_CLICK] = rf24g_28keys_event_r1c1_click_handle, // 按键事件处理函数
+    [RF24G_28_KEY_EVENT_R1C1_LONG] = rf24g_28keys_event_r1c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R1C2_CLICK] = rf24g_28keys_event_r1c2_click_handle,
+    [RF24G_28_KEY_EVENT_R1C2_LONG] = rf24g_28keys_event_r1c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R1C3_CLICK] = rf24g_28keys_event_r1c3_click_handle,
+    [RF24G_28_KEY_EVENT_R1C3_LONG] = rf24g_28keys_event_r1c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R1C4_CLICK] = rf24g_28keys_event_r1c4_click_handle,
+    [RF24G_28_KEY_EVENT_R1C4_LONG] = rf24g_28keys_event_r1c4_click_handle,
+    // =======================================================================
+
+    [RF24G_28_KEY_EVENT_R2C1_CLICK] = rf24g_28keys_event_r2c1_click_handle,
+    [RF24G_28_KEY_EVENT_R2C1_LONG] = rf24g_28keys_event_r2c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R2C2_CLICK] = rf24g_28keys_event_r2c2_click_handle,
+    [RF24G_28_KEY_EVENT_R2C2_LONG] = rf24g_28keys_event_r2c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R2C3_CLICK] = rf24g_28keys_event_r2c3_click_handle,
+    [RF24G_28_KEY_EVENT_R2C3_LONG] = rf24g_28keys_event_r2c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R2C4_CLICK] = rf24g_28keys_event_r2c4_click_handle,
+    [RF24G_28_KEY_EVENT_R2C4_LONG] = rf24g_28keys_event_r2c4_click_handle,
+
+    // =======================================================================
+    [RF24G_28_KEY_EVENT_R3C1_CLICK] = rf24g_28keys_event_r3c1_click_handle,
+    [RF24G_28_KEY_EVENT_R3C1_LONG] = rf24g_28keys_event_r3c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R3C2_CLICK] = rf24g_28keys_event_r3c2_click_handle,
+    [RF24G_28_KEY_EVENT_R3C2_LONG] = rf24g_28keys_event_r3c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R3C3_CLICK] = rf24g_28keys_event_r3c3_click_handle,
+    [RF24G_28_KEY_EVENT_R3C3_LONG] = rf24g_28keys_event_r3c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R3C4_CLICK] = rf24g_28keys_event_r3c4_click_handle,
+    [RF24G_28_KEY_EVENT_R3C4_LONG] = rf24g_28keys_event_r3c4_click_handle,
+    // =======================================================================
+    [RF24G_28_KEY_EVENT_R4C1_CLICK] = rf24g_28keys_event_r4c1_click_handle,
+    [RF24G_28_KEY_EVENT_R4C1_LONG] = rf24g_28keys_event_r4c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R4C2_CLICK] = rf24g_28keys_event_r4c2_click_handle,
+    [RF24G_28_KEY_EVENT_R4C2_LONG] = rf24g_28keys_event_r4c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R4C3_CLICK] = rf24g_28keys_event_r4c3_click_handle,
+    [RF24G_28_KEY_EVENT_R4C3_LONG] = rf24g_28keys_event_r4c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R4C4_CLICK] = rf24g_28keys_event_r4c4_click_handle,
+    [RF24G_28_KEY_EVENT_R4C4_LONG] = rf24g_28keys_event_r4c4_click_handle,
+    // =======================================================================
+    [RF24G_28_KEY_EVENT_R5C1_CLICK] = rf24g_28keys_event_r5c1_click_handle,
+    [RF24G_28_KEY_EVENT_R5C1_LONG] = rf24g_28keys_event_r5c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R5C2_CLICK] = rf24g_28keys_event_r5c2_click_handle,
+    [RF24G_28_KEY_EVENT_R5C2_LONG] = rf24g_28keys_event_r5c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R5C3_CLICK] = rf24g_28keys_event_r5c3_click_handle,
+    [RF24G_28_KEY_EVENT_R5C3_LONG] = rf24g_28keys_event_r5c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R5C4_CLICK] = rf24g_28keys_event_r5c4_click_handle,
+    [RF24G_28_KEY_EVENT_R5C4_LONG] = rf24g_28keys_event_r5c4_click_handle,
+    // =======================================================================
+    [RF24G_28_KEY_EVENT_R6C1_CLICK] = rf24g_28keys_event_r6c1_click_handle,
+    [RF24G_28_KEY_EVENT_R6C1_LONG] = rf24g_28keys_event_r6c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R6C2_CLICK] = rf24g_28keys_event_r6c2_click_handle,
+    [RF24G_28_KEY_EVENT_R6C2_LONG] = rf24g_28keys_event_r6c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R6C3_CLICK] = rf24g_28keys_event_r6c3_click_handle,
+    [RF24G_28_KEY_EVENT_R6C3_LONG] = rf24g_28keys_event_r6c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R6C4_CLICK] = rf24g_28keys_event_r6c4_click_handle,
+    [RF24G_28_KEY_EVENT_R6C4_LONG] = rf24g_28keys_event_r6c4_click_handle,
+    // =======================================================================
+    [RF24G_28_KEY_EVENT_R7C1_CLICK] = rf24g_28keys_event_r7c1_click_handle,
+    [RF24G_28_KEY_EVENT_R7C1_LONG] = rf24g_28keys_event_r7c1_click_handle,
+
+    [RF24G_28_KEY_EVENT_R7C2_CLICK] = rf24g_28keys_event_r7c2_click_handle,
+    [RF24G_28_KEY_EVENT_R7C2_LONG] = rf24g_28keys_event_r7c2_click_handle,
+
+    [RF24G_28_KEY_EVENT_R7C3_CLICK] = rf24g_28keys_event_r7c3_click_handle,
+    [RF24G_28_KEY_EVENT_R7C3_LONG] = rf24g_28keys_event_r7c3_click_handle,
+
+    [RF24G_28_KEY_EVENT_R7C4_CLICK] = rf24g_28keys_event_r7c4_click_handle,
+    [RF24G_28_KEY_EVENT_R7C4_LONG] = rf24g_28keys_event_r7c4_click_handle,
 
 };
 
-void convert_key_val_to_rgb(u8 key_val)
-{
-    // 如果当前遥控器调节的是RGB值
-    // if (CUR_SEL_RGB_MODE == ret_mem_data.current_rgb_mode)
-    // {
-    //     r = table[key_val][0];
-    //     g = table[key_val][1];
-    //     b = table[key_val][2];
-    // }
-    // else if (CUR_SEL_CW_MODE == ret_mem_data.current_rgb_mode)
-    // {
-    //     // 如果当前调节的是亮度值
-    //     cw = (u16)key_val * 100 / 255;
-    // }
-}
-
-#endif // #if (TCFG_RF24GKEY_ENABLE)
+#endif // RF24GKEY_ENABLE
