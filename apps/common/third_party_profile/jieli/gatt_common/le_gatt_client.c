@@ -1097,7 +1097,6 @@ static bool __check_device_is_match(u8 event_type, u8 info_type, u8 *data, int s
     }
     return false;
 }
- 
 
 /*************************************************************************************************/
 /*!
@@ -1160,6 +1159,11 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
         //     //     printf_buf(pBuf,sizeof(rf24g_ins_t));
         //     // }
         // }
+        // if (adv_data_pt[0] == 0xDC && adv_data_pt[1] == 0xDC)
+        // {
+        //     printf_buf(adv_data_pt, length - 1);
+        // }
+
 #endif // RF24GKEY_ENABLE
 
         switch (ad_type)

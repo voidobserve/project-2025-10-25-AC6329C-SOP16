@@ -2381,6 +2381,7 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_period,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_switch_led,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_countdown,pl
+obj/Release/apps/user_app/rf24g_key/rf24g_app.o
 obj/Release/apps/user_app/rf24g_key/rf24g_key.o
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_scan,pl
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_convert_key_event,pl

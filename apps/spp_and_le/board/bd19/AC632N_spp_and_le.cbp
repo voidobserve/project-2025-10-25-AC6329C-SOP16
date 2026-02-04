@@ -140,6 +140,7 @@
 					<Add directory="../../../user_app/protocol" />
 					<Add directory="../../../user_app/led_strip" />
 					<Add directory="../../../user_app/rf433_key" />
+					<Add directory="../../../user_app/save_flash" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />

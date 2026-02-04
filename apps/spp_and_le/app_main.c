@@ -383,7 +383,6 @@ void main_while(void)
         rf_433_key_event_handle();
         rf24_key_handle();
 
-
         // printf("main circle\n");// 主循环约10ms
 
         save_user_data_time_count_down();
