@@ -46,7 +46,8 @@
 #endif
 
 // 广播周期 (unit:0.625ms)
-#define ADV_INTERVAL_MIN (160 * 5) //
+// #define ADV_INTERVAL_MIN (160 * 5) //
+#define ADV_INTERVAL_MIN (64) //
 
 //---------------
 // 连接参数更新请求设置
@@ -504,7 +505,6 @@ static int multi_att_write_callback(hci_con_handle_t connection_handle, uint16_t
 static u8 adv_name_ok = 0; // name 优先存放在ADV包
 static int multi_make_set_adv_data(void)
 {
-
     u8 offset = 0;
     u8 *buf = multi_adv_data;
 
@@ -522,34 +522,27 @@ static int multi_make_set_adv_data(void)
     }
 #endif
 
-// 广播头
-#if 0
-	u8 info[13];    //客户机型数据
-    info[0] = 'Z';
-    info[1] = 'D';
-    info[2] = 0x00; //
-    info[3] = 0xD9;
-    info[4] = 0x03;
-    info[5] = 0x5E;
-    info[6] = 0x89;
-    le_controller_get_mac(&info[7]);    //获取ble的蓝牙public地址
-    offset += make_eir_packet_data(&buf[offset],offset,HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA,info,13);
-#endif
-
-#if 1
+    // 广播头
     u8 index = 0;
     u8 info[14]; // 客户机型数据
+    // info[index++] = 'Z';
+    // info[index++] = 'D';
+    // info[index++] = 0x00; //
+    // info[index++] = 0x01;
+    // info[index++] = 0x04;
+    // info[index++] = 0x89;
+    // info[index++] = 0x00;
+    // info[index++] = 0x01;
     info[index++] = 'Z';
     info[index++] = 'D';
     info[index++] = 0x00; //
     info[index++] = 0x01;
-    info[index++] = 0x04;
-    info[index++] = 0x89;
-    info[index++] = 0x00;
     info[index++] = 0x01;
+    info[index++] = 0xE9;
+    info[index++] = 0x00;
+    info[index++] = 0x00;
     le_controller_get_mac(&info[index]); // 获取ble的蓝牙public地址
     offset += make_eir_packet_data(&buf[offset], offset, HCI_EIR_DATATYPE_MANUFACTURER_SPECIFIC_DATA, info, ARRAY_SIZE(info));
-#endif
 
     if (offset > ADV_RSP_PACKET_MAX)
     {

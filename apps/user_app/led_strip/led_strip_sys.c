@@ -497,48 +497,48 @@ void ls_sub_sensitive(void)
  * @brief 遥控设置音乐效果
  *
  */
-void ls_add_music_effect(void)
-{
-    if (fc_effect.music.m < (MAX_MUSIC_EFFECT_NUMBER - 1))
-    {
-        fc_effect.music.m++;
-        printf("fc_effect.music.m = %d", fc_effect.music.m);
+// void ls_add_music_effect(void)
+// {
+//     if (fc_effect.music.m < (MAX_MUSIC_EFFECT_NUMBER - 1))
+//     {
+//         fc_effect.music.m++;
+//         printf("fc_effect.music.m = %d", fc_effect.music.m);
 
-        fc_effect.Now_state = IS_light_music;
-        set_fc_effect();
-        fb_led_music_mode();
-    }
-    else if (fc_effect.music.m == 3)
-    {
-        fc_effect.Now_state = IS_light_music;
-        set_fc_effect();
-        fb_led_music_mode();
-    }
-}
+//         fc_effect.Now_state = IS_light_music;
+//         set_fc_effect();
+//         fb_led_music_mode();
+//     }
+//     else if (fc_effect.music.m == 3)
+//     {
+//         fc_effect.Now_state = IS_light_music;
+//         set_fc_effect();
+//         fb_led_music_mode();
+//     }
+// }
 
 /**
  * @brief  遥控设置音乐效果
  *
  */
-void ls_sub_music_effect(void)
-{
-    if (fc_effect.music.m > 0)
-    {
-        fc_effect.music.m--;
-        fc_effect.Now_state = IS_light_music;
-        printf("fc_effect.music.m = %d", fc_effect.music.m);
-        set_fc_effect();
-        fb_led_music_mode();
-    }
-    else if (fc_effect.music.m == 0)
-    {
+// void ls_sub_music_effect(void)
+// {
+//     if (fc_effect.music.m > 0)
+//     {
+//         fc_effect.music.m--;
+//         fc_effect.Now_state = IS_light_music;
+//         printf("fc_effect.music.m = %d", fc_effect.music.m);
+//         set_fc_effect();
+//         fb_led_music_mode();
+//     }
+//     else if (fc_effect.music.m == 0)
+//     {
 
-        fc_effect.Now_state = IS_light_music;
+//         fc_effect.Now_state = IS_light_music;
 
-        set_fc_effect();
-        fb_led_music_mode();
-    }
-}
+//         set_fc_effect();
+//         fb_led_music_mode();
+//     }
+// }
 
 /**
  * @brief 遥控开关
@@ -1151,76 +1151,76 @@ void app_set_cw(void)
 {
 }
 
-void ls_add_mode_InAPP(void)
-{
-    u8 user_buff[3] = {0};
-#if 0
-    if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
-    {
-        fc_effect.app_rgb_mode++;
+// void ls_add_mode_InAPP(void)
+// {
+//     u8 user_buff[3] = {0};
+// #if 0
+//     if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
+//     {
+//         fc_effect.app_rgb_mode++;
 
-        user_buff[0] = 0x04;
-        user_buff[1] = 0x02;
-        user_buff[2] = fc_effect.app_rgb_mode;
-        parse_zd_data(user_buff);
-        // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-    }
-#endif
+//         user_buff[0] = 0x04;
+//         user_buff[1] = 0x02;
+//         user_buff[2] = fc_effect.app_rgb_mode;
+//         parse_zd_data(user_buff);
+//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
+//     }
+// #endif
 
-    if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
-    {
-        fc_effect.app_rgb_mode++;
+//     if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
+//     {
+//         fc_effect.app_rgb_mode++;
 
-        user_buff[0] = 0x04;
-        user_buff[1] = 0x02;
-        user_buff[2] = fc_effect.app_rgb_mode;
-        parse_zd_data(user_buff);
-        // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-    }
-    else if (fc_effect.app_rgb_mode < 0x1E + 22) // 流星灯模式
-    {
-        fc_effect.app_rgb_mode++;
-        fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
-        app_set_mereor_mode(fc_effect.star_index);
-    }
+//         user_buff[0] = 0x04;
+//         user_buff[1] = 0x02;
+//         user_buff[2] = fc_effect.app_rgb_mode;
+//         parse_zd_data(user_buff);
+//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
+//     }
+//     else if (fc_effect.app_rgb_mode < 0x1E + 22) // 流星灯模式
+//     {
+//         fc_effect.app_rgb_mode++;
+//         fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
+//         app_set_mereor_mode(fc_effect.star_index);
+//     }
 
-    printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-}
+//     printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
+// }
 
-void ls_sub_mode_InAPP(void)
-{
-    u8 user_buff[3] = {0};
-#if 0
-    if (fc_effect.app_rgb_mode > 0)
-    {
-        fc_effect.app_rgb_mode--;
+// void ls_sub_mode_InAPP(void)
+// {
+//     u8 user_buff[3] = {0};
+// #if 0
+//     if (fc_effect.app_rgb_mode > 0)
+//     {
+//         fc_effect.app_rgb_mode--;
 
-        user_buff[0] = 0x04;
-        user_buff[1] = 0x02;
-        user_buff[2] = fc_effect.app_rgb_mode;
-        parse_zd_data(user_buff);
-        // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-    }
-#endif
+//         user_buff[0] = 0x04;
+//         user_buff[1] = 0x02;
+//         user_buff[2] = fc_effect.app_rgb_mode;
+//         parse_zd_data(user_buff);
+//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
+//     }
+// #endif
 
-    if (fc_effect.app_rgb_mode > 0x1E + 1) // 流星灯模式 (流星灯的索引值不能为0，这里要加一)
-    {
-        fc_effect.app_rgb_mode--;
-        fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
-        app_set_mereor_mode(fc_effect.star_index);
-    }
-    else if (fc_effect.app_rgb_mode > 0)
-    {
-        fc_effect.app_rgb_mode--;
+//     if (fc_effect.app_rgb_mode > 0x1E + 1) // 流星灯模式 (流星灯的索引值不能为0，这里要加一)
+//     {
+//         fc_effect.app_rgb_mode--;
+//         fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
+//         app_set_mereor_mode(fc_effect.star_index);
+//     }
+//     else if (fc_effect.app_rgb_mode > 0)
+//     {
+//         fc_effect.app_rgb_mode--;
 
-        user_buff[0] = 0x04;
-        user_buff[1] = 0x02;
-        user_buff[2] = fc_effect.app_rgb_mode;
-        parse_zd_data(user_buff);
-    }
+//         user_buff[0] = 0x04;
+//         user_buff[1] = 0x02;
+//         user_buff[2] = fc_effect.app_rgb_mode;
+//         parse_zd_data(user_buff);
+//     }
 
-    printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-}
+//     printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
+// }
 
 /**
  * @brief 选择app上某些效果，该些效果需要是有顺序的
@@ -1229,63 +1229,63 @@ void ls_sub_mode_InAPP(void)
  * @param tp_h
  * @param tp_t
  */
-void ls_chose_mode_InAPP(u8 tp_type, u8 tp_m, u8 tp_h, u8 tp_t)
-{
-    u8 uc_buff[3] = {0};
-    static u8 index_cmd = 0;
+// void ls_chose_mode_InAPP(u8 tp_type, u8 tp_m, u8 tp_h, u8 tp_t)
+// {
+//     u8 uc_buff[3] = {0};
+//     static u8 index_cmd = 0;
 
-    if (tp_m == 0) // 循环加减
-    {
-        if (index_cmd < tp_t)
-        {
-            index_cmd++;
-        }
-        else
-        {
-            index_cmd = tp_h;
-        }
-    }
-    else if (tp_m == 1)
-    { // 只加
+//     if (tp_m == 0) // 循环加减
+//     {
+//         if (index_cmd < tp_t)
+//         {
+//             index_cmd++;
+//         }
+//         else
+//         {
+//             index_cmd = tp_h;
+//         }
+//     }
+//     else if (tp_m == 1)
+//     { // 只加
 
-        if (index_cmd < tp_t)
-        {
+//         if (index_cmd < tp_t)
+//         {
 
-            index_cmd++;
-        }
-        else
-        {
-            index_cmd = tp_t;
-        }
-    }
-    else if (tp_m == 2)
-    { // 只减
+//             index_cmd++;
+//         }
+//         else
+//         {
+//             index_cmd = tp_t;
+//         }
+//     }
+//     else if (tp_m == 2)
+//     { // 只减
 
-        if (index_cmd > tp_h)
-        {
+//         if (index_cmd > tp_h)
+//         {
 
-            index_cmd--;
-        }
-        else
-        {
-            index_cmd = tp_h;
-        }
-    }
-    else if (tp_m == 3)
-    { // 指定某个模式
+//             index_cmd--;
+//         }
+//         else
+//         {
+//             index_cmd = tp_h;
+//         }
+//     }
+//     else if (tp_m == 3)
+//     { // 指定某个模式
 
-        index_cmd = tp_h;
-    }
+//         index_cmd = tp_h;
+//     }
 
-    if (tp_type == 1)
-    {
-        uc_buff[0] = 0x04;
-        uc_buff[1] = 0x02;
-        uc_buff[2] = index_cmd;
-    }
-    printf_buf(uc_buff, 3);
-    parse_zd_data(uc_buff);
-}
+//     if (tp_type == 1)
+//     {
+//         uc_buff[0] = 0x04;
+//         uc_buff[1] = 0x02;
+//         uc_buff[2] = index_cmd;
+//     }
+//     printf_buf(uc_buff, 3);
+//     parse_zd_data(uc_buff);
+// }
 
 /***************************************************************************************************************************/
 /***************************************************************************************************************************/
@@ -1383,44 +1383,44 @@ AUTO_TIME_T get_ir_timer(void)
     return ir_timer_state;
 }
 
-static void ir_auto_change_mode(void)
-{
+// static void ir_auto_change_mode(void)
+// {
 
-    extern u8 ws2811fx_set_cycle;
+//     extern u8 ws2811fx_set_cycle;
 
-    // 循环模式
-    if (fc_effect.auto_f == IS_AUTO)
-    {
+//     // 循环模式
+//     if (fc_effect.auto_f == IS_AUTO)
+//     {
 
-        if (ir_auto_change_tcnt != 0)
-        {
+//         if (ir_auto_change_tcnt != 0)
+//         {
 
-            ir_auto_change_tcnt -= 10;
-        }
+//             ir_auto_change_tcnt -= 10;
+//         }
 
-        if (ws2811fx_set_cycle == 1)
-        {
-            ws2811fx_set_cycle = 0;
-            ir_auto_change_tcnt = IR_CHANGE_MODE_T;
-            if (auto_mode[2] < 0x15)
-            {
-                auto_mode[2] += 1;
-            }
-            else
-            {
-                auto_mode[2] = 7;
-            }
-            printf("aotu change");
-            parse_zd_data(auto_mode);
-        }
-    }
-}
+//         if (ws2811fx_set_cycle == 1)
+//         {
+//             ws2811fx_set_cycle = 0;
+//             ir_auto_change_tcnt = IR_CHANGE_MODE_T;
+//             if (auto_mode[2] < 0x15)
+//             {
+//                 auto_mode[2] += 1;
+//             }
+//             else
+//             {
+//                 auto_mode[2] = 7;
+//             }
+//             printf("aotu change");
+//             parse_zd_data(auto_mode);
+//         }
+//     }
+// }
 
-// 10ms调用一次
-void ir_timer_handler(void)
-{
-    ir_auto_change_mode();
-}
+// // 10ms调用一次
+// void ir_timer_handler(void)
+// {
+//     ir_auto_change_mode();
+// }
 
 // 全彩效果初始化
 void full_color_init(void)

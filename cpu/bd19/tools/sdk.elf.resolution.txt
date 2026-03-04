@@ -2191,9 +2191,6 @@ obj/Release/apps/user_app/led_strip/led_strip_sys.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,app_set_sensitive,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_add_sensitive,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_sub_sensitive,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_add_music_effect,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,fb_led_music_mode,l
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_sub_music_effect,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_ledStrip_switch,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,app_set_RGBsequence,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,WS2812FX_init,l
@@ -2233,11 +2230,6 @@ obj/Release/apps/user_app/led_strip/led_strip_sys.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,colorful_lights_set_static_mode,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,colorful_lights_set_static_color,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,app_set_cw,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_add_mode_InAPP,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,parse_zd_data,l
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_sub_mode_InAPP,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ls_chose_mode_InAPP,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,printf_buf,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,set_ir_auto,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,auto_Function_Switch,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,get_ir_auto,pl
@@ -2246,7 +2238,6 @@ obj/Release/apps/user_app/led_strip/led_strip_sys.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ir_mode_sub,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,set_ir_timer,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,get_ir_timer,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ir_timer_handler,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,full_color_init,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,fc_effect,l
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,led_b_array,pl
@@ -2266,7 +2257,6 @@ obj/Release/apps/user_app/led_strip/led_strip_sys.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ir_mode_cnt,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ir_timer_state,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ir_time_cnt,pl
--r=obj/Release/apps/user_app/led_strip/led_strip_sys.o,ws2811fx_set_cycle,l
 obj/Release/apps/user_app/led_strip/led_strip_voice.o
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,get_sound_triggered_by_colorful_lights,pl
 -r=obj/Release/apps/user_app/led_strip/led_strip_voice.o,get_sound_triggered_by_meteor_lights,pl
@@ -2332,7 +2322,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,memcpy,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ble_comm_att_send_data,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_led_on_off_state,pl
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_led_music_mode,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fd_meteor_speed,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fd_meteor_cycle,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fd_meteor_on_off,pl
@@ -2340,7 +2329,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_speed,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_sensitive,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_rgb_value,pl
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_RGBsequence,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_motor_speed,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_motor_mode,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,parse_zd_data,pl
@@ -2376,7 +2364,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_music_data,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_lednum_set,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_draw_tool,pl
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,Ble_Addr,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ZD_HCI_handle,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_period,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_switch_led,pl

@@ -125,7 +125,8 @@ extern dp_lednum_set_t   dp_lednum_set;   //DPID_LED_NUMBER_SET led点数设置
 extern dp_draw_tool_t    dp_draw_tool;    //DPID_DRAW_TOOL 涂抹功能
 
 /* 解析中道数据，主要是静态模式，和动态效果的“基本”效果 */
-void parse_zd_data(unsigned char *LedCommand);
+// void parse_zd_data(unsigned char *LedCommand);
+void parse_zd_data(unsigned char *LedCommand, u8 len);
 // int string2hex(char* str,char* hex,uint8_t str_len);
 unsigned long string_hex_Byte(char* str, unsigned char Byte_num);
 unsigned short dp_extract_data_handle(unsigned char *buff);
