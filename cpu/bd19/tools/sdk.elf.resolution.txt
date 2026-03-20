@@ -2375,7 +2375,6 @@ obj/Release/apps/user_app/rf24g_key/rf24g_key.o
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24_key_handle,pl
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,os_taskq_post,
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_28keys_event_r1c1_click_handle,pl
--r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,printf,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,colorful_lights_set_brightness,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,WS2812FX_setBrightness,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,fb_bright,l
@@ -2416,6 +2415,7 @@ obj/Release/apps/user_app/rf24g_key/rf24g_key.o
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_28keys_event_r5c3_click_handle,pl
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_28keys_event_r5c4_click_handle,pl
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,rf24g_28keys_event_r6c1_click_handle,pl
+-r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,printf,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,ls_meteor_stat_effect,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,WS2812FX_stop,l
 -r=obj/Release/apps/user_app/rf24g_key/rf24g_key.o,WS2812FX_setSegment_colorOptions,l

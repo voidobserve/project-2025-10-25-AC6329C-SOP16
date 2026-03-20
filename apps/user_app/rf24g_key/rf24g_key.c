@@ -3,6 +3,8 @@
 #include "save_flash.h" // 包含读写flash的接口
 #include "ws2812fx_effect.h"
 
+#include "user_include.h"
+
 #if (RF24GKEY_ENABLE)
 
 /*
@@ -72,7 +74,9 @@ void rf24g_scan(u8 *recv_buff)
     if (p->header1 == REMOTE_TYPE_28KEY_HEADER_1 &&
         p->header2 == REMOTE_TYPE_28KEY_HEADER_2)
     {
+#if USER_DEBUG_ENABLE
         // printf_buf(recv_buff, sizeof(rf24g_recv_info_t)); // 打印接收到的数据包
+#endif
 
         rf24g_key_val = p->key_val;
         rf24g_rx_flag = 1;
@@ -95,7 +99,8 @@ static u8 rf24g_get_key_value(void)
             2.4G接收可能会丢失100~200ms的数据包（响应会慢一些）
             值 == 20，10ms调用一次该函数，这里填充200ms的超时值
         */
-        time_out_cnt = 20;
+        // time_out_cnt = 20;
+        time_out_cnt = 5;
 
         last_key_value = key_value;
         return key_value;
@@ -159,7 +164,7 @@ void rf24_key_handle(void)
 {
     u8 rf24g_key_event = 0;
     rf24_key_handle_func_t rf24g_key_handle_func_ptr = NULL;
-  
+
     rf24g_key_event = rf24g_convert_key_event(rf24g_key_driver_value, rf24g_key_driver_event);
     rf24g_key_driver_value = NO_KEY; // 置为无效键值（由于扫描函数只更新，不会清除，在这里要清除）
 
@@ -187,7 +192,9 @@ void rf24_key_handle(void)
 
 void rf24g_28keys_event_r1c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r1c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -215,8 +222,10 @@ void rf24g_28keys_event_r1c1_click_handle(void)
         // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
         colorful_lights_set_brightness(fc_effect.app_b);
         WS2812FX_setBrightness(fc_effect.b);
+#if USER_DEBUG_ENABLE
         printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
         printf("fc_effect.b %u\n", (u16)fc_effect.b);
+#endif
         fb_bright();
     }
     else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
@@ -250,8 +259,11 @@ void rf24g_28keys_event_r1c1_click_handle(void)
         // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
         // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
         colorful_lights_set_speed(fc_effect.app_speed);
+#if USER_DEBUG_ENABLE
         printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
         printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+#endif
+
         fb_speed();
     }
     else if (IS_light_music == fc_effect.Now_state)
@@ -270,7 +282,9 @@ void rf24g_28keys_event_r1c1_click_handle(void)
 
 void rf24g_28keys_event_r1c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r1c2\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -299,8 +313,11 @@ void rf24g_28keys_event_r1c2_click_handle(void)
         // fc_effect.b = (u16)fc_effect.app_b * (255 - 25) / 100 + 25;
         colorful_lights_set_brightness(fc_effect.app_b);
         WS2812FX_setBrightness(fc_effect.b);
+#if USER_DEBUG_ENABLE
         printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
         printf("fc_effect.b %u\n", (u16)fc_effect.b);
+#endif
+
         fb_bright();
     }
     else if (IS_light_scene == fc_effect.Now_state && // 七彩灯的动态模式
@@ -334,8 +351,11 @@ void rf24g_28keys_event_r1c2_click_handle(void)
         // fc_effect.dream_scene.speed = 2000 - ((u32)fc_effect.app_speed * (2000 - 200) / 100);
         // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
         colorful_lights_set_speed(fc_effect.app_speed);
+#if USER_DEBUG_ENABLE
         printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
         printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+#endif
+
         fb_speed();
     }
     else if (IS_light_music == fc_effect.Now_state)
@@ -354,7 +374,9 @@ void rf24g_28keys_event_r1c2_click_handle(void)
 
 void rf24g_28keys_event_r1c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r1c3\n");
+#endif
 
     // 只开 七彩灯 和 电机
     colorful_light_open();
@@ -367,7 +389,9 @@ void rf24g_28keys_event_r1c3_click_handle(void)
 
 void rf24g_28keys_event_r1c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r1c4\n");
+#endif
 
     // 只关 七彩灯 和 电机
     colorful_light_close();
@@ -380,7 +404,9 @@ void rf24g_28keys_event_r1c4_click_handle(void)
 
 void rf24g_28keys_event_r2c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r2c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -393,7 +419,9 @@ void rf24g_28keys_event_r2c1_click_handle(void)
 
 void rf24g_28keys_event_r2c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r2c2\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -406,7 +434,9 @@ void rf24g_28keys_event_r2c2_click_handle(void)
 
 void rf24g_28keys_event_r2c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r2c3\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -419,7 +449,9 @@ void rf24g_28keys_event_r2c3_click_handle(void)
 
 void rf24g_28keys_event_r2c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r2c4\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -438,7 +470,9 @@ void rf24g_28keys_event_r2c4_click_handle(void)
 
 void rf24g_28keys_event_r3c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r3c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -452,7 +486,9 @@ void rf24g_28keys_event_r3c1_click_handle(void)
 
 void rf24g_28keys_event_r3c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r3c2\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -466,7 +502,9 @@ void rf24g_28keys_event_r3c2_click_handle(void)
 
 void rf24g_28keys_event_r3c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r3c3\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -480,7 +518,9 @@ void rf24g_28keys_event_r3c3_click_handle(void)
 
 void rf24g_28keys_event_r3c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r3c4\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -494,7 +534,9 @@ void rf24g_28keys_event_r3c4_click_handle(void)
 
 void rf24g_28keys_event_r4c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r4c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -519,7 +561,9 @@ void rf24g_28keys_event_r4c1_click_handle(void)
 
 void rf24g_28keys_event_r4c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r4c2\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -544,7 +588,9 @@ void rf24g_28keys_event_r4c2_click_handle(void)
 
 void rf24g_28keys_event_r4c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r4c3\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -569,7 +615,9 @@ void rf24g_28keys_event_r4c3_click_handle(void)
 
 void rf24g_28keys_event_r4c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r4c4\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -586,7 +634,9 @@ void rf24g_28keys_event_r4c4_click_handle(void)
 
 void rf24g_28keys_event_r5c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r5c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -602,7 +652,9 @@ void rf24g_28keys_event_r5c1_click_handle(void)
 
 void rf24g_28keys_event_r5c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r5c2\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -618,7 +670,9 @@ void rf24g_28keys_event_r5c2_click_handle(void)
 
 void rf24g_28keys_event_r5c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r5c3\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -634,7 +688,9 @@ void rf24g_28keys_event_r5c3_click_handle(void)
 
 void rf24g_28keys_event_r5c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r5c4\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -650,7 +706,9 @@ void rf24g_28keys_event_r5c4_click_handle(void)
 
 void rf24g_28keys_event_r6c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r6c1\n");
+#endif
 
     // 流星灯开关
     if (fc_effect.star_on_off == DEVICE_OFF)
@@ -689,7 +747,9 @@ void rf24g_28keys_event_r6c1_click_handle(void)
 
 void rf24g_28keys_event_r6c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r6c2\n");
+#endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
     {
@@ -710,7 +770,9 @@ void rf24g_28keys_event_r6c2_click_handle(void)
 
 void rf24g_28keys_event_r6c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r6c3\n");
+#endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
     {
@@ -751,7 +813,9 @@ void rf24g_28keys_event_r6c3_click_handle(void)
 
 void rf24g_28keys_event_r6c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r6c4\n");
+#endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
     {
@@ -792,7 +856,9 @@ void rf24g_28keys_event_r6c4_click_handle(void)
 
 void rf24g_28keys_event_r7c1_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r7c1\n");
+#endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
     {
@@ -807,7 +873,9 @@ void rf24g_28keys_event_r7c1_click_handle(void)
 
 void rf24g_28keys_event_r7c2_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r7c2\n");
+#endif
 
     // 电机关
     motor_close();
@@ -816,7 +884,9 @@ void rf24g_28keys_event_r7c2_click_handle(void)
 
 void rf24g_28keys_event_r7c3_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r7c3\n");
+#endif
 
     // 电机速度加
     if (DEVICE_OFF == fc_effect.motor_on_off)
@@ -850,7 +920,9 @@ void rf24g_28keys_event_r7c3_click_handle(void)
 
 void rf24g_28keys_event_r7c4_click_handle(void)
 {
+#if USER_DEBUG_ENABLE
     printf("28keys event r7c4\n");
+#endif
 
     // 电机速度减
     if (DEVICE_OFF == fc_effect.motor_on_off)

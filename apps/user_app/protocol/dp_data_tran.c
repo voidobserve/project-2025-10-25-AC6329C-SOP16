@@ -1218,6 +1218,14 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         os_time_dly(1);
 
         // 电机
+        //-------------------电机模式--------------------------
+        send_buf_len = send_data_prefix_len;
+        Send_buffer[send_buf_len++] = 0x2F;
+        Send_buffer[send_buf_len++] = 0x06;
+        Send_buffer[send_buf_len++] = fc_effect.base_ins.mode;
+        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        os_time_dly(1);
+
         //-------------------电机速度--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
         send_buf_len = send_data_prefix_len;
@@ -1726,7 +1734,7 @@ void parse_led_strip_data(u8 *pBuf, u8 len)
 {
 
     /* 涂鸦DP协议解析 */
-    dp_extract_data_handle(pBuf);
+    // dp_extract_data_handle(pBuf);
     /* 中道孔明灯协议解析 */
     parse_zd_data(pBuf, len);
     /* 为兼容全彩的协议 */

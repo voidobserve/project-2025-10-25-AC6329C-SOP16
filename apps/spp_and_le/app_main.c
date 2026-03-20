@@ -379,14 +379,25 @@ void main_while(void)
         rf_433_key_learn();
 #endif // #if RF_433_LEARN_ENABLE
 
-        effect_stepmotor(); // 声控，电机的音乐效果  
+        effect_stepmotor(); // 声控，电机的音乐效果
         rf_433_key_event_handle();
         rf24_key_handle();
 
-        // printf("main circle\n");// 主循环约10ms
+    
 
         save_user_data_time_count_down();
         save_user_data_handle();
+
+        // 测试主循环执行时间
+        // {
+        //     static u16 cnt = 0;
+        //     cnt++;
+        //     if (cnt >= 100)
+        //     {
+        //         cnt = 0;
+        //         printf("main circle\n"); // 主循环约10ms
+        //     }
+        // }
         os_time_dly(1);
     }
 }
@@ -540,7 +551,7 @@ void my_main(void)
     led_state_init();    // 流星灯
     mcu_com_init();      // 电机一线通信
     rf_433_key_config(); // rf433信号接收引脚
- 
+
     sys_s_hi_timer_add(NULL, WS2812_circle_task, 10); // 10ms
 
     task_create(user_msg_handle_task, NULL, "msg_task");

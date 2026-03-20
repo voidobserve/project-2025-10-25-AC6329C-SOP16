@@ -319,11 +319,11 @@ u16 get_max_sp(void)
  */
 void app_set_speed(u8 tp_speed)
 {  
-    if (fc_effect.Now_state != IS_light_scene)
-    {
-        // 如果七彩灯不处于对应的动态模式，则返回
-        return;
-    }
+    // if (fc_effect.Now_state != IS_light_scene)
+    // {
+    //     // 如果七彩灯不处于对应的动态模式，则返回
+    //     return;
+    // }
 
     if (tp_speed > 100)
     {

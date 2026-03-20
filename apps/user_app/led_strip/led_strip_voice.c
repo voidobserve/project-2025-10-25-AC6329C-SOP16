@@ -158,10 +158,10 @@ void sound_handle(void)
 
 #if 1 // 移植其他项目的声控程序
 
-    if (fc_effect.on_off_flag != DEVICE_ON)
-    {
-        return;
-    }
+    // if (fc_effect.on_off_flag != DEVICE_ON)
+    // {
+    //     return;
+    // }
 
 #define SAMPLE_N 20
     static volatile u32 adc_sum = 0;
@@ -246,12 +246,12 @@ void sound_handle(void)
     {
         if (adc * fc_effect.music.s / 100 > adc_sum / adc_sum_n)
         {
-
             u32 adc_sum_avrg = adc_sum / adc_sum_n;
             if (adc * fc_effect.colorful_lights_sensitivity / 100 > adc_sum_avrg)
             {
 
-                if (fc_effect.Now_state == IS_light_music)
+                if (fc_effect.on_off_flag == DEVICE_ON &&
+                    fc_effect.Now_state == IS_light_music)
                 {
                     // 如果七彩灯处于声控模式，会进入这里
                     flag_sound_triggered_in_colorful_lights = 1;
@@ -262,8 +262,9 @@ void sound_handle(void)
             }
 
             if (adc * fc_effect.base_ins.sensitivity / 100 > adc_sum_avrg)
-            { 
-                if (5 == fc_effect.base_ins.mode)
+            {
+                if (fc_effect.on_off_flag == DEVICE_ON &&
+                    5 == fc_effect.base_ins.mode)
                 {
                     flag_sound_triggered_in_motor = 1;
                 }
