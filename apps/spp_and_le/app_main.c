@@ -38,6 +38,7 @@
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.h"
 
 #include "rf24g_key.h"
+#include "user_include.h"
 
 // OS_SEM LED_TASK_SEM;
 
@@ -82,6 +83,7 @@ const struct task_info task_info_table[] = {
 
     {"led_task", 2, 0, 512, 512}, // 灯光
     {"msg_task", 3, 0, 256, 256}, // 用户消息处理线程
+    {"motor_task", 3, 0, 256, 256},
     {0, 0},
 };
 
@@ -379,11 +381,9 @@ void main_while(void)
         rf_433_key_learn();
 #endif // #if RF_433_LEARN_ENABLE
 
-        effect_stepmotor(); // 声控，电机的音乐效果
+        // effect_stepmotor(); // 声控，电机的音乐效果
         rf_433_key_event_handle();
         rf24_key_handle();
-
-    
 
         save_user_data_time_count_down();
         save_user_data_handle();
@@ -440,16 +440,19 @@ void user_msg_handle_task(void)
         case MSG_SEQUENCER_ONE_WIRE_SEND_INFO: // 使能单线发送
         {
             // printf("recv one wire send info\n");
-            for (u8 i = 0; i < 5; i++) // 控制重复发送次数
-            {
-                while (is_one_wire_send_end()) // 如果还未发送完，继续等待
-                {
-                    // printf("one wire send wait\n");
-                    os_time_dly(1);
-                }
+            // for (u8 i = 0; i < 3; i++) // 控制重复发送次数
+            // {
+            //     while (is_one_wire_send_end()) // 如果还未发送完，继续等待
+            //     {
+            //         // printf("one wire send wait\n");
+            //         os_time_dly(1);
+            //     }
 
-                enable_one_wire();
-            }
+
+            //     enable_one_wire();
+            // }
+
+            motor_send_data();
         }
         break;
 #if RF_433_LEARN_ENABLE
@@ -542,12 +545,21 @@ void WS2812_circle_task(void)
     WS2812FX_service();
 }
 
+void motor_task(void)
+{
+    while (1)
+    {
+        motor_forward_reverse_mode_handle();
+        motor_music_rulation_mode_handle();
+        os_time_dly(1);
+    }
+}
+
 void my_main(void)
 {
-    led_gpio_init(); // 七彩灯输出口
-    led_pwm_init();  // 七彩灯输出口对应的pwm
-    mic_gpio_init(); // mic
-    // fan_gpio_init();
+    led_gpio_init();     // 七彩灯输出口
+    led_pwm_init();      // 七彩灯输出口对应的pwm
+    mic_gpio_init();     // mic
     led_state_init();    // 流星灯
     mcu_com_init();      // 电机一线通信
     rf_433_key_config(); // rf433信号接收引脚
@@ -560,4 +572,5 @@ void my_main(void)
         接收消息的线程没有创建，导致收不到消息，最后一上电电机会不工作
     */
     task_create(main_while, NULL, "led_task");
+    task_create(motor_task, NULL, "motor_task");
 }

@@ -163,7 +163,7 @@ typedef struct
     u16 period_cnt;              // ms,运行时的计数器 范围： 2000 ~ 20000
 
     u8 colorful_lights_sensitivity;      // 声控模式下，七彩灯的灵敏度 范围： 0 ~ 100
-    Now_state_e state_before_into_music; // 七彩灯 进入声控模式之前，处于哪种模式
+    // Now_state_e state_before_into_music; // 七彩灯 进入声控模式之前，处于哪种模式
     Now_state_e Now_state;               // 当前运行模式
     // smear_adjust_t smear_adjust; // 涂抹功能
     dream_scene_t dream_scene; // 幻彩情景

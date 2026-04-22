@@ -193,7 +193,7 @@ void rf24_key_handle(void)
 void rf24g_28keys_event_r1c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r1c1\n");
+    // printf("28keys event r1c1\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -223,8 +223,8 @@ void rf24g_28keys_event_r1c1_click_handle(void)
         colorful_lights_set_brightness(fc_effect.app_b);
         WS2812FX_setBrightness(fc_effect.b);
 #if USER_DEBUG_ENABLE
-        printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
-        printf("fc_effect.b %u\n", (u16)fc_effect.b);
+        // printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+        // printf("fc_effect.b %u\n", (u16)fc_effect.b);
 #endif
         fb_bright();
     }
@@ -260,8 +260,8 @@ void rf24g_28keys_event_r1c1_click_handle(void)
         // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
         colorful_lights_set_speed(fc_effect.app_speed);
 #if USER_DEBUG_ENABLE
-        printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
-        printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+        // printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+        // printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
 #endif
 
         fb_speed();
@@ -283,7 +283,7 @@ void rf24g_28keys_event_r1c1_click_handle(void)
 void rf24g_28keys_event_r1c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r1c2\n");
+    // printf("28keys event r1c2\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -314,8 +314,8 @@ void rf24g_28keys_event_r1c2_click_handle(void)
         colorful_lights_set_brightness(fc_effect.app_b);
         WS2812FX_setBrightness(fc_effect.b);
 #if USER_DEBUG_ENABLE
-        printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
-        printf("fc_effect.b %u\n", (u16)fc_effect.b);
+        // printf("fc_effect.app_b %u\n", (u16)fc_effect.app_b);
+        // printf("fc_effect.b %u\n", (u16)fc_effect.b);
 #endif
 
         fb_bright();
@@ -352,8 +352,8 @@ void rf24g_28keys_event_r1c2_click_handle(void)
         // fc_effect.dream_scene.speed = 5000 - ((u32)fc_effect.app_speed * (5000 - 200) / 100);
         colorful_lights_set_speed(fc_effect.app_speed);
 #if USER_DEBUG_ENABLE
-        printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
-        printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
+        // printf("fc_effect.app_speed %u\n", (u16)fc_effect.app_speed);
+        // printf("fc_effect.dream_scene.speed %u\n", (u16)fc_effect.dream_scene.speed);
 #endif
 
         fb_speed();
@@ -375,7 +375,7 @@ void rf24g_28keys_event_r1c2_click_handle(void)
 void rf24g_28keys_event_r1c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r1c3\n");
+    // printf("28keys event r1c3\n");
 #endif
 
     // 只开 七彩灯 和 电机
@@ -390,7 +390,7 @@ void rf24g_28keys_event_r1c3_click_handle(void)
 void rf24g_28keys_event_r1c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r1c4\n");
+    // printf("28keys event r1c4\n");
 #endif
 
     // 只关 七彩灯 和 电机
@@ -405,7 +405,7 @@ void rf24g_28keys_event_r1c4_click_handle(void)
 void rf24g_28keys_event_r2c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r2c1\n");
+    // printf("28keys event r2c1\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -420,7 +420,7 @@ void rf24g_28keys_event_r2c1_click_handle(void)
 void rf24g_28keys_event_r2c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r2c2\n");
+    // printf("28keys event r2c2\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -435,7 +435,7 @@ void rf24g_28keys_event_r2c2_click_handle(void)
 void rf24g_28keys_event_r2c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r2c3\n");
+    // printf("28keys event r2c3\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -450,7 +450,7 @@ void rf24g_28keys_event_r2c3_click_handle(void)
 void rf24g_28keys_event_r2c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r2c4\n");
+    // printf("28keys event r2c4\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -471,7 +471,7 @@ void rf24g_28keys_event_r2c4_click_handle(void)
 void rf24g_28keys_event_r3c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r3c1\n");
+    // printf("28keys event r3c1\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -487,7 +487,7 @@ void rf24g_28keys_event_r3c1_click_handle(void)
 void rf24g_28keys_event_r3c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r3c2\n");
+    // printf("28keys event r3c2\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -503,7 +503,7 @@ void rf24g_28keys_event_r3c2_click_handle(void)
 void rf24g_28keys_event_r3c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r3c3\n");
+    // printf("28keys event r3c3\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -519,7 +519,7 @@ void rf24g_28keys_event_r3c3_click_handle(void)
 void rf24g_28keys_event_r3c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r3c4\n");
+    // printf("28keys event r3c4\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -535,7 +535,7 @@ void rf24g_28keys_event_r3c4_click_handle(void)
 void rf24g_28keys_event_r4c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r4c1\n");
+    // printf("28keys event r4c1\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -562,7 +562,7 @@ void rf24g_28keys_event_r4c1_click_handle(void)
 void rf24g_28keys_event_r4c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r4c2\n");
+    // printf("28keys event r4c2\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -589,7 +589,7 @@ void rf24g_28keys_event_r4c2_click_handle(void)
 void rf24g_28keys_event_r4c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r4c3\n");
+    // printf("28keys event r4c3\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -616,7 +616,7 @@ void rf24g_28keys_event_r4c3_click_handle(void)
 void rf24g_28keys_event_r4c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r4c4\n");
+    // printf("28keys event r4c4\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -635,7 +635,7 @@ void rf24g_28keys_event_r4c4_click_handle(void)
 void rf24g_28keys_event_r5c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r5c1\n");
+    // printf("28keys event r5c1\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -653,7 +653,7 @@ void rf24g_28keys_event_r5c1_click_handle(void)
 void rf24g_28keys_event_r5c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r5c2\n");
+    // printf("28keys event r5c2\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -671,7 +671,7 @@ void rf24g_28keys_event_r5c2_click_handle(void)
 void rf24g_28keys_event_r5c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r5c3\n");
+    // printf("28keys event r5c3\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -689,7 +689,7 @@ void rf24g_28keys_event_r5c3_click_handle(void)
 void rf24g_28keys_event_r5c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r5c4\n");
+    // printf("28keys event r5c4\n");
 #endif
 
     if (fc_effect.on_off_flag == DEVICE_OFF)
@@ -707,7 +707,7 @@ void rf24g_28keys_event_r5c4_click_handle(void)
 void rf24g_28keys_event_r6c1_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r6c1\n");
+    // printf("28keys event r6c1\n");
 #endif
 
     // 流星灯开关
@@ -748,7 +748,7 @@ void rf24g_28keys_event_r6c1_click_handle(void)
 void rf24g_28keys_event_r6c2_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r6c2\n");
+    // printf("28keys event r6c2\n");
 #endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
@@ -758,9 +758,9 @@ void rf24g_28keys_event_r6c2_click_handle(void)
     }
 
     // 流星灯模式切换
-    // 流星灯索引值范围： 1 ~ 18
+    // 流星灯索引值范围： 1 ~ 16
     fc_effect.star_index++;
-    if (fc_effect.star_index > 18) //
+    if (fc_effect.star_index > 16) //
     {
         fc_effect.star_index = 1;
     }
@@ -771,7 +771,7 @@ void rf24g_28keys_event_r6c2_click_handle(void)
 void rf24g_28keys_event_r6c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r6c3\n");
+    // printf("28keys event r6c3\n");
 #endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
@@ -780,7 +780,7 @@ void rf24g_28keys_event_r6c3_click_handle(void)
         return;
     }
 
-    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 14)
     {
         // 如果不在声控模式，调节流星灯速度
         // 流星灯 速度 加
@@ -799,7 +799,7 @@ void rf24g_28keys_event_r6c3_click_handle(void)
         printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
         fd_meteor_speed(); // 向app反馈流星灯速度
     }
-    else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+    else if (fc_effect.star_index >= 15 && fc_effect.star_index <= 16)
     {
         // 如果在声控模式，调节流星灯声控模式的灵敏度
         meteor_lights_sound_sensitivity_add();
@@ -814,7 +814,7 @@ void rf24g_28keys_event_r6c3_click_handle(void)
 void rf24g_28keys_event_r6c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r6c4\n");
+    // printf("28keys event r6c4\n");
 #endif
 
     if (fc_effect.star_on_off == DEVICE_OFF)
@@ -823,7 +823,7 @@ void rf24g_28keys_event_r6c4_click_handle(void)
         return;
     }
 
-    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+    if (fc_effect.star_index >= 1 && fc_effect.star_index <= 14)
     {
         // 如果不在声控模式，调节流星灯速度
         // 流星灯 速度减
@@ -842,7 +842,7 @@ void rf24g_28keys_event_r6c4_click_handle(void)
         printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
         fd_meteor_speed(); // 向app反馈流星灯速度
     }
-    else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+    else if (fc_effect.star_index >= 15 && fc_effect.star_index <= 16)
     {
         // 如果在声控模式，调节流星灯声控模式的灵敏度
         meteor_lights_sound_sensitivity_sub();
@@ -885,7 +885,7 @@ void rf24g_28keys_event_r7c2_click_handle(void)
 void rf24g_28keys_event_r7c3_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r7c3\n");
+    // printf("28keys event r7c3\n");
 #endif
 
     // 电机速度加
@@ -896,7 +896,7 @@ void rf24g_28keys_event_r7c3_click_handle(void)
     }
 
     // 判断电机是否处于普通模式（非声控模式）
-    if (5 != fc_effect.base_ins.mode)
+    if (MOTOR_MODE_MUSIC_RULATION != fc_effect.base_ins.mode)
     {
         if (fc_effect.motor_speed_index > 0)
         {
@@ -904,7 +904,29 @@ void rf24g_28keys_event_r7c3_click_handle(void)
         }
 
         fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+#if USER_DEBUG_ENABLE
         printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#endif
+
+        if (fc_effect.base_ins.mode == MOTOR_MODE_FORWARD_REVERSE)
+        {
+            // 如果是在正反转模式下，改变了电机转速，需要根据当前的旋转方向，再设置一次速度
+            if (fc_effect.base_ins.dir_in_mode_forward_reverse == 0)
+            {
+                // 当前是在正转
+                motor_package_data(MOTOR_MODE_FORWARD, fc_effect.base_ins.period);
+            }
+            else
+            {
+                // 当前是在反转
+                motor_package_data(MOTOR_MODE_REVERSE, fc_effect.base_ins.period);
+            }
+        }
+        else
+        {
+            motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
+        }
+
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
         fb_motor_speed(); // 向app反馈电机的转速
     }
@@ -921,7 +943,7 @@ void rf24g_28keys_event_r7c3_click_handle(void)
 void rf24g_28keys_event_r7c4_click_handle(void)
 {
 #if USER_DEBUG_ENABLE
-    printf("28keys event r7c4\n");
+    // printf("28keys event r7c4\n");
 #endif
 
     // 电机速度减
@@ -932,7 +954,7 @@ void rf24g_28keys_event_r7c4_click_handle(void)
     }
 
     // 判断电机是否处于普通模式（非声控模式）
-    if (5 != fc_effect.base_ins.mode)
+    if (MOTOR_MODE_MUSIC_RULATION != fc_effect.base_ins.mode)
     {
         if (fc_effect.motor_speed_index < ARRAY_SIZE(motor_period) - 1)
         {
@@ -940,7 +962,29 @@ void rf24g_28keys_event_r7c4_click_handle(void)
         }
 
         fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+#if USER_DEBUG_ENABLE
         printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#endif
+
+        if (fc_effect.base_ins.mode == MOTOR_MODE_FORWARD_REVERSE)
+        {
+            // 如果是在正反转模式下，改变了电机转速，需要根据当前的旋转方向，再设置一次速度
+            if (fc_effect.base_ins.dir_in_mode_forward_reverse == 0)
+            {
+                // 当前是在正转
+                motor_package_data(MOTOR_MODE_FORWARD, fc_effect.base_ins.period);
+            }
+            else
+            {
+                // 当前是在反转
+                motor_package_data(MOTOR_MODE_REVERSE, fc_effect.base_ins.period);
+            }
+        }
+        else
+        {
+            motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
+        }
+
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
         fb_motor_speed(); // 向app反馈电机的转速
     }

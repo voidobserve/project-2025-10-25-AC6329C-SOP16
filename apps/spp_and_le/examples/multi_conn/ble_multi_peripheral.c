@@ -48,6 +48,7 @@
 // 广播周期 (unit:0.625ms)
 // #define ADV_INTERVAL_MIN (160 * 5) //
 #define ADV_INTERVAL_MIN (64) //
+// #define ADV_INTERVAL_MIN (64) //
 
 //---------------
 // 连接参数更新请求设置

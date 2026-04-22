@@ -8,6 +8,8 @@
 #include "../../../apps/user_app/one_wire/one_wire.h"
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 
+#include "user_include.h"
+
 #define MAX_BRIGHT_RANK 10
 #define MAX_SPEED_RANK 10
 #define MIN_BRIGHT_VALUE 10
@@ -26,7 +28,7 @@ void fc_data_init(void)
     // 灯具
     fc_effect.on_off_flag = DEVICE_ON; // 灯为开启状态
     fc_effect.led_num = 12 + 1;        // 灯带的总灯珠数量（12个流星灯+1七彩灯）
-    fc_effect.state_before_into_music = IS_STATIC;
+    // fc_effect.state_before_into_music = IS_STATIC;
     fc_effect.Now_state = IS_STATIC; // 当前运行状态 静态
     fc_effect.rgb.r = 255;
     fc_effect.rgb.g = 0;
@@ -58,11 +60,13 @@ void fc_data_init(void)
     fc_effect.sequence = NEO_RBGW;
     fc_effect.auto_f = IS_PAUSE;
 
-    fc_effect.music.s = 80;
+    // fc_effect.music.s = 80;
+    fc_effect.music.s = 100; // 默认灵敏度为最大
     fc_effect.music.m = 0;
     fc_effect.music.m_type = 0;
 
-    fc_effect.colorful_lights_sensitivity = 80; // 七彩灯声控模式下，对应的灵敏度
+    // fc_effect.colorful_lights_sensitivity = 80; // 七彩灯声控模式下，对应的灵敏度
+    fc_effect.colorful_lights_sensitivity = 100; // 七彩灯声控模式下，对应的灵敏度
 
     fc_effect.app_rgb_mode = 0;
     // 闹钟
@@ -80,16 +84,22 @@ void fc_data_init(void)
     fc_effect.meteor_period = 2;                           // 默认 2 秒  周期值
     fc_effect.period_cnt = fc_effect.meteor_period * 1000; // 周期值计数值，单位 ms
     fc_effect.mode_cycle = 0;                              // 模式完成一个循环的标志
-    fc_effect.meteor_lights_sensitivity = 80;              // 流星灯声控模式下，对应的灵敏度
+    // fc_effect.meteor_lights_sensitivity = 80;              // 流星灯声控模式下，对应的灵敏度
+    fc_effect.meteor_lights_sensitivity = 100; // 流星灯声控模式下，对应的灵敏度
 
     // 电机
+    fc_effect.motor_on_off = DEVICE_ON;           // 默认 电机开启
+    fc_effect.base_ins.mode = MOTOR_MODE_FORWARD; // 默认正转
+    fc_effect.base_ins.last_mode = MOTOR_MODE_FORWARD;
     fc_effect.motor_speed_index = 0; // 电机模式或电机速度索引
-    fc_effect.base_ins.mode = 4;     // 360转
-    fc_effect.base_ins.period = 8;   // 速度8s
-    fc_effect.base_ins.dir = 0;      // 0: 正转  1：
-    fc_effect.base_ins.music_mode = 0;
-    fc_effect.motor_on_off = DEVICE_ON;
-    fc_effect.base_ins.sensitivity = 80; // 电机声控模式下，对应的灵敏度
+    fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
+    // fc_effect.base_ins.sensitivity = 80; // 电机声控模式下，对应的灵敏度
+    fc_effect.base_ins.sensitivity = 100; // 电机声控模式下，对应的灵敏度
+
+    // fc_effect.base_ins.mode = MOTOR_MODE_MUSIC_RULATION;
+    // fc_effect.base_ins.mode = MOTOR_MODE_FORWARD;
+    // fc_effect.base_ins.mode = MOTOR_MODE_REVERSE;
+    // fc_effect.base_ins.mode = MOTOR_MODE_FORWARD_REVERSE;
 }
 
 // void OpenMortor(void);
@@ -107,13 +117,28 @@ void soft_turn_on_the_light(void) // 软开灯处理
 
     if (DEVICE_ON == fc_effect.motor_on_off)
     {
+        /*
+            如果在开灯之前，记录的电机状态是开着的，
+            这里也要一并打开电机
+        */
+
         // 如果在开机前，电机是开着的，则恢复电机在开机前的状态
-        if (6 == fc_effect.base_ins.mode)
-        {
-            // 如果电机的模式是6（关闭），则改为4
-            fc_effect.base_ins.mode = 4;
-        }
+        // if (6 == fc_effect.base_ins.mode)
+        // {
+        //     // 如果电机的模式是6（关闭），则改为4
+        //     fc_effect.base_ins.mode = 4;
+        // }
+
+        // if (fc_effect.base_ins.mode == MOTOR_MODE_STOP)
+        // {
+        //     // 如果电机模式是停止，改为默认的正转
+        //     fc_effect.base_ins.mode = MOTOR_MODE_FORWARD;
+        // }
+
+        fc_effect.base_ins.mode = fc_effect.base_ins.last_mode;
     }
+
+    motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
     // printf("fc_effect.motor_speed_index %u\n", (u16)fc_effect.motor_speed_index); // 打印电机的速度索引
 
@@ -130,13 +155,21 @@ void soft_turn_on_the_light(void) // 软开灯处理
     printf("soft_turn_on_the_light\n");
 }
 
-void CloseMotor(void);
 void soft_turn_off_lights(void) // 软关灯处理
 {
     fc_effect.on_off_flag = DEVICE_OFF;
 
-    // 改成只发送关闭电机的控制命令，不给 fc_effect.motor_on_off 赋值为 DEVICE_OFF
-    one_wire_set_mode(6); // 关闭电机
+    /*
+        不给 fc_effect.motor_on_off 赋值为 DEVICE_OFF
+        下一次开灯时，要能够打开电机
+    */
+    // one_wire_set_mode(6); // 关闭电机
+    if (fc_effect.base_ins.mode != MOTOR_MODE_STOP)
+    {
+        fc_effect.base_ins.last_mode = fc_effect.base_ins.mode;
+    }
+    fc_effect.base_ins.mode = MOTOR_MODE_STOP;
+    motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
     // 关闭七彩灯：（让七彩灯一直熄灭）
@@ -211,11 +244,16 @@ void colorful_light_close(void)
 void motor_open(void)
 {
     fc_effect.motor_on_off = DEVICE_ON;
-    if (6 == fc_effect.base_ins.mode)
-    {
-        // 如果电机的模式是6（关闭），则改为4
-        fc_effect.base_ins.mode = 4;
-    }
+
+    // if (fc_effect.base_ins.mode == MOTOR_MODE_STOP)
+    // {
+    //     // 如果之前电机是停止状态，改成默认的 正转
+    //     fc_effect.base_ins.mode = MOTOR_MODE_FORWARD;
+    // }
+
+    fc_effect.base_ins.mode = fc_effect.base_ins.last_mode;
+
+    motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 }
 
@@ -223,7 +261,15 @@ void motor_open(void)
 void motor_close(void)
 {
     fc_effect.motor_on_off = DEVICE_OFF;
-    one_wire_set_mode(6); // 关闭电机
+    // one_wire_set_mode(6); // 关闭电机
+
+    if (fc_effect.base_ins.mode != MOTOR_MODE_STOP)
+    {
+        fc_effect.base_ins.last_mode = fc_effect.base_ins.mode;
+    }
+
+    fc_effect.base_ins.mode = MOTOR_MODE_STOP;
+    motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
     os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 }
 
@@ -313,12 +359,12 @@ u16 get_max_sp(void)
 }
 
 /**
- * @brief APP设置速度 
- * 
+ * @brief APP设置速度
+ *
  * @param tp_speed  0-100  0是最慢  100是最快
  */
 void app_set_speed(u8 tp_speed)
-{  
+{
     // if (fc_effect.Now_state != IS_light_scene)
     // {
     //     // 如果七彩灯不处于对应的动态模式，则返回
@@ -544,10 +590,10 @@ void ls_sub_sensitive(void)
  * @brief 遥控开关
  *
  */
-void ls_ledStrip_switch(void)
-{
-    // fc_effect.on_off_flag == DEVICE_ON ? soft_turn_off_lights(): soft_turn_on_the_light();
-}
+// void ls_ledStrip_switch(void)
+// {
+//     // fc_effect.on_off_flag == DEVICE_ON ? soft_turn_off_lights(): soft_turn_on_the_light();
+// }
 
 // 和通信协议对应
 u8 RGBsequence_map[6] =
@@ -674,7 +720,7 @@ void meteor_set_mode_can_be_cycled(void)
     }
 
     fc_effect.star_index++;
-    if (fc_effect.star_index > 22) // 超出了索引范围，从头开始
+    if (fc_effect.star_index > 16) // 超出了索引范围，从头开始
     {
         fc_effect.star_index = 0;
     }
@@ -728,7 +774,7 @@ u8 get_effect_p(void)
  * @param tp_p
  */
 void app_set_meteor_pro(u8 tp_p)
-{  
+{
     if (tp_p >= 2 && tp_p <= 20)
     {
         fc_effect.meteor_period = tp_p;
@@ -786,12 +832,20 @@ void app_set_on_off_meteor(u8 tp_sw)
  */
 void app_set_mereor_mode(u8 tp_m)
 {
-
-    if (tp_m <= 22) // void custom_meteor_effect(void)有关
+    if (tp_m <= 16) // void custom_meteor_effect(void)有关
     {
         fc_effect.star_index = tp_m;
         ls_meteor_stat_effect();
-        printf(" fc_effect.star_index  = %d", fc_effect.star_index);
+#if USER_DEBUG_ENABLE
+        printf(" fc_effect.star_index  = %d\n", fc_effect.star_index);
+#endif
+    }
+    else
+    {
+#if USER_DEBUG_ENABLE
+        printf("func: app_set_mereor_mode\n");
+        printf("param error\n");
+#endif
     }
 }
 
@@ -819,41 +873,6 @@ void app_set_mereor_speed(u8 tp_s)
 u8 get_custom_index(void)
 {
     return fc_effect.star_index;
-}
-
-void ls_set_star_one_two(void)
-{
-    if (fc_effect.star_on_off != DEVICE_ON)
-        return;
-    if (get_custom_index() != 19)
-        app_set_mereor_mode(19); // 单流星 有掉电保存
-    else
-        app_set_mereor_mode(22); // 双流星
-}
-
-void ls_set_star_music(void)
-{
-    if (fc_effect.star_on_off != DEVICE_ON)
-        return;
-    if (get_custom_index() != 17)
-        app_set_mereor_mode(17); // 单流星
-    else
-        app_set_mereor_mode(18); // 双流星
-}
-
-void ls_set_star_dir(void)
-{
-    if (fc_effect.star_on_off != DEVICE_ON)
-        return;
-    if (fc_effect.dream_scene.direction == IS_forward)
-    {
-        fc_effect.dream_scene.direction = IS_back;
-    }
-    else
-    {
-        fc_effect.dream_scene.direction = IS_forward;
-    }
-    ls_meteor_stat_effect();
 }
 
 // 30 -300
@@ -943,41 +962,21 @@ void ls_set_star_pro(void)
     fd_meteor_cycle();
 }
 
-void ls_set_star_tail(void)
-{
-    u8 p;
-    p = get_custom_index();
-
-    if (p == 19 || p == 20 || p == 21)
-    {
-        fc_effect.star_index++;
-        if (fc_effect.star_index > 21)
-            fc_effect.star_index = 19;
-        p = fc_effect.star_index;
-
-        app_set_mereor_mode(p); // 单流星
-    }
-    else
-    {
-        app_set_mereor_mode(19);
-    }
-}
-
 /*********************************************************
  *
  *      电机效果设置 API
  *
  *********************************************************/
-extern u8 motor_period[6];
-
 void ls_add_motor_speed(void)
 {
     // 目前是索引值越小，电机转速越快
     if (fc_effect.motor_speed_index > 0)
     {
         fc_effect.motor_speed_index--;
-        one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
+        // one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
+        fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
         // enable_one_wire();
+        motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
         // printf("fc_effect.motor_speed_index = %d", fc_effect.motor_speed_index);
@@ -992,49 +991,13 @@ void ls_sub_motor_speed(void)
         fc_effect.motor_speed_index++;
         one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
         // enable_one_wire();
+
+        motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
         os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
 
         // printf("fc_effect.motor_speed_index = %d", fc_effect.motor_speed_index);
     }
 }
-
-void CloseMotor(void)
-{
-    fc_effect.motor_on_off = DEVICE_OFF;
-    one_wire_set_period(motor_period[fc_effect.motor_speed_index]);
-    one_wire_set_mode(0x06); // 关闭电机
-
-    os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
-    // enable_one_wire();       // 启动发送电机数据
-}
-
-// u8 mo_cnt = 3;
-// void OpenMortor(void)
-// {
-//     fc_effect.motor_on_off = DEVICE_ON;
-//     // mo_cnt = 3;
-// }
-
-// void power_motor_Init(void)
-// {
-
-//     if (mo_cnt > 1)
-//     {
-//         mo_cnt--;
-
-//         if (fc_effect.motor_on_off == DEVICE_ON)
-//         {
-//             one_wire_set_mode(4);
-//             enable_one_wire();
-//         }
-//         else
-//         {
-
-//             one_wire_set_mode(6); // 停止电机
-//             enable_one_wire();
-//         }
-//     }
-// }
 
 /*********************************************************
  *
@@ -1047,17 +1010,17 @@ ON_OFF_FLAG get_on_off_state(void)
     return fc_effect.on_off_flag;
 }
 
-void set_on_off_led(u8 on_off)
-{
-    if (on_off == DEVICE_ON)
-    {
-        soft_turn_on_the_light(); // 开灯
-    }
-    else
-    {
-        soft_turn_off_lights(); // 关灯
-    }
-}
+// void set_on_off_led(u8 on_off)
+// {
+//     if (on_off == DEVICE_ON)
+//     {
+//         soft_turn_on_the_light(); // 开灯
+//     }
+//     else
+//     {
+//         soft_turn_off_lights(); // 关灯
+//     }
+// }
 
 /**
  * @brief APP设置纯白光的颜色
@@ -1071,7 +1034,7 @@ void app_set_w(u8 tp_w)
     fc_effect.rgb.r = 0;
     fc_effect.rgb.g = 0;
     fc_effect.rgb.b = 0;
-    fc_effect.rgb.w = tp_w * 255 / 100;
+    fc_effect.rgb.w = (u32)tp_w * 255 / 100;
     set_fc_effect(); // 效果调度
 #endif
 }
@@ -1142,150 +1105,6 @@ void colorful_lights_set_static_color(u32 color)
 
     set_fc_effect(); // 效果调度
 }
-
-/**
- * @brief APP设置暖白光的颜色
- *
- */
-void app_set_cw(void)
-{
-}
-
-// void ls_add_mode_InAPP(void)
-// {
-//     u8 user_buff[3] = {0};
-// #if 0
-//     if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
-//     {
-//         fc_effect.app_rgb_mode++;
-
-//         user_buff[0] = 0x04;
-//         user_buff[1] = 0x02;
-//         user_buff[2] = fc_effect.app_rgb_mode;
-//         parse_zd_data(user_buff);
-//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-//     }
-// #endif
-
-//     if (fc_effect.app_rgb_mode < 0x1e) // 七彩灯模式
-//     {
-//         fc_effect.app_rgb_mode++;
-
-//         user_buff[0] = 0x04;
-//         user_buff[1] = 0x02;
-//         user_buff[2] = fc_effect.app_rgb_mode;
-//         parse_zd_data(user_buff);
-//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-//     }
-//     else if (fc_effect.app_rgb_mode < 0x1E + 22) // 流星灯模式
-//     {
-//         fc_effect.app_rgb_mode++;
-//         fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
-//         app_set_mereor_mode(fc_effect.star_index);
-//     }
-
-//     printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-// }
-
-// void ls_sub_mode_InAPP(void)
-// {
-//     u8 user_buff[3] = {0};
-// #if 0
-//     if (fc_effect.app_rgb_mode > 0)
-//     {
-//         fc_effect.app_rgb_mode--;
-
-//         user_buff[0] = 0x04;
-//         user_buff[1] = 0x02;
-//         user_buff[2] = fc_effect.app_rgb_mode;
-//         parse_zd_data(user_buff);
-//         // printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-//     }
-// #endif
-
-//     if (fc_effect.app_rgb_mode > 0x1E + 1) // 流星灯模式 (流星灯的索引值不能为0，这里要加一)
-//     {
-//         fc_effect.app_rgb_mode--;
-//         fc_effect.star_index = fc_effect.app_rgb_mode - 0x1E;
-//         app_set_mereor_mode(fc_effect.star_index);
-//     }
-//     else if (fc_effect.app_rgb_mode > 0)
-//     {
-//         fc_effect.app_rgb_mode--;
-
-//         user_buff[0] = 0x04;
-//         user_buff[1] = 0x02;
-//         user_buff[2] = fc_effect.app_rgb_mode;
-//         parse_zd_data(user_buff);
-//     }
-
-//     printf("fc_effect.app_rgb_mode = %d", fc_effect.app_rgb_mode);
-// }
-
-/**
- * @brief 选择app上某些效果，该些效果需要是有顺序的
- *
- * @param tp_type
- * @param tp_h
- * @param tp_t
- */
-// void ls_chose_mode_InAPP(u8 tp_type, u8 tp_m, u8 tp_h, u8 tp_t)
-// {
-//     u8 uc_buff[3] = {0};
-//     static u8 index_cmd = 0;
-
-//     if (tp_m == 0) // 循环加减
-//     {
-//         if (index_cmd < tp_t)
-//         {
-//             index_cmd++;
-//         }
-//         else
-//         {
-//             index_cmd = tp_h;
-//         }
-//     }
-//     else if (tp_m == 1)
-//     { // 只加
-
-//         if (index_cmd < tp_t)
-//         {
-
-//             index_cmd++;
-//         }
-//         else
-//         {
-//             index_cmd = tp_t;
-//         }
-//     }
-//     else if (tp_m == 2)
-//     { // 只减
-
-//         if (index_cmd > tp_h)
-//         {
-
-//             index_cmd--;
-//         }
-//         else
-//         {
-//             index_cmd = tp_h;
-//         }
-//     }
-//     else if (tp_m == 3)
-//     { // 指定某个模式
-
-//         index_cmd = tp_h;
-//     }
-
-//     if (tp_type == 1)
-//     {
-//         uc_buff[0] = 0x04;
-//         uc_buff[1] = 0x02;
-//         uc_buff[2] = index_cmd;
-//     }
-//     printf_buf(uc_buff, 3);
-//     parse_zd_data(uc_buff);
-// }
 
 /***************************************************************************************************************************/
 /***************************************************************************************************************************/
@@ -1382,45 +1201,6 @@ AUTO_TIME_T get_ir_timer(void)
 {
     return ir_timer_state;
 }
-
-// static void ir_auto_change_mode(void)
-// {
-
-//     extern u8 ws2811fx_set_cycle;
-
-//     // 循环模式
-//     if (fc_effect.auto_f == IS_AUTO)
-//     {
-
-//         if (ir_auto_change_tcnt != 0)
-//         {
-
-//             ir_auto_change_tcnt -= 10;
-//         }
-
-//         if (ws2811fx_set_cycle == 1)
-//         {
-//             ws2811fx_set_cycle = 0;
-//             ir_auto_change_tcnt = IR_CHANGE_MODE_T;
-//             if (auto_mode[2] < 0x15)
-//             {
-//                 auto_mode[2] += 1;
-//             }
-//             else
-//             {
-//                 auto_mode[2] = 7;
-//             }
-//             printf("aotu change");
-//             parse_zd_data(auto_mode);
-//         }
-//     }
-// }
-
-// // 10ms调用一次
-// void ir_timer_handler(void)
-// {
-//     ir_auto_change_mode();
-// }
 
 // 全彩效果初始化
 void full_color_init(void)

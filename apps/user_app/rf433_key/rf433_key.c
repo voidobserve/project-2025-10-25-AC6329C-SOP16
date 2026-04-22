@@ -9,6 +9,8 @@
 #include "../../../apps/user_app/save_flash/save_flash.h"
 #include "../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/ws2812fx_effect.h"
 
+#include "user_include.h"
+
 #if RF_433_KEY_ENABLE
 
 static volatile u32 rf_data = 0;              // 定时器中断使用的接收缓冲区，避免直接覆盖全局的数据接收缓冲区
@@ -903,9 +905,9 @@ void rf_433_key_event_handle(void)
         }
 
         // 流星灯模式切换
-        // 流星灯索引值范围： 1 ~ 18
+        // 流星灯索引值范围： 1 ~ 16
         fc_effect.star_index++;
-        if (fc_effect.star_index > 18)
+        if (fc_effect.star_index > 16)
         {
             fc_effect.star_index = 1;
         }
@@ -923,7 +925,7 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 14)
         {
             // 如果不在声控模式，调节流星灯速度
             // 流星灯 速度 加
@@ -942,7 +944,7 @@ void rf_433_key_event_handle(void)
             printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
             fd_meteor_speed(); // 向app反馈流星灯速度
         }
-        else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+        else if (fc_effect.star_index >= 15 && fc_effect.star_index <= 16)
         {
             // 如果在声控模式，调节流星灯声控模式的灵敏度
             meteor_lights_sound_sensitivity_add();
@@ -964,7 +966,7 @@ void rf_433_key_event_handle(void)
             return;
         }
 
-        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 16)
+        if (fc_effect.star_index >= 1 && fc_effect.star_index <= 14)
         {
             // 如果不在声控模式，调节流星灯速度
             // 流星灯 速度减
@@ -983,7 +985,7 @@ void rf_433_key_event_handle(void)
             printf("fc_effect.star_speed = %u\n", (u16)fc_effect.star_speed);
             fd_meteor_speed(); // 向app反馈流星灯速度
         }
-        else if (fc_effect.star_index >= 17 && fc_effect.star_index <= 18)
+        else if (fc_effect.star_index >= 15 && fc_effect.star_index <= 16)
         {
             // 如果在声控模式，调节流星灯声控模式的灵敏度
             meteor_lights_sound_sensitivity_sub();
@@ -1034,7 +1036,7 @@ void rf_433_key_event_handle(void)
         }
 
         // 判断电机是否处于普通模式（非声控模式）
-        if (5 != fc_effect.base_ins.mode)
+        if (MOTOR_MODE_MUSIC_RULATION != fc_effect.base_ins.mode)
         {
             if (fc_effect.motor_speed_index > 0)
             {
@@ -1042,7 +1044,29 @@ void rf_433_key_event_handle(void)
             }
 
             fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
-            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#if USER_DEBUG_ENABLE
+            // printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#endif
+
+            if (fc_effect.base_ins.mode == MOTOR_MODE_FORWARD_REVERSE)
+            {
+                // 如果是在正反转模式下，改变了电机转速，需要根据当前的旋转方向，再设置一次速度
+                if (fc_effect.base_ins.dir_in_mode_forward_reverse == 0)
+                {
+                    // 当前是在正转
+                    motor_package_data(MOTOR_MODE_FORWARD, fc_effect.base_ins.period);
+                }
+                else
+                {
+                    // 当前是在反转
+                    motor_package_data(MOTOR_MODE_REVERSE, fc_effect.base_ins.period);
+                }
+            }
+            else
+            {
+                motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
+            }
+
             os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
             fb_motor_speed(); // 向app反馈电机的转速
         }
@@ -1068,7 +1092,7 @@ void rf_433_key_event_handle(void)
         }
 
         // 判断电机是否处于普通模式（非声控模式）
-        if (5 != fc_effect.base_ins.mode)
+        if (MOTOR_MODE_MUSIC_RULATION != fc_effect.base_ins.mode)
         {
             if (fc_effect.motor_speed_index < ARRAY_SIZE(motor_period) - 1)
             {
@@ -1076,7 +1100,30 @@ void rf_433_key_event_handle(void)
             }
 
             fc_effect.base_ins.period = motor_period[fc_effect.motor_speed_index];
-            printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#if USER_DEBUG_ENABLE
+            // printf("motor speed index %u\n", (u16)fc_effect.motor_speed_index);
+#endif
+
+            if (fc_effect.base_ins.mode == MOTOR_MODE_FORWARD_REVERSE)
+            {
+                // 如果是在正反转模式下，改变了电机转速，需要根据当前的旋转方向，再设置一次速度
+                if (fc_effect.base_ins.dir_in_mode_forward_reverse == 0)
+                {
+                    // 当前是在正转
+                    motor_package_data(MOTOR_MODE_FORWARD, fc_effect.base_ins.period);
+                }
+                else
+                {
+                    // 当前是在反转
+                    motor_package_data(MOTOR_MODE_REVERSE, fc_effect.base_ins.period);
+                }
+            }
+            else
+            {
+                motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
+            }
+
+            motor_package_data(fc_effect.base_ins.mode, fc_effect.base_ins.period);
             os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
             fb_motor_speed(); // 向app反馈电机的转速
         }

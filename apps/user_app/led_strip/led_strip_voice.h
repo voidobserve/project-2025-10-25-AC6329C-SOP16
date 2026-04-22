@@ -5,7 +5,9 @@
 
 u8 get_sound_triggered_by_colorful_lights(void); // 获取七彩灯的声控结果
 u8 get_sound_triggered_by_meteor_lights(void);   // 获取流星灯的声控结果
-u8 get_sound_triggered_by_motor(void);
+// u8 get_sound_triggered_by_motor(void);
+u8 sound_triggered_by_motor_get(void);
+void sound_triggered_by_motor_clear(void);
 
 void colorful_lights_sound_sensitivity_add(void); // 七彩灯声控模式下的灵敏度 增加
 void colorful_lights_sound_sensitivity_sub(void); // 七彩灯声控模式下的灵敏度 减少

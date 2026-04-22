@@ -935,6 +935,9 @@ static void ls_custom_effect(void)
  */
 void ls_meteor_stat_effect(void)
 {
+    mode_ptr meteor_light_mode_ptr = NULL;
+    u8 opt = NO_OPTIONS;
+
     if (fc_effect.star_on_off == DEVICE_OFF)
     {
         // 流星灯当前是关闭的，不调节
@@ -947,237 +950,111 @@ void ls_meteor_stat_effect(void)
     if (fc_effect.star_index == 1)
     {
         // 单流星
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_FAST);                                 // 选项
+        meteor_light_mode_ptr = WS2812FX_mode_comet_1_with_max_brightness;
+        opt = FADE_FAST; // 选项
     }
     else if (fc_effect.star_index == 2)
     {
         // 单流星
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_MEDIUM);                               // 选项
+        meteor_light_mode_ptr = WS2812FX_mode_comet_1_with_max_brightness;
+        opt = FADE_SLOW; // 选项
     }
     else if (fc_effect.star_index == 3)
-    {
-        // 单流星
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_SLOW);                                 // 选项，这里像素点大小：3 REVERSE决定方向
+    { // 单流星（反向）
+        meteor_light_mode_ptr = WS2812FX_mode_comet_1_with_max_brightness;
+        opt = FADE_FAST | REVERSE; // 选项
     }
     else if (fc_effect.star_index == 4)
     {
-        // 单流星（反向）
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_FAST | REVERSE);                       // 选项，这里像素点大小：3 REVERSE决定方向
+        meteor_light_mode_ptr = WS2812FX_mode_comet_1_with_max_brightness;
+        opt = FADE_SLOW | REVERSE; // 选项
     }
     else if (fc_effect.star_index == 5)
     {
-        // 单流星（反向）
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_MEDIUM | REVERSE);                     // 选项，这里像素点大小：3 REVERSE决定方向
+        meteor_light_mode_ptr = WS2812FX_mode_comet_4_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 6)
     {
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_1_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            FADE_SLOW | REVERSE);                       // 选项，这里像素点大小：3 REVERSE决定方向
+        // 两段流星灯追逐
+        meteor_light_mode_ptr = meteor_lights_chase_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 7)
     {
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                          // 第0段
-            1, fc_effect.led_num - 1,                   // 起始位置，结束位置
-            &WS2812FX_mode_comet_4_with_max_brightness, // 效果
-            WHITE,                                      // 颜色
-            fc_effect.star_speed,                       // 速度
-            0);                                         // 选项，这里像素点大小：3 REVERSE决定方向
+        // 两段流星灯追逐
+        meteor_light_mode_ptr = meteor_lights_chase_with_max_brightness;
+        opt = REVERSE; // 选项
     }
     else if (fc_effect.star_index == 8)
     {
-        // 两段流星灯追逐
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                        // 第0段
-            1, fc_effect.led_num - 1,                 // 起始位置，结束位置
-            &meteor_lights_chase_with_max_brightness, // 效果
-            WHITE,                                    // 颜色
-            fc_effect.star_speed,                     // 速度
-            0);                                       // 选项，这里像素点大小：3 REVERSE决定方向
+        // 改成先流星上半，时间间隔结束后，流星下半
+        meteor_light_mode_ptr = meteor_lights_half_flow_with_max_brightness;
+        opt = FADE_MEDIUM; // 选项
     }
     else if (fc_effect.star_index == 9)
     {
-        // 两段流星灯追逐
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                        // 第0段
-            1, fc_effect.led_num - 1,                 // 起始位置，结束位置
-            &meteor_lights_chase_with_max_brightness, // 效果
-            WHITE,                                    // 颜色
-            fc_effect.star_speed,                     // 速度
-            REVERSE);                                 // 选项，这里像素点大小：3 REVERSE决定方向
+        // 改成先流星上半，时间间隔结束后，流星下半
+        meteor_light_mode_ptr = meteor_lights_half_flow_with_max_brightness;
+        opt = REVERSE | FADE_MEDIUM; // 选项
     }
     else if (fc_effect.star_index == 10)
-    { 
-        // 改成先流星上半，时间间隔结束后，流星下半
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                            // 第0段
-            1, fc_effect.led_num - 1,                     // 起始位置，结束位置
-            &meteor_lights_half_flow_with_max_brightness, // 效果
-            WHITE,                                        // 颜色
-            fc_effect.star_speed,                         // 速度
-            NO_OPTIONS | FADE_MEDIUM);                    // 选项，这里像素点大小：3 REVERSE决定方向
+    {
+        // 单点流水，最后四个灯堆积
+        meteor_light_mode_ptr = meteor_lights_single_flow_and_stack_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 11)
-    { 
-        // 改成先流星上半，时间间隔结束后，流星下半
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                            // 第0段
-            1, fc_effect.led_num - 1,                     // 起始位置，结束位置
-            &meteor_lights_half_flow_with_max_brightness, // 效果
-            WHITE,                                        // 颜色
-            fc_effect.star_speed,                         // 速度
-            REVERSE | FADE_MEDIUM);                       // 选项，这里像素点大小：3 REVERSE决定方向
+    {
+        // 单点流水，最后四个灯堆积（反向）
+        meteor_light_mode_ptr = meteor_lights_single_flow_and_stack_with_max_brightness;
+        opt = REVERSE; // 选项
     }
     else if (fc_effect.star_index == 12)
     {
-        // 单点流水，最后四个灯堆积
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                                        // 第0段
-            1, fc_effect.led_num - 1,                                 // 起始位置，结束位置
-            &meteor_lights_single_flow_and_stack_with_max_brightness, // 效果
-            WHITE,                                                    // 颜色
-            fc_effect.star_speed,                                     // 速度
-            0);                                                       // 选项，这里像素点大小：3 REVERSE决定方向
+        // 堆积流水
+        meteor_light_mode_ptr = meteor_lights_stack_flow_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 13)
     {
-        // 单点流水，最后四个灯堆积（反向）
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                                        // 第0段
-            1, fc_effect.led_num - 1,                                 // 起始位置，结束位置
-            &meteor_lights_single_flow_and_stack_with_max_brightness, // 效果
-            WHITE,                                                    // 颜色
-            fc_effect.star_speed,                                     // 速度
-            REVERSE);                                                 // 选项，这里像素点大小：3 REVERSE决定方向
+        // 堆积流水（反向）
+        meteor_light_mode_ptr = meteor_lights_stack_flow_with_max_brightness;
+        opt = REVERSE; // 选项
     }
     else if (fc_effect.star_index == 14)
     {
-        // 堆积流水
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                             // 第0段
-            1, fc_effect.led_num - 1,                      // 起始位置，结束位置
-            &meteor_lights_stack_flow_with_max_brightness, // 效果
-            WHITE,                                         // 颜色
-            fc_effect.star_speed,                          // 速度
-            0);                                            // 选项，这里像素点大小：3 REVERSE决定方向
+        // 堆积流水(正向) + 堆积流水(反向)
+        meteor_light_mode_ptr = meteor_lights_stack_flow_plus_reverse_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 15)
     {
-        // 堆积流水（反向）
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                             // 第0段
-            1, fc_effect.led_num - 1,                      // 起始位置，结束位置
-            &meteor_lights_stack_flow_with_max_brightness, // 效果
-            WHITE,                                         // 颜色
-            fc_effect.star_speed,                          // 速度
-            REVERSE);                                      // 选项，这里像素点大小：3 REVERSE决定方向
+        // 音乐律动1
+        meteor_light_mode_ptr = meteor_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
     else if (fc_effect.star_index == 16)
     {
-        // 堆积流水(正向) + 堆积流水(反向)
-        WS2812FX_stop();
-        WS2812FX_setSegment_colorOptions(
-            1,                                                          // 第0段
-            1, fc_effect.led_num - 1,                                   // 起始位置，结束位置
-            &meteor_lights_stack_flow_plus_reverse_with_max_brightness, // 效果
-            WHITE,                                                      // 颜色
-            fc_effect.star_speed,                                       // 速度
-            0);                                                         // 选项
+        // 音乐律动2
+        meteor_light_mode_ptr = music_meteor3_with_max_brightness;
+        opt = NO_OPTIONS; // 选项
     }
-    else if (fc_effect.star_index == 17) // 音乐律动1
-    {
-        extern uint16_t meteor(void);
-        WS2812FX_stop();
-
-        WS2812FX_setSegment_colorOptions(
-            1,                        // 第0段
-            1, fc_effect.led_num - 1, // 起始位置，结束位置
-            // &meteor,                  // 效果
-            &meteor_with_max_brightness, // 效果
-            WHITE,                       // 颜色，WS2812FX_setColors设置
-            fc_effect.star_speed,        // 速度
-            0);                          // 选项，这里像素点大小：3 REVERSE决定方向
-    }
-    else if (fc_effect.star_index == 18) // 音乐律动2
-    {
-        extern uint16_t music_meteor3(void);
-        WS2812FX_stop();
-
-        WS2812FX_setSegment_colorOptions(
-            1,                        // 第0段
-            1, fc_effect.led_num - 1, // 起始位置，结束位置
-            // &music_meteor3,           // 效果
-            &music_meteor3_with_max_brightness, // 效果
-            WHITE,                              // 颜色，WS2812FX_setColors设置
-            fc_effect.star_speed,               // 速度
-            0);                                 // 选项，这里像素点大小：3 REVERSE决定方向
-    }
-    // 目前app调节的流星灯中，没有 index == 19 ~ index == 22 的功能：
-    // else if (fc_effect.star_index == 19 || fc_effect.star_index == 20 || fc_effect.star_index == 21) //
-    // {
-    //     // 单色灯带渐变灭灯,做流星效果   兼容正反方向
-    //     strand_meteor(fc_effect.star_index);
-    // }
-    // else if (fc_effect.star_index == 22)
-    // {
-    //     double_meteor(); // 双流星
-    // }
     else
     {
         // index 不在 索引范围内，直接返回
         return;
     }
 
+    WS2812FX_stop();
+    WS2812FX_setSegment_colorOptions(
+        1,                           // 第 x 段
+        1,                           // 起始位置
+        fc_effect.led_num - 1,       // 结束位置
+        meteor_light_mode_ptr,      // 效果
+        WHITE,                       // 颜色
+        fc_effect.star_speed,        // 速度
+        opt);                        // 选项
     WS2812FX_resetSegmentRuntime(1); // 重置流星灯所在的段运行时参数
     WS2812FX_running_flag_set();
     os_taskq_post("msg_task", 1, MSG_USER_SAVE_INFO);
@@ -1189,51 +1066,6 @@ void ls_meteor_stat_effect(void)
  */
 static void ls_music_effect(void)
 {
-#if 0
-    extern uint16_t fc_music_gradual(void);
-    extern uint16_t fc_music_breath(void);
-    extern uint16_t fc_music_static(void);
-    extern uint16_t fc_music_twinkle(void);
-
-    void *music_effect_addr = &fc_music_gradual; // 避免出现地址空，导致不断复位
-    app_set_bright(100);
-#if (LED_STRIP_TYPE == TYPE_Fiber_optic_lights)
-    switch (fc_effect.music.m)
-    {
-    case 0:
-        music_effect_addr = &fc_music_gradual;
-        break;
-    case 1:
-        music_effect_addr = &fc_music_breath;
-        break;
-    case 2:
-        music_effect_addr = &fc_music_static;
-        break;
-    case 3:
-        music_effect_addr = &fc_music_twinkle;
-        break;
-    default:
-        break;
-    }
-
-    WS2812FX_setSegment_colorOptions(
-        0,                       // 第0段
-        0, 0,                    // 起始位置，结束位置
-        music_effect_addr,       // 效果
-        WHITE,                   // 颜色，WS2812FX_setColors设置
-        100,                     // 速度
-        SIZE_MEDIUM | FADE_XSLOW // 选项，这里像素点大小：3,反向/反向
-    );
-
-#elif (LED_STRIP_TYPE == TYPE_Magic_lights)
-
-#endif
-
-    // WS2812FX_start();
-    WS2812FX_resetSegmentRuntime(0); // 清除指定段的显示缓存
-    WS2812FX_running_flag_set();
-#endif
-
 #if 1
     void *music_effect_addr = NULL;
     switch (fc_effect.music.m)

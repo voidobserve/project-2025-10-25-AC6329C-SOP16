@@ -141,6 +141,7 @@
 					<Add directory="../../../user_app/led_strip" />
 					<Add directory="../../../user_app/rf433_key" />
 					<Add directory="../../../user_app/save_flash" />
+					<Add directory="../../../user_app" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -907,6 +908,7 @@
 		<Unit filename="../../../user_app/led_strip/led_strip_voice.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../../user_app/led_strip/led_strip_voice.h" />
 		<Unit filename="../../../user_app/led_strip/paint_tool.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -939,6 +941,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/save_flash/save_flash.h" />
+		<Unit filename="../../../user_app/user_include.h" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/Adafruit_NeoPixel.H" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/adafruit_typedef.h" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.c">
