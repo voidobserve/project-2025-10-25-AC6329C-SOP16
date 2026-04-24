@@ -83,7 +83,7 @@ const struct task_info task_info_table[] = {
 
     {"led_task", 2, 0, 512, 512}, // 灯光
     {"msg_task", 3, 0, 256, 256}, // 用户消息处理线程
-    {"motor_task", 3, 0, 256, 256},
+    {"motor_task", 3, 0, 128, 128},
     {0, 0},
 };
 
@@ -448,7 +448,6 @@ void user_msg_handle_task(void)
             //         os_time_dly(1);
             //     }
 
-
             //     enable_one_wire();
             // }
 
@@ -552,6 +551,72 @@ void motor_task(void)
         motor_forward_reverse_mode_handle();
         motor_music_rulation_mode_handle();
         os_time_dly(1);
+    }
+}
+
+// 发送缓冲区中，一条指令最大的长度：
+#define BLE_NOTIFY_SEND_BUFF_MAX_LEN 20
+// 发送缓冲区中，最大的指令数量：
+#define BLE_NOTIFY_SEND_BUFF_MAX_NUM 20
+typedef struct
+{
+    // 发送缓冲区
+    u8 send_buff[BLE_NOTIFY_SEND_BUFF_MAX_NUM][BLE_NOTIFY_SEND_BUFF_MAX_LEN];
+    u16 send_buff_len[BLE_NOTIFY_SEND_BUFF_MAX_NUM];
+    u8 send_buff_head;
+    u8 send_buff_tail;  
+    u8 send_buff_num;
+
+    // 存放指令
+    void (*param_put)(u8 buff, u16 len);
+    void (*param_get_num)(void);
+    // 指令处理函数
+    void (*handle)(void);
+} ble_notify_t;
+
+volatile ble_notify_t ble_notify_obj;
+void ble_notify_param_put(u8 buff, u16 len)
+{
+    // 如果缓冲区满，下面的操作会覆盖缓冲区中旧的数据：
+    ble_notify_obj.send_buff_head++;
+    if (ble_notify_obj.send_buff_head >= BLE_NOTIFY_SEND_BUFF_MAX_NUM)
+    {
+        ble_notify_obj.send_buff_head = 0;
+    }
+
+    memcpy(ble_notify_obj.send_buff[ble_notify_obj.send_buff_head], buff, len);
+    ble_notify_obj.send_buff_len[ble_notify_obj.send_buff_head] = len;
+    ble_notify_obj.send_buff_num++;
+    if (ble_notify_obj.send_buff_num >= BLE_NOTIFY_SEND_BUFF_MAX_NUM)
+    {
+        ble_notify_obj.send_buff_num = BLE_NOTIFY_SEND_BUFF_MAX_NUM;
+    }
+}
+
+// 获取指令数量
+u8 ble_notify_param_get_num(void)
+{
+    return ble_notify_obj.send_buff_num;
+}
+
+void ble_notify_handle(void)
+{
+    if (ble_notify_obj.send_buff_num == 0)
+    {
+        // 缓冲区中没有存放指令，直接返回
+        return;
+    }   
+
+    
+}
+
+void ble_notify_task(void)
+{
+    while (1)
+    {
+
+        os_time_dly(1);
+        // wdt_clear();
     }
 }
 

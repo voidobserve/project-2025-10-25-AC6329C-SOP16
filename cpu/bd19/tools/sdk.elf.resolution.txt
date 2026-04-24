@@ -2320,7 +2320,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_motor_speed,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_motor_mode,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,parse_zd_data,pl
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,os_time_dly,
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,get_on_off_state,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,colorful_light_open,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_open,l
@@ -2910,6 +2909,11 @@ obj/Release/apps/spp_and_le/app_main.o
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_task,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_forward_reverse_mode_handle,l
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_music_rulation_mode_handle,l
+-r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_param_put,pl
+-r=obj/Release/apps/spp_and_le/app_main.o,memcpy,l
+-r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_param_get_num,pl
+-r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_handle,pl
+-r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_task,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,my_main,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,led_gpio_init,l
 -r=obj/Release/apps/spp_and_le/app_main.o,led_pwm_init,l
@@ -2924,6 +2928,7 @@ obj/Release/apps/spp_and_le/app_main.o
 -r=obj/Release/apps/spp_and_le/app_main.o,config_update_mode,l
 -r=obj/Release/apps/spp_and_le/app_main.o,log_tag_const_i_APP,l
 -r=obj/Release/apps/spp_and_le/app_main.o,__initcall_user_timer_init,pl
+-r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_obj,pl
 obj/Release/apps/spp_and_le/config/lib_btctrler_config.o
 -r=obj/Release/apps/spp_and_le/config/lib_btctrler_config.o,config_btctler_modules,pl
 -r=obj/Release/apps/spp_and_le/config/lib_btctrler_config.o,CONFIG_TWS_RUN_SLOT,pl
