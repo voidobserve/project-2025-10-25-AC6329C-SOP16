@@ -559,6 +559,9 @@ void motor_forward_reverse_mode_handle(void)
     }
 }
 
+// 声控模式下，电机快速转动的超时时间
+// 由于处理函数是10ms调用一次，这里要除以10
+#define MOTOR_TIMEOUT_CNT_IN_MUSIC_RULATION (2000 / 10)
 // 电机声控模式下，对应的处理函数
 // 目前与 fc_effect.base_ins.period 无关，只与 fc_effect.base_ins.sensitivity 有关
 void motor_music_rulation_mode_handle(void)
@@ -578,6 +581,43 @@ void motor_music_rulation_mode_handle(void)
         return;
     }
 
+    if (sound_triggered_by_motor_get())
+    {
+
+        sound_triggered_by_motor_clear();
+
+        if (is_send_slowest_speed)
+        {
+            /*
+                有声控信号，并且当前速度为最慢
+            */
+            is_send_slowest_speed = 0;
+            motor_package_data(MOTOR_MODE_FORWARD, 8);
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+        }
+
+        // 有声控信号，重置超时时间
+        timeout_cnt = 0;
+    }
+
+    if (timeout_cnt < MOTOR_TIMEOUT_CNT_IN_MUSIC_RULATION)
+    {
+        timeout_cnt++;
+    }
+    else
+    {
+        // 超时，把电机速度设置为最慢
+
+        // 超时之后，只发送一次
+        if (is_send_slowest_speed == 0)
+        {
+            motor_package_data(MOTOR_MODE_FORWARD, 35);
+            os_taskq_post("msg_task", 1, MSG_SEQUENCER_ONE_WIRE_SEND_INFO);
+            is_send_slowest_speed = 1;
+        }
+    }
+
+#if 0
     // 超时之后，再检测有没有声控信号，否则一旦有声控信号，就会给电机ic发送数据
     // if (timeout_cnt >= 200 && get_sound_triggered_by_motor())
     if (timeout_cnt >= 200 && sound_triggered_by_motor_get())
@@ -613,4 +653,5 @@ void motor_music_rulation_mode_handle(void)
             is_send_slowest_speed = 1;
         }
     }
+#endif
 }

@@ -142,6 +142,7 @@
 					<Add directory="../../../user_app/rf433_key" />
 					<Add directory="../../../user_app/save_flash" />
 					<Add directory="../../../user_app" />
+					<Add directory="../../../../include_lib/btstack/le" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -941,6 +942,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../../user_app/save_flash/save_flash.h" />
+		<Unit filename="../../../user_app/user_ble_notify/user_ble_notify.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../user_app/user_ble_notify/user_ble_notify.h" />
 		<Unit filename="../../../user_app/user_include.h" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/Adafruit_NeoPixel.H" />
 		<Unit filename="../../../user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/adafruit_typedef.h" />

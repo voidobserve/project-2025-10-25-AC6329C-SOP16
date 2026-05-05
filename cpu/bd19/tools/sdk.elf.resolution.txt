@@ -2308,7 +2308,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,set_fc_effect,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,zd_fb_2_app,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,memcpy,l
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ble_comm_att_send_data,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fb_led_on_off_state,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fd_meteor_speed,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,fd_meteor_cycle,pl
@@ -2340,7 +2339,6 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,app_set_mereor_speed,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ls_meteor_stat_effect,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,app_set_meteor_pro,l
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,one_wire_set_mode,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_package_data,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,os_taskq_post,
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,parse_led_strip_data,pl
@@ -2351,7 +2349,7 @@ obj/Release/apps/user_app/protocol/dp_data_tran.o
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_music_data,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_lednum_set,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_draw_tool,pl
--r=obj/Release/apps/user_app/protocol/dp_data_tran.o,ZD_HCI_handle,l
+-r=obj/Release/apps/user_app/protocol/dp_data_tran.o,user_ble_notify_obj,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,motor_period,l
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_switch_led,pl
 -r=obj/Release/apps/user_app/protocol/dp_data_tran.o,dp_countdown,pl
@@ -2500,6 +2498,13 @@ obj/Release/apps/user_app/save_flash/save_flash.o
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,save_user_data_handle,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,save_data,pl
 -r=obj/Release/apps/user_app/save_flash/save_flash.o,fc_effect,l
+obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,ble_notify_param_put,pl
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,ble_notify_param_handle,pl
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,memcpy,l
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,ble_comm_att_send_data,l
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,user_ble_notify_obj,pl
+-r=obj/Release/apps/user_app/user_ble_notify/user_ble_notify.o,ZD_HCI_handle,l
 obj/Release/apps/user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.o
 -r=obj/Release/apps/user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.o,ws281x_init,pl
 -r=obj/Release/apps/user_app/ws2812-fx-lib/Adafruit_NeoPixel_C/neo_pixel.o,ws281x_show,pl
@@ -2909,10 +2914,6 @@ obj/Release/apps/spp_and_le/app_main.o
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_task,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_forward_reverse_mode_handle,l
 -r=obj/Release/apps/spp_and_le/app_main.o,motor_music_rulation_mode_handle,l
--r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_param_put,pl
--r=obj/Release/apps/spp_and_le/app_main.o,memcpy,l
--r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_param_get_num,pl
--r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_handle,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_task,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,my_main,pl
 -r=obj/Release/apps/spp_and_le/app_main.o,led_gpio_init,l
@@ -2928,7 +2929,7 @@ obj/Release/apps/spp_and_le/app_main.o
 -r=obj/Release/apps/spp_and_le/app_main.o,config_update_mode,l
 -r=obj/Release/apps/spp_and_le/app_main.o,log_tag_const_i_APP,l
 -r=obj/Release/apps/spp_and_le/app_main.o,__initcall_user_timer_init,pl
--r=obj/Release/apps/spp_and_le/app_main.o,ble_notify_obj,pl
+-r=obj/Release/apps/spp_and_le/app_main.o,user_ble_notify_obj,l
 obj/Release/apps/spp_and_le/config/lib_btctrler_config.o
 -r=obj/Release/apps/spp_and_le/config/lib_btctrler_config.o,config_btctler_modules,pl
 -r=obj/Release/apps/spp_and_le/config/lib_btctrler_config.o,CONFIG_TWS_RUN_SLOT,pl

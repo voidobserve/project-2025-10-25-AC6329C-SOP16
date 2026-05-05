@@ -13,7 +13,8 @@
 #include "one_wire.h"
 
 #include "user_include.h"
-#include "../../../apps/user_app/led_strip/led_strand_effect.h"
+#include "led_strand_effect.h"
+#include "user_ble_notify.h"
 
 dp_data_header_t dp_data_header; // 涂鸦DP数据头
 dp_switch_led_t dp_switch_led;   // DPID_SWITCH_LED开关
@@ -256,8 +257,14 @@ void zd_fb_2_app(u8 *p, u8 len)
 {
     uint8_t fc_buffer[30]; // 发送缓存
     // memcpy(fc_buffer, Ble_Addr, 6);
-    memcpy(fc_buffer + 6, p, len);
-    ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, fc_buffer, len + 6, ATT_OP_AUTO_READ_CCC);
+    memcpy(fc_buffer + 6, p, len); // 跳过前6个字节的地址
+    // ble_comm_att_send_data(
+    //     ZD_HCI_handle,
+    //     ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE,
+    //     fc_buffer,
+    //     len + 6,
+    //     ATT_OP_AUTO_READ_CCC);
+    user_ble_notify_obj.param_put(fc_buffer, len + 6);
 }
 
 /*********************************************************
@@ -481,8 +488,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
 {
     volatile u8 send_buf_len = 0; // 存放待发送的指令长度
     // const u8 send_addr_len = 6;        // 存放待发送的地址的长度
-    const u8 send_data_prefix_len = 3; // 存放待发送的指令的前缀长度
-    volatile uint8_t Send_buffer[20];           // 发送缓存
+    const u8 send_data_prefix_len = 3; // 存放待发送的指令的前缀长度(0x01、0xE9、0x00共3bytes)
+    volatile uint8_t Send_buffer[20];  // 发送缓存
     // memcpy(Send_buffer, Ble_Addr, 6);
     // send_buf_len += 6;
 
@@ -505,7 +512,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x01;
         Send_buffer[send_buf_len++] = 0x01;
         Send_buffer[send_buf_len++] = 0x02; // 灯具类型：RGBW
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         // os_time_dly(1);
         //-------------------发送开关机状态---------------------------
 
@@ -514,7 +522,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x01;
         Send_buffer[send_buf_len++] = 0x01;
         Send_buffer[send_buf_len++] = get_on_off_state(); // 目前状态
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         // os_time_dly(1);
 
         //-------------------发送亮度---------------------------
@@ -523,7 +532,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x04;
         Send_buffer[send_buf_len++] = 0x03;
         Send_buffer[send_buf_len++] = fc_effect.app_b;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         // os_time_dly(1);
 
         //-------------------发送速度---------------------------
@@ -532,7 +542,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x04;
         Send_buffer[send_buf_len++] = 0x04;
         Send_buffer[send_buf_len++] = fc_effect.app_speed;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         // os_time_dly(1);
 
         //-------------------发送灯带长度---------------------------
@@ -542,7 +553,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x08;
         Send_buffer[send_buf_len++] = fc_effect.led_num >> 8;
         Send_buffer[send_buf_len++] = fc_effect.led_num & 0xff;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         // os_time_dly(1);
 
         //-------------------发送灵敏度---------------------------
@@ -551,8 +563,9 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x05;
         Send_buffer[send_buf_len++] = fc_effect.music.s;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
 
         //-------------------发送静态RGB模式--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
@@ -563,8 +576,9 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = fc_effect.rgb.r;
         Send_buffer[send_buf_len++] = fc_effect.rgb.g;
         Send_buffer[send_buf_len++] = fc_effect.rgb.b;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
 
         //-------------------发送RGB接口模式--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
@@ -572,8 +586,9 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x04;
         Send_buffer[send_buf_len++] = 0x05;
         Send_buffer[send_buf_len++] = fc_effect.sequence;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
 
         //-------------------声控模式（手机麦或外麦--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
@@ -581,16 +596,20 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x06;
         Send_buffer[send_buf_len++] = 0x07;
         Send_buffer[send_buf_len++] = fc_effect.music.m_type;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
+
         //-------------------本地麦克风模式--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
         send_buf_len = send_data_prefix_len;
         Send_buffer[send_buf_len++] = 0x06;
         Send_buffer[send_buf_len++] = 0x06;
         Send_buffer[send_buf_len++] = fc_effect.music.m;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
+
         // 流星
 
         //-------------------流星开关--------------------------
@@ -599,24 +618,29 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x02;
         Send_buffer[send_buf_len++] = fc_effect.star_on_off;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
+
         //-------------------流星速度--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
         send_buf_len = send_data_prefix_len;
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x01;
         Send_buffer[send_buf_len++] = fc_effect.app_star_speed;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
+
         //-------------------流星周期--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
         send_buf_len = send_data_prefix_len;
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x03;
         Send_buffer[send_buf_len++] = fc_effect.meteor_period;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
 
         // 电机
         //-------------------电机模式--------------------------
@@ -624,8 +648,9 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x06;
         Send_buffer[send_buf_len++] = fc_effect.base_ins.mode;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
 
         //-------------------电机速度--------------------------
         // send_buf_len = send_addr_len + send_data_prefix_len;
@@ -633,8 +658,9 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
         Send_buffer[send_buf_len++] = 0x2F;
         Send_buffer[send_buf_len++] = 0x07;
         Send_buffer[send_buf_len++] = fc_effect.base_ins.period;
-        ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+        // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
         // os_time_dly(1);
+        user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
     }
     else
     {
@@ -943,7 +969,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
             Send_buffer[send_buf_len++] = 0x06;
             Send_buffer[send_buf_len++] = 0x06;
             Send_buffer[send_buf_len++] = LedCommand[5];
-            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+            // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+            user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         }
 
         //---------------------------------设备手机麦或者外麦-----------------------------------
@@ -981,7 +1008,8 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
             Send_buffer[send_buf_len++] = 0x06;
             Send_buffer[send_buf_len++] = 0x07;
             Send_buffer[send_buf_len++] = LedCommand[5];
-            ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+            // ble_comm_att_send_data(ZD_HCI_handle, ATT_CHARACTERISTIC_fff1_01_VALUE_HANDLE, Send_buffer, send_buf_len, ATT_OP_AUTO_READ_CCC);
+            user_ble_notify_obj.param_put(Send_buffer, send_buf_len);
         }
 
         //---------------------------------设置麦克风灵，电机，流星 灵敏度-----------------------------------
@@ -1072,18 +1100,15 @@ void parse_zd_data(unsigned char *LedCommand, u8 len)
             LedCommand[3] == 0x2F &&
             LedCommand[4] == 0x06)
         {
-            if (DEVICE_OFF == get_on_off_state())
-            {
-                // 如果七彩灯没有开，不设置电机模式（七彩灯跟电机绑定）
+            // if (DEVICE_OFF == get_on_off_state())
+            // {
+            //     // 如果七彩灯没有开，不设置电机模式（七彩灯跟电机绑定）
 
-                // USER_TO_DO 可能在关机之后，关闭电机之后，也要能设置电机模式，再次开启电机时能恢复到对应模式
-                one_wire_set_mode(LedCommand[5]);
-                fb_motor_mode();
-                return;
-            }
-
-            // extern void one_wire_set_mode(u8 m);
-            // one_wire_set_mode(LedCommand[5]); // 配置模式
+            //     // USER_TO_DO 可能在关机之后，关闭电机之后，也要能设置电机模式，再次开启电机时能恢复到对应模式
+            //     one_wire_set_mode(LedCommand[5]);
+            //     fb_motor_mode();
+            //     return;
+            // }
 
             // 旧版的程序是延时关闭，如果频繁切换电机模式，就会有问题，现在是如果设置了关闭电机，就直接关闭，不用延时关闭
             if (LedCommand[5] == MOTOR_MODE_STOP)

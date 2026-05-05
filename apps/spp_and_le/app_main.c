@@ -39,6 +39,7 @@
 
 #include "rf24g_key.h"
 #include "user_include.h"
+#include "user_ble_notify.h"
 
 // OS_SEM LED_TASK_SEM;
 
@@ -84,6 +85,7 @@ const struct task_info task_info_table[] = {
     {"led_task", 2, 0, 512, 512}, // 灯光
     {"msg_task", 3, 0, 256, 256}, // 用户消息处理线程
     {"motor_task", 3, 0, 128, 128},
+    {"usr_ble_task", 3, 0, 128, 128},
     {0, 0},
 };
 
@@ -398,9 +400,21 @@ void main_while(void)
         //         printf("main circle\n"); // 主循环约10ms
         //     }
         // }
+
         os_time_dly(1);
     }
 }
+
+// 自定义一个简易的消息控制
+// typedef struct
+// {   
+
+//     u8 flag_is_msg_;
+//     // u8 flag_is_
+
+
+//     void (*)(void);
+// } user_msg_handle_t;
 
 /*
     处理用户消息的线程 user_msg_handle_task
@@ -554,67 +568,28 @@ void motor_task(void)
     }
 }
 
-// 发送缓冲区中，一条指令最大的长度：
-#define BLE_NOTIFY_SEND_BUFF_MAX_LEN 20
-// 发送缓冲区中，最大的指令数量：
-#define BLE_NOTIFY_SEND_BUFF_MAX_NUM 20
-typedef struct
-{
-    // 发送缓冲区
-    u8 send_buff[BLE_NOTIFY_SEND_BUFF_MAX_NUM][BLE_NOTIFY_SEND_BUFF_MAX_LEN];
-    u16 send_buff_len[BLE_NOTIFY_SEND_BUFF_MAX_NUM];
-    u8 send_buff_head;
-    u8 send_buff_tail;  
-    u8 send_buff_num;
-
-    // 存放指令
-    void (*param_put)(u8 buff, u16 len);
-    void (*param_get_num)(void);
-    // 指令处理函数
-    void (*handle)(void);
-} ble_notify_t;
-
-volatile ble_notify_t ble_notify_obj;
-void ble_notify_param_put(u8 buff, u16 len)
-{
-    // 如果缓冲区满，下面的操作会覆盖缓冲区中旧的数据：
-    ble_notify_obj.send_buff_head++;
-    if (ble_notify_obj.send_buff_head >= BLE_NOTIFY_SEND_BUFF_MAX_NUM)
-    {
-        ble_notify_obj.send_buff_head = 0;
-    }
-
-    memcpy(ble_notify_obj.send_buff[ble_notify_obj.send_buff_head], buff, len);
-    ble_notify_obj.send_buff_len[ble_notify_obj.send_buff_head] = len;
-    ble_notify_obj.send_buff_num++;
-    if (ble_notify_obj.send_buff_num >= BLE_NOTIFY_SEND_BUFF_MAX_NUM)
-    {
-        ble_notify_obj.send_buff_num = BLE_NOTIFY_SEND_BUFF_MAX_NUM;
-    }
-}
-
-// 获取指令数量
-u8 ble_notify_param_get_num(void)
-{
-    return ble_notify_obj.send_buff_num;
-}
-
-void ble_notify_handle(void)
-{
-    if (ble_notify_obj.send_buff_num == 0)
-    {
-        // 缓冲区中没有存放指令，直接返回
-        return;
-    }   
-
-    
-}
-
 void ble_notify_task(void)
 {
     while (1)
     {
+        user_ble_notify_obj.param_handle();
 
+        // {
+        //     static u32 cnt = 0;
+        //     u8 cur_state;
+        //     cnt++;
+        //     if (cnt >= (3000 / 10))
+        //     {
+        //         cnt = 0;
+        //         cur_state = get_ble_work_state();
+        //         printf("cur ble sta == %u\n", (u16)cur_state);
+        //     }
+        // }
+
+        /*
+            notify 需要一段时间才能发送，
+            如果直接一次性修改发送，会导致旧数据被覆盖
+        */
         os_time_dly(1);
         // wdt_clear();
     }
@@ -631,11 +606,12 @@ void my_main(void)
 
     sys_s_hi_timer_add(NULL, WS2812_circle_task, 10); // 10ms
 
+    task_create(motor_task, NULL, "motor_task");
+    task_create(ble_notify_task, NULL, "usr_ble_task");
     task_create(user_msg_handle_task, NULL, "msg_task");
     /*
         这里要放到最后，防止调用 soft_turn_on_the_light() 给线程发送消息时，
         接收消息的线程没有创建，导致收不到消息，最后一上电电机会不工作
     */
     task_create(main_while, NULL, "led_task");
-    task_create(motor_task, NULL, "motor_task");
 }

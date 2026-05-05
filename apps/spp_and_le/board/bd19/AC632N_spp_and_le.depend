@@ -55432,14 +55432,14 @@
 1719208267 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\led_strip\paint_tool.h
 	"led_strip_sys.h"
 
-1776844794 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
+1777100177 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\one_wire\one_wire.c
 	"system/includes.h"
 	"one_wire.h"
 	"led_strand_effect.h"
 	"led_strip_voice.h"
 	"user_include.h"
 
-1777011441 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
+1777096789 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\protocol\dp_data_tran.c
 	"cpu.h"
 	"led_strip_sys.h"
 	"paint_tool.h"
@@ -55454,7 +55454,8 @@
 	"led_strip_drive.h"
 	"one_wire.h"
 	"user_include.h"
-	"../../../apps/user_app/led_strip/led_strand_effect.h"
+	"led_strand_effect.h"
+	"user_ble_notify.h"
 
 1719186943 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\examples\multi_conn\ble_multi_profile.h
 	<stdint.h>
@@ -55503,7 +55504,7 @@
 	<string.h>
 	"ws2812fx_tool.h"
 
-1777015553 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
+1777097993 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\app_main.c
 	"system/includes.h"
 	"app_config.h"
 	"app_action.h"
@@ -55524,6 +55525,7 @@
 	"../../../apps/user_app/ws2812-fx-lib/WS2812FX_C/WS2812FX.h"
 	"rf24g_key.h"
 	"user_include.h"
+	"user_ble_notify.h"
 	"led_strip_drive.h"
 	"hardware.h"
 
@@ -56424,7 +56426,7 @@
 	<stdint.h>
 	"app_config.h"
 
-1777011667 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\examples\multi_conn\ble_multi_central.c
+1777342077 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\spp_and_le\examples\multi_conn\ble_multi_central.c
 	"system/app_core.h"
 	"system/includes.h"
 	"app_config.h"
@@ -56995,4 +56997,14 @@
 	"../../../apps/user_app/led_strip/led_strip_sys.h"
 
 1776231613 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\user_include.h
+
+1777083486 source:d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\user_ble_notify\user_ble_notify.c
+	"user_ble_notify.h"
+	"typedef.h"
+	"btstack_typedef.h"
+	"ble_multi_profile.h"
+	"att.h"
+
+1777082853 d:\a_workst\aworkst\2025-10-25-世纪光电-rgbw+流星灯-ac6329c-sop16\code\project-2025-10-25-ac6329c-sop16\apps\user_app\user_ble_notify\user_ble_notify.h
+	"typedef.h"
 
